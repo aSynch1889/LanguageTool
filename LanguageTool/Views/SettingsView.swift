@@ -10,6 +10,11 @@ struct SettingsView: View {
     // 修改为使用原生语言名称
     private let supportedLanguages = [
         ("en", "English"),
+        ("en-CA", "English (Canada)"),
+        ("en-GB", "English (UK)"),
+        ("en-IN", "English (India)"),
+        ("de", "Deutsch"),
+        ("fr", "Français"),
         ("zh-Hans", "简体中文"),
         ("zh-Hant", "繁體中文"),
         ("ja", "日本語"),
