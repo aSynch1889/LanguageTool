@@ -290,6 +290,61 @@ struct TransferView: View {
         alert.runModal()
     }
     
+    private func handleDroppedFile(_ providers: [NSItemProvider]) -> Bool {
+        guard let provider = providers.first else { return false }
+        
+        if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
+            provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, error in
+                guard error == nil,
+                      let data = item as? Data,
+                      let url = URL(dataRepresentation: data, relativeTo: nil) else {
+                    return
+                }
+                
+                // 验证文件类型
+                let fileExtension = url.pathExtension.lowercased()
+                var isValidFile = false
+                
+                switch selectedPlatform {
+                case .iOS:
+                    isValidFile = ["strings", "xcstrings"].contains(fileExtension)
+                case .flutter:
+                    isValidFile = fileExtension == "arb"
+                case .electron:
+                    isValidFile = fileExtension == "json"
+                }
+                
+                if !isValidFile {
+                    DispatchQueue.main.async {
+                        showErrorAlert(message: "Invalid file type for selected platform".localized)
+                    }
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    self.inputPath = url.path
+                    self.isInputSelected = true
+                    
+                    // 设置输出格式
+                    switch selectedPlatform {
+                    case .iOS:
+                        self.outputFormat = fileExtension == "strings" ? .strings : .xcstrings
+                    case .flutter:
+                        self.outputFormat = .arb
+                    case .electron:
+                        self.outputFormat = .electron
+                    }
+                    
+                    // 重置输出路径
+                    self.outputPath = "No save location selected".localized
+                    self.isOutputSelected = false
+                }
+            }
+            return true
+        }
+        return false
+    }
+    
     var body: some View {
         ZStack {
             ScrollView {
@@ -320,6 +375,15 @@ struct TransferView: View {
                             Button("Select Input File".localized) {
                                 selectInputFile()
                             }
+                            
+                            // 添加拖放区域
+                            DropZoneView(isSelected: isInputSelected) { providers in
+                                handleDroppedFile(providers)
+                            }
+                            .onDrop(of: [.fileURL], isTargeted: nil) { providers in
+                                handleDroppedFile(providers)
+                            }
+                            
                             Text(inputPath.localized)
                                 .foregroundColor(.gray)
                                 .font(.system(.body, design: .monospaced))
@@ -502,6 +566,29 @@ struct LanguageToggle: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(isSelected ? Color.blue.opacity(0.1) : Color.clear)
         .cornerRadius(8)
+    }
+}
+
+// 添加拖放区域视图
+struct DropZoneView: View {
+    let isSelected: Bool
+    let onDrop: ([NSItemProvider]) -> Bool
+    
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5]))
+                .foregroundColor(isSelected ? .blue : .gray)
+                .frame(height: 100)
+            
+            VStack(spacing: 8) {
+                Image(systemName: "arrow.down.doc")
+                    .font(.system(size: 24))
+                Text("Drag and drop file here".localized)
+                    .font(.subheadline)
+            }
+            .foregroundColor(.gray)
+        }
     }
 }
 
