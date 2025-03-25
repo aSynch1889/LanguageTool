@@ -370,19 +370,13 @@ struct TransferView: View {
                     
                     // 文件选择部分
                     VStack(alignment: .leading, spacing: 20) {
-                        // 左对齐的内容容器
                         VStack(alignment: .leading, spacing: 10) {
-                            Button("Select Input File".localized) {
-                                selectInputFile()
-                            }
-                            
-                            // 添加拖放区域
-                            DropZoneView(isSelected: isInputSelected) { providers in
-                                handleDroppedFile(providers)
-                            }
-                            .onDrop(of: [.fileURL], isTargeted: nil) { providers in
-                                handleDroppedFile(providers)
-                            }
+                            DragDropButton(
+                                title: "Select Input File".localized,
+                                action: selectInputFile,
+                                isSelected: isInputSelected,
+                                onDrop: handleDroppedFile
+                            )
                             
                             Text(inputPath.localized)
                                 .foregroundColor(.gray)
@@ -569,26 +563,51 @@ struct LanguageToggle: View {
     }
 }
 
-// 添加拖放区域视图
-struct DropZoneView: View {
+// 更新按钮和拖放区域的组合视图
+struct DragDropButton: View {
+    let title: String
+    let action: () -> Void
     let isSelected: Bool
     let onDrop: ([NSItemProvider]) -> Bool
     
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5]))
-                .foregroundColor(isSelected ? .blue : .gray)
-                .frame(height: 100)
-            
-            VStack(spacing: 8) {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Text(title)
                 Image(systemName: "arrow.down.doc")
-                    .font(.system(size: 24))
-                Text("Drag and drop file here".localized)
-                    .font(.subheadline)
+                    .font(.system(size: 14))
+                    .foregroundColor(.secondary)
             }
-            .foregroundColor(.gray)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle()) // 确保整个区域可点击
         }
+        .buttonStyle(DragDropButtonStyle(isSelected: isSelected))
+        .onDrop(of: [.fileURL], isTargeted: nil, perform: onDrop)
+    }
+}
+
+// 自定义按钮样式
+struct DragDropButtonStyle: ButtonStyle {
+    let isSelected: Bool
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(
+                        style: StrokeStyle(
+                            lineWidth: 2,
+                            dash: [5]
+                        )
+                    )
+                    .foregroundColor(isSelected ? .blue : .gray)
+            )
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(configuration.isPressed ? Color.gray.opacity(0.1) : Color.clear)
+            )
     }
 }
 
