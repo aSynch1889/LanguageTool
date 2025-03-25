@@ -87,10 +87,12 @@ Language Tool 是一个 macOS 应用程序，用于自动化生成多平台的�
 
 ## 注意事项
 
-- 使用前需要配置有效的 DeepSeek AI 或者 Gemini 服务 API Key
+- 使用前需要配置有效的 DeepSeek AI 或者 Gemini（免费但限制地区） 服务 API Key
 - 建议在使用前备份原有的本地化文件
 - 翻译结果可能需要人工审核以确保准确性
 - 不同平台的本地化文件格式有所不同，请确保选择正确的平台
+- deepseek API [申请地址](https://platform.deepseek.com/api_keys)
+- Gemini API [申请地址](https://aistudio.google.com/app/apikey?hl=zh-cn)
 
 ## 贡献
 

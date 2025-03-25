@@ -90,6 +90,8 @@ If you prefer to build the application yourself:
 - It is recommended to back up existing localization files before use
 - Translation results may require manual review to ensure accuracy
 - Different platforms have different localization file formats, please ensure to select the correct platform
+- deepseek [application portal](https://platform.deepseek.com/api_keys)
+- Gemini api [application portal](https://aistudio.google.com/app/apikey?hl=zh-cn)
 
 ## Contribution
 
