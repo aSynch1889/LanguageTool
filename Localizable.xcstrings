@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    " (Optional)" : {
+      "comment" : " (Optional)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " (Optional)"
+          }
+        }
+      }
+    },
     "API Settings" : {
       "extractionState" : "stale",
       "localizations" : {
