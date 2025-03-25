@@ -76,6 +76,29 @@ struct TransferView: View {
                 self.inputPath = fileURL.path
                 self.isInputSelected = true
                 
+                // 设置默认输出路径：使用输入文件所在目录 + 之前的文件名
+                let inputDirectory = fileURL.deletingLastPathComponent().path
+                if self.isOutputSelected {
+                    // 如果已经有输出路径，保留文件名但更改目录
+                    let currentOutputURL = URL(fileURLWithPath: self.outputPath)
+                    let fileName = currentOutputURL.lastPathComponent
+                    self.outputPath = (inputDirectory as NSString).appendingPathComponent(fileName)
+                } else {
+                    // 如果还没有输出路径，生成默认文件名
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+                    let timestamp = dateFormatter.string(from: Date())
+                    let defaultFileName = "Localizable_\(timestamp)"
+                    
+                    switch outputFormat {
+                    case .xcstrings:
+                        self.outputPath = (inputDirectory as NSString).appendingPathComponent("\(defaultFileName).xcstrings")
+                    case .strings, .arb, .electron:
+                        self.outputPath = inputDirectory
+                    }
+                }
+                self.isOutputSelected = true
+                
                 // 根据选择的平台设置输出格式
                 switch selectedPlatform {
                 case .iOS:
@@ -84,12 +107,8 @@ struct TransferView: View {
                 case .flutter:
                     self.outputFormat = .arb
                 case .electron:
-                    self.outputFormat = .electron  // 新增 .electron 格式
+                    self.outputFormat = .electron
                 }
-                
-                // 重置输出路径
-                self.outputPath = "No save location selected".localized
-                self.isOutputSelected = false
             }
         }
     }
@@ -325,7 +344,30 @@ struct TransferView: View {
                     self.inputPath = url.path
                     self.isInputSelected = true
                     
-                    // 设置输出格式
+                    // 设置默认输出路径：使用输入文件所在目录 + 之前的文件名
+                    let inputDirectory = url.deletingLastPathComponent().path
+                    if self.isOutputSelected {
+                        // 如果已经有输出路径，保留文件名但更改目录
+                        let currentOutputURL = URL(fileURLWithPath: self.outputPath)
+                        let fileName = currentOutputURL.lastPathComponent
+                        self.outputPath = (inputDirectory as NSString).appendingPathComponent(fileName)
+                    } else {
+                        // 如果还没有输出路径，生成默认文件名
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+                        let timestamp = dateFormatter.string(from: Date())
+                        let defaultFileName = "Localizable_\(timestamp)"
+                        
+                        switch self.outputFormat {
+                        case .xcstrings:
+                            self.outputPath = (inputDirectory as NSString).appendingPathComponent("\(defaultFileName).xcstrings")
+                        case .strings, .arb, .electron:
+                            self.outputPath = inputDirectory
+                        }
+                    }
+                    self.isOutputSelected = true
+                    
+                    // 根据选择的平台设置输出格式
                     switch selectedPlatform {
                     case .iOS:
                         self.outputFormat = fileExtension == "strings" ? .strings : .xcstrings
@@ -334,10 +376,6 @@ struct TransferView: View {
                     case .electron:
                         self.outputFormat = .electron
                     }
-                    
-                    // 重置输出路径
-                    self.outputPath = "No save location selected".localized
-                    self.isOutputSelected = false
                 }
             }
             return true
@@ -386,14 +424,20 @@ struct TransferView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 10) {
-                            Button("Select Output Location".localized) {
-                                selectOutputPath()
+                            DragDropButton(
+                                title: "Select Output Location".localized + " (Optional)".localized,
+                                action: selectOutputPath,
+                                isSelected: isOutputSelected,
+                                onDrop: { _ in false }  // 输出位置不支持拖放
+                            )
+                            
+                            if isOutputSelected {
+                                Text(outputPath.localized)
+                                    .foregroundColor(.gray)
+                                    .font(.system(.body, design: .monospaced))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
                             }
-                            Text(outputPath.localized)
-                                .foregroundColor(.gray)
-                                .font(.system(.body, design: .monospaced))
-                                .lineLimit(1)
-                                .truncationMode(.middle)
                         }
                         
                         // 语言选择部分
