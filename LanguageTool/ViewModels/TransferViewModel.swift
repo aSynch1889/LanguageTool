@@ -2,6 +2,7 @@ import SwiftUI
 import AppKit
 import UniformTypeIdentifiers
 
+@MainActor
 class TransferViewModel: ObservableObject {
     @Published var inputPath = "No file selected"
     @Published var outputPath = "No save location selected"
@@ -136,9 +137,11 @@ class TransferViewModel: ObservableObject {
     
     func convertToLocalization() {
         Task {
-            isLoading = true
-            showResult = false
-            showSuccessActions = false
+            await MainActor.run {
+                isLoading = true
+                showResult = false
+                showSuccessActions = false
+            }
             
             let fileExtension = (inputPath as NSString).pathExtension.lowercased()
             let result: (message: String, success: Bool)
@@ -202,11 +205,11 @@ class TransferViewModel: ObservableObject {
                 }
             }
             
-            DispatchQueue.main.async {
-                self.conversionResult = result.message
-                self.showSuccessActions = result.success
-                self.isLoading = false
-                self.showResult = true
+            await MainActor.run {
+                conversionResult = result.message
+                showSuccessActions = result.success
+                isLoading = false
+                showResult = true
             }
         }
     }
@@ -290,4 +293,17 @@ class TransferViewModel: ObservableObject {
     func openInFinder() {
         NSWorkspace.shared.selectFile(outputPath, inFileViewerRootedAtPath: "")
     }
-} 
+    
+    func syncToSource() {
+        let sourceURL = URL(fileURLWithPath: inputPath)
+        let outputURL = URL(fileURLWithPath: outputPath)
+        
+        do {
+            try FileManager.default.removeItem(at: sourceURL)
+            try FileManager.default.copyItem(at: outputURL, to: sourceURL)
+            showErrorAlert(message: "同步成功".localized)
+        } catch {
+            showErrorAlert(message: "同步失败：\(error.localizedDescription)".localized)
+        }
+    }
+}

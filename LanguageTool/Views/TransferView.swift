@@ -183,10 +183,19 @@ struct TransferView: View {
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(6)
                     
-                    Button(action: viewModel.openInFinder) {
-                        HStack {
-                            Image(systemName: "folder")
-                            Text("Show in Finder".localized)
+                    HStack(spacing: 16) {
+                        Button(action: viewModel.openInFinder) {
+                            HStack {
+                                Image(systemName: "folder")
+                                Text("Show in Finder".localized)
+                            }
+                        }
+                        
+                        Button(action: viewModel.syncToSource) {
+                            HStack {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                Text("Sync to Source".localized)
+                            }
                         }
                     }
                     .buttonStyle(.borderless)
