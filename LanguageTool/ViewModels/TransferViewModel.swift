@@ -69,29 +69,6 @@ class TransferViewModel: ObservableObject {
                 self.inputPath = fileURL.path
                 self.isInputSelected = true
                 
-                // 设置默认输出路径：使用输入文件所在目录 + 之前的文件名
-                let inputDirectory = fileURL.deletingLastPathComponent().path
-                if self.isOutputSelected {
-                    // 如果已经有输出路径，保留文件名但更改目录
-                    let currentOutputURL = URL(fileURLWithPath: self.outputPath)
-                    let fileName = currentOutputURL.lastPathComponent
-                    self.outputPath = (inputDirectory as NSString).appendingPathComponent(fileName)
-                } else {
-                    // 如果还没有输出路径，生成默认文件名
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
-                    let timestamp = dateFormatter.string(from: Date())
-                    let defaultFileName = "Localizable_\(timestamp)"
-                    
-                    switch self.outputFormat {
-                    case .xcstrings:
-                        self.outputPath = (inputDirectory as NSString).appendingPathComponent("\(defaultFileName).xcstrings")
-                    case .strings, .arb, .electron:
-                        self.outputPath = inputDirectory
-                    }
-                }
-                self.isOutputSelected = true
-                
                 // 根据选择的平台设置输出格式
                 switch self.selectedPlatform {
                 case .iOS:
@@ -108,26 +85,21 @@ class TransferViewModel: ObservableObject {
     
     func selectOutputPath() {
         switch outputFormat {
-        case .electron:
-            selectDirectoryForElectron()
-        case .arb:
-            selectDirectoryForARB()
-        case .strings:
-            selectDirectoryForStrings()
+        case .electron, .arb, .strings:
+            selectDirectory()
         case .xcstrings:
-            selectFileForXCStrings()
+            selectXCStringsFile()
         }
     }
     
-    private func selectDirectoryForElectron() {
+    private func selectDirectory() {
         let openPanel = NSOpenPanel()
         openPanel.canChooseFiles = false
         openPanel.canChooseDirectories = true
         openPanel.allowsMultipleSelection = false
-        openPanel.message = "Select directory for JSON files".localized
+        openPanel.message = "Select directory for output files".localized
         openPanel.prompt = "Select".localized
         openPanel.title = "Select Save Directory".localized
-        openPanel.treatsFilePackagesAsDirectories = true
         
         openPanel.begin { [weak self] response in
             guard let self = self else { return }
@@ -138,45 +110,7 @@ class TransferViewModel: ObservableObject {
         }
     }
     
-    private func selectDirectoryForARB() {
-        let openPanel = NSOpenPanel()
-        openPanel.canChooseFiles = false
-        openPanel.canChooseDirectories = true
-        openPanel.allowsMultipleSelection = false
-        openPanel.message = "Select directory for ARB files".localized
-        openPanel.prompt = "Select".localized
-        openPanel.title = "Select Save Directory".localized
-        openPanel.treatsFilePackagesAsDirectories = true
-        
-        openPanel.begin { [weak self] response in
-            guard let self = self else { return }
-            if response == .OK, let directoryURL = openPanel.url {
-                self.outputPath = directoryURL.path
-                self.isOutputSelected = true
-            }
-        }
-    }
-    
-    private func selectDirectoryForStrings() {
-        let openPanel = NSOpenPanel()
-        openPanel.canChooseFiles = false
-        openPanel.canChooseDirectories = true
-        openPanel.allowsMultipleSelection = false
-        openPanel.message = "Select directory for language files".localized
-        openPanel.prompt = "Select".localized
-        openPanel.title = "Select Save Directory".localized
-        openPanel.treatsFilePackagesAsDirectories = true
-        
-        openPanel.begin { [weak self] response in
-            guard let self = self else { return }
-            if response == .OK, let directoryURL = openPanel.url {
-                self.outputPath = directoryURL.path
-                self.isOutputSelected = true
-            }
-        }
-    }
-    
-    private func selectFileForXCStrings() {
+    private func selectXCStringsFile() {
         let panel = NSSavePanel()
         if let xcstringsType = UTType(filenameExtension: "xcstrings") {
             panel.allowedContentTypes = [xcstringsType]
@@ -186,9 +120,7 @@ class TransferViewModel: ObservableObject {
         dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
         let timestamp = dateFormatter.string(from: Date())
         
-        let defaultFileName = "Localizable_\(timestamp)"
-        panel.nameFieldStringValue = defaultFileName
-        
+        panel.nameFieldStringValue = "Localizable_\(timestamp)"
         panel.canCreateDirectories = true
         panel.title = "Save Localization File".localized
         panel.message = "Select location to save .xcstrings file".localized
@@ -314,29 +246,6 @@ class TransferViewModel: ObservableObject {
                     self.inputPath = url.path
                     self.isInputSelected = true
                     
-                    // 设置默认输出路径：使用输入文件所在目录 + 之前的文件名
-                    let inputDirectory = url.deletingLastPathComponent().path
-                    if self.isOutputSelected {
-                        // 如果已经有输出路径，保留文件名但更改目录
-                        let currentOutputURL = URL(fileURLWithPath: self.outputPath)
-                        let fileName = currentOutputURL.lastPathComponent
-                        self.outputPath = (inputDirectory as NSString).appendingPathComponent(fileName)
-                    } else {
-                        // 如果还没有输出路径，生成默认文件名
-                        let dateFormatter = DateFormatter()
-                        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
-                        let timestamp = dateFormatter.string(from: Date())
-                        let defaultFileName = "Localizable_\(timestamp)"
-                        
-                        switch self.outputFormat {
-                        case .xcstrings:
-                            self.outputPath = (inputDirectory as NSString).appendingPathComponent("\(defaultFileName).xcstrings")
-                        case .strings, .arb, .electron:
-                            self.outputPath = inputDirectory
-                        }
-                    }
-                    self.isOutputSelected = true
-                    
                     // 根据选择的平台设置输出格式
                     switch self.selectedPlatform {
                     case .iOS:
@@ -371,7 +280,7 @@ class TransferViewModel: ObservableObject {
     
     func showErrorAlert(message: String) {
         let alert = NSAlert()
-        alert.messageText = "文件类型错误".localized
+        alert.messageText = "错误".localized
         alert.informativeText = message
         alert.alertStyle = .warning
         alert.addButton(withTitle: "确定".localized)
