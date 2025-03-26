@@ -172,18 +172,11 @@ struct TransferView: View {
             
             if viewModel.showSuccessActions {
                 VStack(spacing: 8) {
-                    Text("Save Path:".localized)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    
-                    Text(viewModel.outputPath)
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.primary)
-                        .padding(8)
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(6)
-                    
                     HStack(spacing: 16) {
+                        Text("Save Path:".localized)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
                         Button(action: viewModel.openInFinder) {
                             HStack {
                                 Image(systemName: "folder")
@@ -200,6 +193,13 @@ struct TransferView: View {
                     }
                     .buttonStyle(.borderless)
                     .padding(.top, 4)
+                    
+                    Text(viewModel.outputPath)
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(.primary)
+                        .padding(8)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(6)
                 }
                 .padding()
                 .background(
