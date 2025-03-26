@@ -173,13 +173,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "外観設定"
+            "value" : "表示設定"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모양 설정"
+            "value" : "외관 설정"
           }
         },
         "zh-Hans" : {
@@ -238,7 +238,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "変換完了！"
+            "value" : "変換が成功しました！"
           }
         },
         "ko" : {
@@ -315,7 +315,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "深色模式"
+            "value" : "暗黑模式"
           }
         },
         "zh-Hant" : {
@@ -380,13 +380,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "取消全选"
+            "value" : "全不选"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "取消選擇全部"
+            "value" : "取消全選"
           }
         }
       }
@@ -456,13 +456,78 @@
         }
       }
     },
+    "Error" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "en-IN" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エラー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오류"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "错误"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "錯誤"
+          }
+        }
+      }
+    },
     "Input Message" : {
       "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eingangsnachricht"
+            "value" : "Eingangsmeldung"
           }
         },
         "en" : {
@@ -510,7 +575,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入消息"
+            "value" : "输入信息"
           }
         },
         "zh-Hant" : {
@@ -527,7 +592,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oberflächensprache"
+            "value" : "Oberflächensrache"
           }
         },
         "en" : {
@@ -582,6 +647,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "介面語言"
+          }
+        }
+      }
+    },
+    "Invalid file type for selected platform" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungültiger Dateityp für die ausgewählte Plattform"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid file type for selected platform"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid file type for selected platform"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid file type for selected platform"
+          }
+        },
+        "en-IN" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid file type for selected platform"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type de fichier invalide pour la plateforme sélectionnée"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択されたプラットフォームのファイル形式が無効です"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택된 플랫폼에 대한 잘못된 파일 형식입니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所选平台的文件类型无效"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所選平台的檔案類型無效"
           }
         }
       }
@@ -790,7 +920,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Weitere Einstellungen in Entwicklung..."
+            "value" : "Weitere Einstellungen in Entwicklung…"
           }
         },
         "en" : {
@@ -820,7 +950,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plus de paramètres en cours de développement..."
+            "value" : "Plus de paramètres en cours de développement…"
           }
         },
         "ja" : {
@@ -950,7 +1080,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun emplacement de sauvegarde sélectionné"
+            "value" : "Aucun emplacement d'enregistrement sélectionné"
           }
         },
         "ja" : {
@@ -1115,7 +1245,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bitte .arb-Datei auswählen"
+            "value" : "Bitte wählen Sie eine .arb-Datei aus"
           }
         },
         "en" : {
@@ -1157,7 +1287,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "*.arb 파일을 선택하십시오"
+            "value" : ".arb 파일을 선택하십시오"
           }
         },
         "zh-Hans" : {
@@ -1180,7 +1310,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bitte .json-Datei auswählen"
+            "value" : "Bitte wählen Sie eine .json-Datei aus"
           }
         },
         "en" : {
@@ -1222,7 +1352,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "*.json 파일을 선택하십시오"
+            "value" : ".json 파일을 선택하십시오"
           }
         },
         "zh-Hans" : {
@@ -1245,7 +1375,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bitte .strings- oder .xcstrings-Datei auswählen"
+            "value" : "Bitte wählen Sie eine .strings oder .xcstrings Datei aus"
           }
         },
         "en" : {
@@ -1281,13 +1411,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ".stringsまたは.xcstringsファイルを選択してください"
+            "value" : ".stringsファイルまたは.xcstringsファイルを選択してください"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "*.strings 또는 *.xcstrings 파일을 선택하십시오"
+            "value" : ".strings 또는 .xcstrings 파일을 선택하십시오"
           }
         },
         "zh-Hans" : {
@@ -1310,7 +1440,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bitte warten, dies kann einige Zeit dauern"
+            "value" : "Bitte warten Sie, dies kann eine Weile dauern"
           }
         },
         "en" : {
@@ -1346,13 +1476,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "しばらくお待ちください。時間がかかる場合があります"
+            "value" : "お待ちください。しばらく時間がかかる場合があります"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "잠시 기다려주세요. 시간이 다소 걸릴 수 있습니다"
+            "value" : "잠시 기다려주세요. 시간이 걸릴 수 있습니다"
           }
         },
         "zh-Hans" : {
@@ -1458,7 +1588,7 @@
         "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Save Localisation File"
+            "value" : "Save Localization File"
           }
         },
         "en-IN" : {
@@ -1689,7 +1819,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇全部"
+            "value" : "全選"
           }
         }
       }
@@ -1736,13 +1866,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ARBファイルのディレクトリを選択"
+            "value" : "ARBファイルのディレクトリを選択してください"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ARB 파일 디렉토리 선택"
+            "value" : "ARB 파일을 저장할 디렉토리를 선택하십시오"
           }
         },
         "zh-Hans" : {
@@ -1801,13 +1931,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JSONファイルのディレクトリを選択"
+            "value" : "JSONファイルのディレクトリを選択してください"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JSON 파일 디렉토리 선택"
+            "value" : "JSON 파일을 저장할 디렉토리를 선택하십시오"
           }
         },
         "zh-Hans" : {
@@ -1866,13 +1996,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "言語ファイルのディレクトリを選択"
+            "value" : "言語ファイルのディレクトリを選択してください"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "언어 파일 디렉토리 선택"
+            "value" : "언어 파일을 저장할 디렉토리를 선택하십시오"
           }
         },
         "zh-Hans" : {
@@ -1885,6 +2015,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇語言檔案目錄"
+          }
+        }
+      }
+    },
+    "Select directory for output files" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgabeverzeichnis auswählen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select directory for output files"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select directory for output files"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select directory for output files"
+          }
+        },
+        "en-IN" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select directory for output files"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionner le répertoire pour les fichiers de sortie"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出力ファイルのディレクトリを選択してください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "출력 파일을 저장할 디렉토리를 선택하십시오"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择输出文件目录"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇輸出檔案目錄"
           }
         }
       }
@@ -1931,7 +2126,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "入力ファイルを選択"
+            "value" : "入力ファイルを選択してください"
           }
         },
         "ko" : {
@@ -1978,7 +2173,7 @@
         "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select Localisation File"
+            "value" : "Select Localization File"
           }
         },
         "en-IN" : {
@@ -1996,7 +2191,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ローカライズファイルを選択"
+            "value" : "ローカライズファイルを選択してください"
           }
         },
         "ko" : {
@@ -2043,7 +2238,7 @@
         "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select location to save a .xcstrings file"
+            "value" : "Select location to save .xcstrings file"
           }
         },
         "en-IN" : {
@@ -2061,19 +2256,19 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ".xcstringsファイルを保存する場所を選択"
+            "value" : ".xcstringsファイルの保存場所を選択してください"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "*.xcstrings 파일을 저장할 위치를 선택하십시오"
+            "value" : ".xcstrings 파일을 저장할 위치를 선택하십시오"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择保存.xcstrings文件的位置"
+            "value" : "选择保存.xcstrings文件的路径"
           }
         },
         "zh-Hant" : {
@@ -2090,7 +2285,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ausgabeverzeichnis auswählen"
+            "value" : "Ausgabeort auswählen"
           }
         },
         "en" : {
@@ -2126,7 +2321,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "出力場所を選択"
+            "value" : "出力場所を選択してください"
           }
         },
         "ko" : {
@@ -2191,7 +2386,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "プラットフォームを選択"
+            "value" : "プラットフォームを選択してください"
           }
         },
         "ko" : {
@@ -2250,13 +2445,13 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sélectionner le répertoire de sauvegarde"
+            "value" : "Sélectionner le répertoire d'enregistrement"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存ディレクトリを選択"
+            "value" : "保存ディレクトリを選択してください"
           }
         },
         "ko" : {
@@ -2321,7 +2516,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "対象言語を選択"
+            "value" : "ターゲット言語を選択してください"
           }
         },
         "ko" : {
@@ -2451,7 +2646,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Finderで表示"
+            "value" : "Finderで開く"
           }
         },
         "ko" : {
@@ -2575,7 +2770,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Démarrer la conversion"
+            "value" : "Lancer la conversion"
           }
         },
         "ja" : {
@@ -2604,13 +2799,78 @@
         }
       }
     },
+    "Success" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfolg"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Success"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Success"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Success"
+          }
+        },
+        "en-IN" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Success"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Succès"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "成功"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "성공"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "成功"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "成功"
+          }
+        }
+      }
+    },
     "Successfully generated ARB files for all languages" : {
       "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erfolgreich ARB-Dateien für alle Sprachen erstellt"
+            "value" : "ARB-Dateien für alle Sprachen erfolgreich generiert"
           }
         },
         "en" : {
@@ -2658,7 +2918,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "成功为所有语言生成ARB文件"
+            "value" : "已成功为所有语言生成ARB文件"
           }
         },
         "zh-Hant" : {
@@ -2675,7 +2935,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erfolgreich lokalisierte Dateien für alle Sprachen erstellt"
+            "value" : "Lokalisierte Dateien für alle Sprachen erfolgreich generiert"
           }
         },
         "en" : {
@@ -2711,19 +2971,19 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "すべての言語のローカライズ済みファイルが正常に生成されました"
+            "value" : "すべての言語のローカライズファイルが正常に生成されました"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모든 언어에 대한 지역화 파일이 성공적으로 생성되었습니다"
+            "value" : "모든 언어에 대한 지역화된 파일이 성공적으로 생성되었습니다"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "成功为所有语言生成本地化文件"
+            "value" : "已成功为所有语言生成本地化文件"
           }
         },
         "zh-Hant" : {
@@ -2740,7 +3000,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erfolgreich lokalisierte JSON-Datei mit %@ Übersetzungseinträgen erstellt"
+            "value" : "Lokalisierte JSON-Datei mit %@ Übersetzungseinträgen erfolgreich generiert"
           }
         },
         "en" : {
@@ -2776,7 +3036,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@個の翻訳項目を含むローカライズ済みJSONファイルが正常に生成されました"
+            "value" : "%@の翻訳項目を含むローカライズされたJSONファイルが正常に生成されました"
           }
         },
         "ko" : {
@@ -2788,13 +3048,208 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "成功生成包含%@个翻译条目的本地化JSON文件"
+            "value" : "已成功生成包含%@个翻译项目的本地化JSON文件"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "已成功產生包含 %@ 個翻譯項目的本地化 JSON 檔案"
+          }
+        }
+      }
+    },
+    "Sync completed successfully" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisierung erfolgreich abgeschlossen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync completed successfully"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync completed successfully"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync completed successfully"
+          }
+        },
+        "en-IN" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync completed successfully"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisation terminée avec succès"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期が正常に完了しました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동기화가 성공적으로 완료되었습니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步完成"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步完成"
+          }
+        }
+      }
+    },
+    "Sync failed:" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisierung fehlgeschlagen:"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync failed:"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync failed:"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync failed:"
+          }
+        },
+        "en-IN" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync failed:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisation échouée :"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同期失敗："
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동기화 실패:"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步失败："
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步失敗："
+          }
+        }
+      }
+    },
+    "Sync to Source" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Quelle synchronisieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync to Source"
+          }
+        },
+        "en-CA" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync to Source"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync to Source"
+          }
+        },
+        "en-IN" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync to Source"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchroniser avec la source"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ソースに同期"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "소스에 동기화"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步到源代码"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步到原始碼"
           }
         }
       }
@@ -2853,7 +3308,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "繁体中文"
+            "value" : "繁體中文"
           }
         },
         "zh-Hant" : {
@@ -2870,7 +3325,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Übersetzung..."
+            "value" : "Übersetzung…"
           }
         },
         "en" : {
@@ -2900,7 +3355,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traduction en cours..."
+            "value" : "Traduction en cours…"
           }
         },
         "ja" : {
@@ -2918,7 +3373,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在翻译…"
+            "value" : "正在翻译..."
           }
         },
         "zh-Hant" : {

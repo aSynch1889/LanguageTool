@@ -62,7 +62,7 @@ class TransferViewModel: ObservableObject {
                 if self.selectedPlatform == .electron {
                     let fileExtension = fileURL.pathExtension.lowercased()
                     guard fileExtension == "json" else {
-                        self.showErrorAlert(message: "必须选择 .json 文件")
+                        self.showAlert(message: "Must select .json file".localized, isError: true)
                         return
                     }
                 }
@@ -240,7 +240,7 @@ class TransferViewModel: ObservableObject {
                 
                 if !isValidFile {
                     DispatchQueue.main.async {
-                        self.showErrorAlert(message: "Invalid file type for selected platform".localized)
+                        self.showAlert(message: "Invalid file type for selected platform".localized, isError: true)
                     }
                     return
                 }
@@ -281,12 +281,12 @@ class TransferViewModel: ObservableObject {
         showSuccessActions = false
     }
     
-    func showErrorAlert(message: String) {
+    func showAlert(message: String, isError: Bool = false) {
         let alert = NSAlert()
-        alert.messageText = "错误".localized
+        alert.messageText = (isError ? "Error" : "Success").localized
         alert.informativeText = message
-        alert.alertStyle = .warning
-        alert.addButton(withTitle: "确定".localized)
+        alert.alertStyle = isError ? .warning : .informational
+        alert.addButton(withTitle: "OK".localized)
         alert.runModal()
     }
     
@@ -301,9 +301,9 @@ class TransferViewModel: ObservableObject {
         do {
             try FileManager.default.removeItem(at: sourceURL)
             try FileManager.default.copyItem(at: outputURL, to: sourceURL)
-            showErrorAlert(message: "同步成功".localized)
+            showAlert(message: "Sync completed successfully".localized)
         } catch {
-            showErrorAlert(message: "同步失败：\(error.localizedDescription)".localized)
+            showAlert(message: "Sync failed: \(error.localizedDescription)".localized, isError: true)
         }
     }
 }
