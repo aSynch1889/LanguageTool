@@ -190,6 +190,13 @@ struct TransferView: View {
                                 Text("Sync to Source".localized)
                             }
                         }
+
+                        Button(action: viewModel.exportToExcel) {
+                            HStack {
+                                Image(systemName: "arrow.down.doc")
+                                Text("Export to Excel".localized)
+                            }
+                        }
                     }
                     .buttonStyle(.borderless)
                     .padding(.top, 4)

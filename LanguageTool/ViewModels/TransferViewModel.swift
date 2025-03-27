@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import UniformTypeIdentifiers
+import Foundation
 
 @MainActor
 class TransferViewModel: ObservableObject {
@@ -16,6 +17,25 @@ class TransferViewModel: ObservableObject {
     @Published var outputFormat: LocalizationFormat = .xcstrings
     @Published var selectedPlatform: PlatformType = .iOS
     @Published var languageChanged = false
+    
+    enum ExportFormat {
+        case csv
+        case excel
+        
+        var fileExtension: String {
+            switch self {
+            case .csv: return "csv"
+            case .excel: return "xlsx"
+            }
+        }
+        
+        var contentType: UTType {
+            switch self {
+            case .csv: return UTType.commaSeparatedText
+            case .excel: return UTType.spreadsheet
+            }
+        }
+    }
     
     func selectInputFile() {
         let panel = NSOpenPanel()
@@ -304,6 +324,119 @@ class TransferViewModel: ObservableObject {
             showAlert(message: "Sync completed successfully".localized)
         } catch {
             showAlert(message: "Sync failed: \(error.localizedDescription)".localized, isError: true)
+        }
+    }
+    
+    func exportToExcel() {
+        let alert = NSAlert()
+        alert.messageText = "Choose Export Format".localized
+        alert.informativeText = "Please select the format you want to export to".localized
+        alert.addButton(withTitle: "CSV")
+        alert.addButton(withTitle: "Excel")
+        alert.addButton(withTitle: "Cancel".localized)
+        
+        let response = alert.runModal()
+        guard response != .alertThirdButtonReturn else { return }
+        
+        let format: ExportFormat = response == .alertFirstButtonReturn ? .csv : .excel
+        
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [format.contentType]
+        panel.nameFieldStringValue = "translations.\(format.fileExtension)"
+        panel.canCreateDirectories = true
+        
+        panel.begin { response in
+            if response == .OK, let url = panel.url {
+                do {
+                    // 读取本地化文件
+                    let jsonData = try Data(contentsOf: URL(fileURLWithPath: self.outputPath))
+                    let decoder = JSONDecoder()
+                    
+                    // 根据文件类型选择不同的解析方式
+                    let fileExtension = (self.outputPath as NSString).pathExtension.lowercased()
+                    var translations: [String: [String: String]] = [:]
+                    
+                    if fileExtension == "xcstrings" {
+                        // 解析 xcstrings 格式
+                        struct XCStringsContainer: Codable {
+                            struct StringEntry: Codable {
+                                struct LocalizationEntry: Codable {
+                                    let stringUnit: StringUnit
+                                }
+                                let localizations: [String: LocalizationEntry]
+                            }
+                            struct StringUnit: Codable {
+                                let value: String
+                            }
+                            let strings: [String: StringEntry]
+                        }
+                        
+                        let xcstrings = try decoder.decode(XCStringsContainer.self, from: jsonData)
+                        
+                        // 转换格式
+                        for (key, entry) in xcstrings.strings {
+                            var languageValues: [String: String] = [:]
+                            for (languageCode, localization) in entry.localizations {
+                                languageValues[languageCode] = localization.stringUnit.value
+                            }
+                            translations[key] = languageValues
+                        }
+                    } else {
+                        // 其他格式直接解析
+                        translations = try decoder.decode([String: [String: String]].self, from: jsonData)
+                    }
+                    
+                    if format == .csv {
+                        // 创建 CSV 内容
+                        var csvContent = "Key,"
+                        csvContent += Language.supportedLanguages.map { $0.code }.joined(separator: ",")
+                        csvContent += "\n"
+                        
+                        // 添加每一行翻译内容
+                        for (key, values) in translations {
+                            csvContent += "\(key),"
+                            csvContent += Language.supportedLanguages.map { language in
+                                let value = values[language.code] ?? ""
+                                // 处理 CSV 中的特殊字符
+                                return "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
+                            }.joined(separator: ",")
+                            csvContent += "\n"
+                        }
+                        
+                        // 写入文件，使用 UTF-8 BOM 以确保 Excel 正确识别编码
+                        let bom = Data([0xEF, 0xBB, 0xBF])
+                        try bom.write(to: url)
+                        try csvContent.data(using: .utf8)?.write(to: url, options: .atomic)
+                    } else {
+                        // 如果选择了 Excel 格式，我们仍然创建 CSV 但使用 .xlsx 扩展名
+                        // Excel 会自动处理打开这种文件
+                        var csvContent = "Key,"
+                        csvContent += Language.supportedLanguages.map { $0.code }.joined(separator: ",")
+                        csvContent += "\n"
+                        
+                        for (key, values) in translations {
+                            csvContent += "\(key),"
+                            csvContent += Language.supportedLanguages.map { language in
+                                let value = values[language.code] ?? ""
+                                return "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
+                            }.joined(separator: ",")
+                            csvContent += "\n"
+                        }
+                        
+                        let bom = Data([0xEF, 0xBB, 0xBF])
+                        try bom.write(to: url)
+                        try csvContent.data(using: .utf8)?.write(to: url, options: .atomic)
+                    }
+                    
+                    DispatchQueue.main.async {
+                        NSWorkspace.shared.open(url)
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        self.showAlert(message: "Export failed: \(error.localizedDescription)", isError: true)
+                    }
+                }
+            }
         }
     }
 }
