@@ -386,18 +386,29 @@ class TransferViewModel: ObservableObject {
                         translations = try decoder.decode([String: [String: String]].self, from: jsonData)
                     }
                     
-                    if format == .csv {
-                        // 创建 CSV 内容
+                    // 收集所有有翻译的语言代码
+                    var usedLanguageCodes = Set<String>()
+                    for (_, values) in translations {
+                        for (code, value) in values {
+                            if !value.isEmpty {
+                                usedLanguageCodes.insert(code)
+                            }
+                        }
+                    }
+                    
+                    // 将语言代码转换为Language对象，并按照supportedLanguages的顺序排序
+                    let usedLanguages = Language.supportedLanguages.filter { usedLanguageCodes.contains($0.code) }
+                    
+                    let writeContent = { (format: ExportFormat) in
                         var csvContent = "Key,"
-                        csvContent += Language.supportedLanguages.map { $0.code }.joined(separator: ",")
+                        csvContent += usedLanguages.map { $0.code }.joined(separator: ",")
                         csvContent += "\n"
                         
                         // 添加每一行翻译内容
                         for (key, values) in translations {
                             csvContent += "\(key),"
-                            csvContent += Language.supportedLanguages.map { language in
+                            csvContent += usedLanguages.map { language in
                                 let value = values[language.code] ?? ""
-                                // 处理 CSV 中的特殊字符
                                 return "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
                             }.joined(separator: ",")
                             csvContent += "\n"
@@ -407,26 +418,10 @@ class TransferViewModel: ObservableObject {
                         let bom = Data([0xEF, 0xBB, 0xBF])
                         try bom.write(to: url)
                         try csvContent.data(using: .utf8)?.write(to: url, options: .atomic)
-                    } else {
-                        // 如果选择了 Excel 格式，我们仍然创建 CSV 但使用 .xlsx 扩展名
-                        // Excel 会自动处理打开这种文件
-                        var csvContent = "Key,"
-                        csvContent += Language.supportedLanguages.map { $0.code }.joined(separator: ",")
-                        csvContent += "\n"
-                        
-                        for (key, values) in translations {
-                            csvContent += "\(key),"
-                            csvContent += Language.supportedLanguages.map { language in
-                                let value = values[language.code] ?? ""
-                                return "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
-                            }.joined(separator: ",")
-                            csvContent += "\n"
-                        }
-                        
-                        let bom = Data([0xEF, 0xBB, 0xBF])
-                        try bom.write(to: url)
-                        try csvContent.data(using: .utf8)?.write(to: url, options: .atomic)
                     }
+                    
+                    // 根据选择的格式写入文件
+                    try writeContent(format)
                     
                     DispatchQueue.main.async {
                         NSWorkspace.shared.open(url)
