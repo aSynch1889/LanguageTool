@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     " (Optional)" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -195,6 +198,9 @@
           }
         }
       }
+    },
+    "Comment" : {
+
     },
     "Conversion successful!" : {
       "extractionState" : "stale",
@@ -391,8 +397,10 @@
         }
       }
     },
+    "en (英语)" : {
+
+    },
     "English" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -716,6 +724,9 @@
         }
       }
     },
+    "ja (日语)" : {
+
+    },
     "Japanese" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -780,6 +791,12 @@
           }
         }
       }
+    },
+    "Key" : {
+
+    },
+    "ko (韩语)" : {
+
     },
     "Korean" : {
       "extractionState" : "stale",
@@ -3449,10 +3466,52 @@
         }
       }
     },
+    "zh - Hans (简体 中..." : {
+
+    },
+    "zh - Hant (繁体 中文)" : {
+
+    },
+    "한국어" : {
+
+    },
+    "仅对 勾选 了 “ 翻译 ” 的 内容 进行 翻译 。" : {
+
+    },
     "发送" : {
 
     },
+    "同步到源文件" : {
+
+    },
+    "导出" : {
+
+    },
+    "搜索" : {
+
+    },
+    "新增语言" : {
+
+    },
+    "日本語" : {
+
+    },
+    "立即翻译" : {
+
+    },
+    "简体中文" : {
+
+    },
+    "繁體中文" : {
+
+    },
+    "翻译" : {
+
+    },
     "输入消息" : {
+
+    },
+    "重新加载源文件" : {
 
     }
   },

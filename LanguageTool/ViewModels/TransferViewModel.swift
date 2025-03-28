@@ -327,6 +327,19 @@ class TransferViewModel: ObservableObject {
         }
     }
     
+    func openInNewWindow() {
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "Localization Master"
+        window.contentView = NSHostingView(rootView: LocalizationMasterView())
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+    }
+    
     func exportToExcel() {
         let alert = NSAlert()
         alert.messageText = "Choose Export Format".localized

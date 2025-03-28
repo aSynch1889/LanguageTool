@@ -197,6 +197,14 @@ struct TransferView: View {
                                 Text("Export to Excel".localized)
                             }
                         }
+
+                        //新增一个按钮，用于打开一个新的窗口，用于显示转换结果
+                        Button(action: viewModel.openInNewWindow) {
+                            HStack {
+                                Image(systemName: "window")
+                                Text("Open in New Window".localized)
+                            }
+                        }
                     }
                     .buttonStyle(.borderless)
                     .padding(.top, 4)
