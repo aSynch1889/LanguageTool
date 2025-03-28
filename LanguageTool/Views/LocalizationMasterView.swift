@@ -3,15 +3,36 @@ import SwiftUI
 struct LocalizationMasterView: View {
     @State private var remainingTrials = 4
     @State private var translateSelectedOnly = true
-    @StateObject private var transferViewModel = TransferViewModel()
-    @State private var translations: [TranslationItem] = []
-
+    @StateObject private var viewModel = TransferViewModel()
+    
     @State private var searchText = ""
-
+    
+    // 添加一个计算属性来获取所有可用的语言
+    private var availableLanguages: [String] {
+        // 从所有翻译项中收集语言代码
+        var languageCodes = Set<String>()
+        for translation in viewModel.translationItems {
+            languageCodes.formUnion(translation.translations.keys)
+        }
+        return Array(languageCodes).sorted()
+    }
+    
+    // 添加一个计算属性来过滤和搜索翻译项
+    private var filteredTranslations: [TranslationItem] {
+        let items = viewModel.translationItems
+        if searchText.isEmpty {
+            return items
+        }
+        return items.filter { item in
+            item.key.localizedCaseInsensitiveContains(searchText) ||
+            item.translations.values.contains { $0.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Toggle("仅对 勾选 了 “ 翻译 ” 的 内容 进行 翻译 。", isOn: $translateSelectedOnly)
+                Toggle("仅对勾选了 “翻译“ 的内容进行翻译。", isOn: $translateSelectedOnly)
                 Spacer()
                 HStack {
                     Image(systemName: "magnifyingglass")
@@ -21,39 +42,44 @@ struct LocalizationMasterView: View {
                 }
             }
             .padding()
-
+            
             Divider()
-
+            
             ScrollView {
                 LazyVStack {
                     headerRow()
                         .padding(.horizontal)
                         .padding(.vertical, 5)
                     Divider()
-                    ForEach($translations) { $translation in
-                        TranslationRow(translation: $translation, translateSelectedOnly: $translateSelectedOnly)
-                            .padding(.horizontal)
-                            .padding(.vertical, 3)
+                    ForEach(filteredTranslations) { translation in
+                        TranslationRow(
+                            translation: binding(for: translation),
+                            translateSelectedOnly: $translateSelectedOnly
+                        )
+                        .padding(.horizontal)
+                        .padding(.vertical, 3)
                         Divider()
                     }
                 }
             }
-
+            
             Divider()
-
+            
             HStack {
                 Button("新增语言") {
                     // TODO: Implement add language functionality
                 }
                 Spacer()
                 Button("重新加载源文件") {
-                    // TODO: Implement reload source file functionality
+                    Task {
+                        await viewModel.reloadSourceFile()
+                    }
                 }
                 Button("同步到源文件") {
-                    // TODO: Implement sync to source file functionality
+                    viewModel.syncToSource()
                 }
                 Button("导出") {
-                    // TODO: Implement export functionality
+                    viewModel.exportToExcel()
                 }
                 Button("立即翻译") {
                     // TODO: Implement immediate translation functionality
@@ -61,30 +87,51 @@ struct LocalizationMasterView: View {
             }
             .padding()
         }
-        .frame(minWidth: 800, minHeight: 600) // Set a reasonable minimum size for a macOS window
+        .frame(minWidth: 800, minHeight: 600)
+    }
+    
+    // 辅助函数：为特定的翻译项创建绑定
+    private func binding(for translation: TranslationItem) -> Binding<TranslationItem> {
+        Binding(
+            get: {
+                translation
+            },
+            set: { newValue in
+                if let index = viewModel.translationItems.firstIndex(where: { $0.id == translation.id }) {
+                    viewModel.translationItems[index] = newValue
+                }
+            }
+        )
     }
 
     private func headerRow() -> some View {
         HStack {
+            // 翻译选择框
             Text("翻译")
                 .frame(width: 40)
+            
+            // Key 列
             Text("Key")
                 .frame(maxWidth: .infinity, alignment: .leading)
-            Text("en (英语)")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Text("zh - Hans (简体 中...")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Text("ja (日语)")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Text("zh - Hant (繁体 中文)")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Text("ko (韩语)")
-                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            // 动态语言列
+            ForEach(availableLanguages, id: \.self) { languageCode in
+                Text(getLanguageDisplay(for: languageCode))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            
+            // Comment 列
             Text("Comment")
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .font(.subheadline)
         .foregroundColor(.gray)
+    }
+
+    // 辅助函数：获取语言的显示名称
+    private func getLanguageDisplay(for code: String) -> String {
+        let languageName = Locale.current.localizedString(forLanguageCode: code) ?? code
+        return "\(code) (\(languageName))"
     }
 }
 
@@ -92,12 +139,19 @@ struct TranslationItem: Identifiable {
     let id = UUID()
     var isSelected: Bool = true
     var key: String
-    var english: String
-    var chineseSimplified: String
-    var japanese: String
-    var chineseTraditional: String
-    var korean: String
+    var translations: [String: String] // 语言代码到翻译的映射
     var comment: String = ""
+    
+    // 便利初始化器用于兼容现有代码
+    init(isSelected: Bool = true,
+         key: String,
+         translations: [String: String] = [:],
+         comment: String = "") {
+        self.isSelected = isSelected
+        self.key = key
+        self.translations = translations
+        self.comment = comment
+    }
 }
 
 struct TranslationRow: View {
@@ -106,29 +160,34 @@ struct TranslationRow: View {
 
     var body: some View {
         HStack {
+            // 翻译选择框
             Toggle("", isOn: $translation.isSelected)
                 .frame(width: 40)
+            
+            // Key
             Text(translation.key)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            TextField("English", text: $translation.english)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .frame(maxWidth: .infinity)
-            TextField("简体中文", text: $translation.chineseSimplified)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .frame(maxWidth: .infinity)
-            TextField("日本語", text: $translation.japanese)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .frame(maxWidth: .infinity)
-            TextField("繁體中文", text: $translation.chineseTraditional)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .frame(maxWidth: .infinity)
-            TextField("한국어", text: $translation.korean)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .frame(maxWidth: .infinity)
+            
+            // 动态语言输入框
+            ForEach(Array(translation.translations.keys).sorted(), id: \.self) { languageCode in
+                TextField(getLanguageDisplay(for: languageCode),
+                         text: Binding(
+                            get: { translation.translations[languageCode] ?? "" },
+                            set: { translation.translations[languageCode] = $0 }
+                         ))
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .frame(maxWidth: .infinity)
+            }
+            
+            // Comment
             TextField("Comment", text: $translation.comment)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .frame(maxWidth: .infinity)
         }
+    }
+    
+    private func getLanguageDisplay(for code: String) -> String {
+        Locale.current.localizedString(forLanguageCode: code) ?? code
     }
 }
 

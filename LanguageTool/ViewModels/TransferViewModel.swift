@@ -19,6 +19,9 @@ class TransferViewModel: ObservableObject {
     @Published var languageChanged = false
     @Published var translationItems: [TranslationItem] = []
     
+    // 添加一个属性来保持对窗口的强引用
+    private var localizationWindow: NSWindow?
+    
     enum ExportFormat {
         case csv
         case excel
@@ -333,15 +336,48 @@ class TransferViewModel: ObservableObject {
     }
     
     func openInNewWindow() {
+        // 如果窗口已经存在，就把它带到前面
+        if let existingWindow = localizationWindow {
+            existingWindow.makeKeyAndOrderFront(nil)
+            return
+        }
+        
+        // 创建新窗口
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false
         )
+        
+        // 创建窗口控制器（但不设置为代理）
+        let windowController = NSWindowController(window: window)
+        
         window.title = "Localization Master"
-        window.contentView = NSHostingView(rootView: LocalizationMasterView())
+        let masterView = LocalizationMasterView()
+        window.contentView = NSHostingView(rootView: masterView)
         window.center()
+        
+        // 保存对窗口的引用
+        self.localizationWindow = window
+        
+        // 加载翻译内容
+        Task {
+            await reloadSourceFile()
+        }
+        
+        // 设置窗口关闭时的回调
+        window.isReleasedWhenClosed = false
+        
+        // 创建并设置正确的窗口代理
+        let delegate = WindowDelegate(onClose: { [weak self] in
+            self?.localizationWindow = nil
+        })
+        window.delegate = delegate
+        
+        // 保持对代理的引用（否则代理可能被过早释放）
+        objc_setAssociatedObject(window, "delegateReference", delegate, .OBJC_ASSOCIATION_RETAIN)
+        
         window.makeKeyAndOrderFront(nil)
     }
     
@@ -451,5 +487,37 @@ class TransferViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    // 在解析文件后更新 translations 数组
+    func updateTranslations(from translations: [String: [String: String]]) {
+        self.translationItems = translations.map { key, values in
+            TranslationItem(
+                key: key,
+                translations: values
+            )
+        }
+    }
+    
+    func reloadSourceFile() async {
+        guard !inputPath.isEmpty && inputPath != "No file selected" else { return }
+        
+        isLoading = true
+        translationItems = await TranslationManager.shared.parseInputFile(at: inputPath, platform: selectedPlatform)
+        isLoading = false
+    }
+}
+
+// 添加一个窗口代理类来处理窗口关闭事件
+private class WindowDelegate: NSObject, NSWindowDelegate {
+    let onClose: () -> Void
+    
+    init(onClose: @escaping () -> Void) {
+        self.onClose = onClose
+        super.init()
+    }
+    
+    func windowWillClose(_ notification: Notification) {
+        onClose()
     }
 }
