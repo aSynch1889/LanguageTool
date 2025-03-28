@@ -3,9 +3,13 @@ import SwiftUI
 struct LocalizationMasterView: View {
     @State private var remainingTrials = 4
     @State private var translateSelectedOnly = true
-    @StateObject private var viewModel = TransferViewModel()
-    
+    @StateObject var viewModel: TransferViewModel
     @State private var searchText = ""
+    
+    // 初始化器
+    init(viewModel: TransferViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     // 添加一个计算属性来获取所有可用的语言
     private var availableLanguages: [String] {
@@ -193,6 +197,6 @@ struct TranslationRow: View {
 
 struct LocalizationMasterView_Previews: PreviewProvider {
     static var previews: some View {
-        LocalizationMasterView()
+        LocalizationMasterView(viewModel: TransferViewModel())
     }
 }

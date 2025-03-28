@@ -7,49 +7,85 @@ class TranslationManager {
     
     func parseInputFile(at path: String, platform: PlatformType) async -> [TranslationItem] {
         do {
+            print("Attempting to parse file at path:", path)
+            print("Selected platform:", platform)
+            
             let fileURL = URL(fileURLWithPath: path)
             let data = try Data(contentsOf: fileURL)
+            print("Successfully read file data, size:", data.count)
             
+            let items: [TranslationItem]
             switch platform {
             case .iOS:
                 if path.hasSuffix(".xcstrings") {
-                    return try await parseXCStrings(data: data)
+                    print("Parsing as xcstrings file")
+                    items = try await parseXCStrings(data: data)
                 } else {
-                    return try await parseStringsFile(data: data)
+                    print("Parsing as strings file")
+                    items = try await parseStringsFile(data: data)
                 }
             case .electron:
-                return try await parseJsonFile(data: data)
+                print("Parsing as JSON file")
+                items = try await parseJsonFile(data: data)
             case .flutter:
-                return try await parseArbFile(data: data)
+                print("Parsing as ARB file")
+                items = try await parseArbFile(data: data)
             }
+            
+            print("Successfully parsed items count:", items.count)
+            if items.isEmpty {
+                print("Warning: No items were parsed from the file")
+            } else {
+                print("Sample item - Key:", items[0].key)
+                print("Sample item - Translations:", items[0].translations)
+            }
+            
+            return items
         } catch {
-            print("Error parsing file: \(error)")
+            print("Error parsing file:", error)
+            print("Error details:", String(describing: error))
+            if let decodingError = error as? DecodingError {
+                switch decodingError {
+                case .keyNotFound(let key, let context):
+                    print("Missing key:", key)
+                    print("Context:", context)
+                case .typeMismatch(let type, let context):
+                    print("Type mismatch:", type)
+                    print("Context:", context)
+                default:
+                    print("Other decoding error:", decodingError)
+                }
+            }
             return []
         }
     }
     
     private func parseXCStrings(data: Data) async throws -> [TranslationItem] {
+        print("Starting parseXCStrings")
         let decoder = JSONDecoder()
         
+        // 更新数据结构以匹配实际的 JSON 格式
         struct XCStringsContainer: Codable {
-            struct Source: Codable {
-                let strings: [String: StringEntry]
-            }
-            
             struct StringEntry: Codable {
-                let extractionState: String?
+                // 源语言的值
+                let source: Source?
+                // 注释
                 let comment: String?
-                let localizations: [String: Localization]
-            }
-            
-            struct Localization: Codable {
-                let stringUnit: StringUnit
-                let state: String?
-            }
-            
-            struct StringUnit: Codable {
-                let value: String
-                let state: String?
+                // 翻译
+                let localizations: [String: Localization]?
+                
+                struct Source: Codable {
+                    let stringUnit: StringUnit
+                }
+                
+                struct Localization: Codable {
+                    let stringUnit: StringUnit
+                }
+                
+                struct StringUnit: Codable {
+                    let state: String?
+                    let value: String
+                }
             }
             
             let sourceLanguage: String
@@ -57,21 +93,43 @@ class TranslationManager {
             let version: String
         }
         
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("Raw JSON data:", jsonString)
+        }
+        
         let xcstrings = try decoder.decode(XCStringsContainer.self, from: data)
         
-        return xcstrings.strings.map { key, entry in
+        print("Parsed sourceLanguage:", xcstrings.sourceLanguage)
+        print("Number of strings:", xcstrings.strings.count)
+        print("Available keys:", xcstrings.strings.keys)
+        
+        let items = xcstrings.strings.map { key, entry in
             var translations: [String: String] = [:]
             
-            for (languageCode, localization) in entry.localizations {
-                translations[languageCode] = localization.stringUnit.value
+            // 添加源语言的值
+            if let sourceValue = entry.source?.stringUnit.value {
+                translations[xcstrings.sourceLanguage] = sourceValue
             }
             
-            return TranslationItem(
+            // 添加其他语言的翻译
+            if let localizations = entry.localizations {
+                for (languageCode, localization) in localizations {
+                    translations[languageCode] = localization.stringUnit.value
+                }
+            }
+            
+            let item = TranslationItem(
                 key: key,
                 translations: translations,
                 comment: entry.comment ?? ""
             )
+            print("Created item - Key:", key)
+            print("Created item - Translations:", translations)
+            return item
         }
+        
+        print("Finished parsing, returning \(items.count) items")
+        return items
     }
     
     private func parseStringsFile(data: Data) async throws -> [TranslationItem] {

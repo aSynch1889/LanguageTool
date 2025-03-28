@@ -336,49 +336,57 @@ class TransferViewModel: ObservableObject {
     }
     
     func openInNewWindow() {
-        // 如果窗口已经存在，就把它带到前面
-        if let existingWindow = localizationWindow {
-            existingWindow.makeKeyAndOrderFront(nil)
-            return
+        Task { @MainActor in  // 确保在主线程上下文中执行
+            // 如果窗口已经存在，就把它带到前面
+            if let existingWindow = localizationWindow {
+                existingWindow.makeKeyAndOrderFront(nil)
+                return
+            }
+            
+            // 创建新窗口
+            let window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+                styleMask: [.titled, .closable, .miniaturizable, .resizable],
+                backing: .buffered,
+                defer: false
+            )
+            
+            // 创建窗口控制器（但不设置为代理）
+            let windowController = NSWindowController(window: window)
+            
+            // 创建视图模型并设置必要的属性
+            let viewModel = TransferViewModel()
+            viewModel.inputPath = self.inputPath
+            viewModel.outputPath = self.outputPath
+            viewModel.selectedPlatform = self.selectedPlatform
+            
+            window.title = "Localization Master"
+            let masterView = LocalizationMasterView(viewModel: viewModel)
+            window.contentView = NSHostingView(rootView: masterView)
+            window.center()
+            
+            // 保存对窗口的引用
+            self.localizationWindow = window
+            
+            // 设置窗口关闭时的回调
+            window.isReleasedWhenClosed = false
+            
+            // 创建并设置正确的窗口代理
+            let delegate = WindowDelegate(onClose: { [weak self] in
+                self?.localizationWindow = nil
+            })
+            window.delegate = delegate
+            
+            // 保持对代理的引用（否则代理可能被过早释放）
+            objc_setAssociatedObject(window, "delegateReference", delegate, .OBJC_ASSOCIATION_RETAIN)
+            
+            window.makeKeyAndOrderFront(nil)
+            
+            // 如果有输入文件，立即解析并显示内容
+            if !inputPath.isEmpty && inputPath != "No file selected" {
+                await viewModel.reloadSourceFile()
+            }
         }
-        
-        // 创建新窗口
-        let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable],
-            backing: .buffered,
-            defer: false
-        )
-        
-        // 创建窗口控制器（但不设置为代理）
-        let windowController = NSWindowController(window: window)
-        
-        window.title = "Localization Master"
-        let masterView = LocalizationMasterView()
-        window.contentView = NSHostingView(rootView: masterView)
-        window.center()
-        
-        // 保存对窗口的引用
-        self.localizationWindow = window
-        
-        // 加载翻译内容
-        Task {
-            await reloadSourceFile()
-        }
-        
-        // 设置窗口关闭时的回调
-        window.isReleasedWhenClosed = false
-        
-        // 创建并设置正确的窗口代理
-        let delegate = WindowDelegate(onClose: { [weak self] in
-            self?.localizationWindow = nil
-        })
-        window.delegate = delegate
-        
-        // 保持对代理的引用（否则代理可能被过早释放）
-        objc_setAssociatedObject(window, "delegateReference", delegate, .OBJC_ASSOCIATION_RETAIN)
-        
-        window.makeKeyAndOrderFront(nil)
     }
     
     func exportToExcel() {
