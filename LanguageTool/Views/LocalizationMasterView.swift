@@ -3,19 +3,8 @@ import SwiftUI
 struct LocalizationMasterView: View {
     @State private var remainingTrials = 4
     @State private var translateSelectedOnly = true
-    @State private var translations: [TranslationItem] = [
-        TranslationItem(key: "Select Platform", english: "Select Platform", chineseSimplified: "选择平台", japanese: "プラットフォ...", chineseTraditional: "選擇平台", korean: "플랫폼 선택"),
-        TranslationItem(key: "Korean", english: "Korean", chineseSimplified: "韩语", japanese: "韓国語", chineseTraditional: "韓語", korean: "한국어"),
-        TranslationItem(key: "Select Output ...", english: "Select Output ...", chineseSimplified: "选择输出位置", japanese: "出力場所を選択", chineseTraditional: "選擇輸出位置", korean: "출력 위치 선택"),
-        TranslationItem(key: "Select directo ...", english: "Select directo ...", chineseSimplified: "选择 JSON 文...", japanese: "JSON ファイ...", chineseTraditional: "選擇 JSON 檔...", korean: "JSON 파일 디렉..."),
-        TranslationItem(key: "Select locatio ...", english: "Select locatio ...", chineseSimplified: "选择保存 .xcstr...", japanese: ".xcstrings ファ...", chineseTraditional: "選擇儲存 .xcstri....", korean: ".xcstrings 파일 ..."),
-        TranslationItem(key: "Other Settings", english: "Other Settings", chineseSimplified: "其他设置", japanese: "その他設定", chineseTraditional: "其他設定", korean: "기타 설정"),
-        TranslationItem(key: "Select Target ...", english: "Select Target ...", chineseSimplified: "选择目标语言", japanese: "対象言語を選択", chineseTraditional: "選擇目標語言", korean: "대상 언어 선택"),
-        TranslationItem(key: "Translating ...", english: "Translating ...", chineseSimplified: "正在翻译...", japanese: "翻訳中...", chineseTraditional: "翻譯中....", korean: "번역 중 ..."),
-        TranslationItem(key: "Successfully ...", english: "Successfully ...", chineseSimplified: "成功为所有语...", japanese: "すべての言語...", chineseTraditional: "成功為所有語...", korean: "모든 언어에 대한 ..."),
-        TranslationItem(key: "Select Input F ...", english: "Select Input F ...", chineseSimplified: "选择输入文件", japanese: "入力ファイル...", chineseTraditional: "選擇輸入檔案", korean: "입력 파일 선택"),
-        TranslationItem(key: "Please wait , t ...", english: "Please wait , t ...", chineseSimplified: "请稍候, 这可...", japanese: "お待ちくださ...", chineseTraditional: "請稍候 , 這可 ...", korean: "잠시 기다려 주세 ..."),
-    ]
+    @StateObject private var transferViewModel = TransferViewModel()
+    @State private var translations: [TranslationItem] = []
 
     @State private var searchText = ""
 

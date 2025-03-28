@@ -17,6 +17,7 @@ class TransferViewModel: ObservableObject {
     @Published var outputFormat: LocalizationFormat = .xcstrings
     @Published var selectedPlatform: PlatformType = .iOS
     @Published var languageChanged = false
+    @Published var translationItems: [TranslationItem] = []
     
     enum ExportFormat {
         case csv
@@ -161,7 +162,11 @@ class TransferViewModel: ObservableObject {
                 isLoading = true
                 showResult = false
                 showSuccessActions = false
+                translationItems = []
             }
+            
+            // 先解析输入文件获取翻译项
+            translationItems = await TranslationManager.shared.parseInputFile(at: inputPath, platform: selectedPlatform)
             
             let fileExtension = (inputPath as NSString).pathExtension.lowercased()
             let result: (message: String, success: Bool)
