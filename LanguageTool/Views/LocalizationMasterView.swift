@@ -28,8 +28,19 @@ struct LocalizationMasterView: View {
             return items
         }
         return items.filter { item in
-            item.key.localizedCaseInsensitiveContains(searchText) ||
-            item.translations.values.contains { $0.localizedCaseInsensitiveContains(searchText) }
+            // 搜索key
+            if item.key.localizedCaseInsensitiveContains(searchText) {
+                return true
+            }
+            // 搜索translations中的值
+            if item.translations.values.contains(where: { $0.localizedCaseInsensitiveContains(searchText) }) {
+                return true
+            }
+            // 搜索comment
+            if item.comment.localizedCaseInsensitiveContains(searchText) {
+                return true
+            }
+            return false
         }
     }
     
