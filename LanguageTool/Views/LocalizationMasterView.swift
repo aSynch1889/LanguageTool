@@ -182,6 +182,8 @@ struct TranslationRow: View {
             // Key
             Text(translation.key)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .opacity(translation.isSelected ? 1.0 : 0.5)
+                .disabled(!translation.isSelected)
             
             // 动态语言输入框
             ForEach(Array(translation.translations.keys).sorted(), id: \.self) { languageCode in
@@ -192,13 +194,19 @@ struct TranslationRow: View {
                          ))
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(maxWidth: .infinity)
+                    .opacity(translation.isSelected ? 1.0 : 0.5)
+                    .disabled(!translation.isSelected)
             }
             
             // Comment
             TextField("Comment", text: $translation.comment)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .frame(maxWidth: .infinity)
+                .opacity(translation.isSelected ? 1.0 : 0.5)
+                .disabled(!translation.isSelected)
         }
+//        .opacity(translation.isSelected ? 1.0 : 0.5)
+//        .disabled(!translation.isSelected)
     }
     
     private func getLanguageDisplay(for code: String) -> String {
