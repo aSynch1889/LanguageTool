@@ -4,6 +4,7 @@ struct SettingsView: View {
     @AppStorage("apiKey") private var apiKey: String = ""
     @AppStorage("selectedAIService") private var selectedService: AIServiceType = .deepseek
     @AppStorage("geminiApiKey") private var geminiApiKey: String = ""
+    @AppStorage("aliyunApiKey") private var aliyunApiKey: String = ""
     @AppStorage("appLanguage") private var appLanguage: String = "en"  // 默认为英语
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false // 添加暗黑模式存储
     
@@ -42,6 +43,9 @@ struct SettingsView: View {
                         .textFieldStyle(.roundedBorder)
                 case .gemini:
                     SecureField("Gemini API Key".localized, text: $geminiApiKey)
+                        .textFieldStyle(.roundedBorder)
+                case .aliyun:
+                    SecureField("Aliyun API Key".localized, text: $aliyunApiKey)
                         .textFieldStyle(.roundedBorder)
                 }
             }

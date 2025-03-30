@@ -17,6 +17,7 @@ class AIService {
     
     @AppStorage("selectedAIService") private var selectedService: AIServiceType = .deepseek
     @AppStorage("geminiApiKey") private var geminiApiKey: String = ""
+    @AppStorage("aliyunApiKey") private var aliyunApiKey: String = ""
     
     private var apiKey: String {
         AppSettings.shared.apiKey
@@ -53,6 +54,8 @@ class AIService {
             service = DeepSeekService()
         case .gemini:
             service = GeminiService()
+        case .aliyun:
+            service = AliyunService()
         }
         
         sendMessage(messages: messages, service: service, completion: completion)
@@ -64,6 +67,8 @@ class AIService {
             return try await translateWithDeepseek(text: text, to: targetLanguage)
         case .gemini:
             return try await translateWithGemini(text: text, to: targetLanguage)
+        case .aliyun:
+            return try await makeAliyunRequest(prompt: text)
         }
     }
     
@@ -255,6 +260,59 @@ class AIService {
 //        }
 //    }
     
+    private func getApiKey() -> String {
+        var apiKeyToUse = ""
+        switch selectedService {
+        case .deepseek:
+            apiKeyToUse = apiKey
+        case .gemini:
+            apiKeyToUse = geminiApiKey
+        case .aliyun:
+            apiKeyToUse = aliyunApiKey
+        }
+        return apiKeyToUse
+    }
+
+    private func makeAliyunRequest(prompt: String) async throws -> String {
+        let url = URL(string: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(aliyunApiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let requestBody: [String: Any] = [
+            "model": "qwen-mt-turbo",
+            "messages": [
+                ["role": "user", "content": prompt]
+            ],
+            "translation_options": [
+                "source_lang": "auto",
+                "target_lang": "English"
+            ]
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AIServiceError.invalidResponse
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            throw AIServiceError.requestFailed(statusCode: httpResponse.statusCode)
+        }
+        
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let choices = json["choices"] as? [[String: Any]],
+              let firstChoice = choices.first,
+              let message = firstChoice["message"] as? [String: Any],
+              let content = message["content"] as? String else {
+            throw AIServiceError.invalidData
+        }
+        
+        return content
+    }
 }
 
 
@@ -267,6 +325,8 @@ extension AIService {
             apiKeyToUse = apiKey
         case .gemini:
             apiKeyToUse = geminiApiKey
+        case .aliyun:
+            apiKeyToUse = aliyunApiKey
         }
         
         guard !apiKeyToUse.isEmpty else {
@@ -282,6 +342,8 @@ extension AIService {
             urlString = service.baseURL
         case .gemini:
             urlString = service.baseURL + "?key=\(apiKeyToUse)"
+        case .aliyun:
+            urlString = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
         }
         
         guard let url = URL(string: urlString) else {
@@ -297,6 +359,10 @@ extension AIService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         switch selectedService {
         case .deepseek:
+            request.setValue("Bearer \(apiKeyToUse)", forHTTPHeaderField: "Authorization")
+        case .gemini:
+            request.setValue("Bearer \(apiKeyToUse)", forHTTPHeaderField: "Authorization")
+        case .aliyun:
             request.setValue("Bearer \(apiKeyToUse)", forHTTPHeaderField: "Authorization")
         default:
             print()

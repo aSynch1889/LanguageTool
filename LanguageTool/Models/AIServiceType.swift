@@ -3,6 +3,7 @@ import Foundation
 enum AIServiceType: String, CaseIterable {
     case deepseek = "DeepSeek"
     case gemini = "Gemini"
+    case aliyun
     
     var description: String {
         switch self {
@@ -10,6 +11,8 @@ enum AIServiceType: String, CaseIterable {
             return "DeepSeek Chat"
         case .gemini:
             return "Google Gemini"
+        case .aliyun:
+            return "Aliyun"
         }
     }
     
@@ -19,6 +22,8 @@ enum AIServiceType: String, CaseIterable {
             return "deepseek-chat"
         case .gemini:
             return "gemini-pro"
+        case .aliyun:
+            return "aliyun-pro"
         }
     }
 } 
