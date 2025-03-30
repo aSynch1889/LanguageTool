@@ -162,14 +162,14 @@ struct TransferView: View {
             .buttonStyle(.bordered)
             .disabled(viewModel.isLoading)
             
-            Button(action: viewModel.openInNewWindow) {
-                HStack {
-                    Image(systemName: "window")
-                    Text("Open in New Window".localized)
-                }
-            }
-            .buttonStyle(.bordered)
-            .disabled(viewModel.isLoading)
+//            Button(action: viewModel.openInNewWindow) {
+//                HStack {
+//                    Image(systemName: "window")
+//                    Text("Open in New Window".localized)
+//                }
+//            }
+//            .buttonStyle(.bordered)
+//            .disabled(viewModel.isLoading)
         }
     }
     
