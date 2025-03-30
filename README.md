@@ -1,117 +1,114 @@
 # Language Tool
+[English](README.md) | [中文](README-zh.md)
+Language Tool is a macOS application designed for the automated generation of multi-platform localization files in multiple languages. It supports the generation of localization files for iOS, Flutter, and Electron projects.
 
-Language Tool 是一个 macOS 应用程序，用于自动化生成多平台的多语言本地化文件。支持 iOS、Flutter 和 Electron 项目的本地化文件生成。
+## Features
 
-## 功能特点
+- 📱 Multi-platform support:
+  - iOS: `.xcstrings` and `.strings` files
+  - Flutter: `.arb` files
+  - Electron: localized `.json` files
+- 🌍 Supports automatic translation in 50+ languages
+- 🔄 Batch translation processing
+- 💾 Generates standardized localization files by platform
+- ⚡️ Simple and intuitive user interface
+- 🎯 Fully compatible with localization workflows across platforms
+- 🔁 Supports synchronization with source file content
+- 📊 Export to Excel format for easier management
 
-- 📱 支持多个平台：
-  - iOS: `.xcstrings` 和 `.strings` 文件
-  - Flutter: `.arb` 文件
-  - Electron: 本地化 `.json` 文件
-- 🌍 支持 50+ 种语言的自动翻译
-- 🔄 批量翻译处理
-- 💾 按平台生成标准格式的本地化文件
-- ⚡️ 简单直观的用户界面
-- 🎯 完全适配各平台的本地化工作流
+## Supported Languages
 
-## 支持的语言
+Including but not limited to:
+- Chinese (Simplified, Traditional, Hong Kong Traditional)
+- English (US, UK, Australian variants, etc.)
+- Japanese
+- Korean
+- European languages (French, German, Spanish, etc.)
+- Southeast Asian languages (Thai, Vietnamese, etc.)
+- Middle Eastern languages (Arabic, etc.)
 
-包括但不限于：
-- 中文（简体、繁体、香港繁体）
-- 英语（美国、英国、澳大利亚等变体）
-- 日语
-- 韩语
-- 欧洲语言（法语、德语、西班牙语等）
-- 东南亚语言（泰语、越南语等）
-- 中东语言（阿拉伯语等）
+## How to Use
 
-## 使用方法
+1. Launch the application
+   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/qaVqGx20250226155114.png)
+2. Configure the API Key for the AI service in the settings
+   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/NzwOzR20250226155150.png)
+3. Select the target platform (iOS/Flutter/Electron)
+4. Choose the source file:
+   - iOS: Select `.xcstrings` or `.strings` files
+   - Flutter: Select `.arb` files
+   - Electron: Select `.json` files
+5. Select the target language
+6. Choose the save location
+7. Click "Start Conversion"
+8. Wait for the conversion to complete
+9. Add the generated files to your project:
+   - iOS: Add `.xcstrings` or `.strings` files to the Xcode project
+   - Flutter: Place `.arb` files in the `lib/l10n` directory
+   - Electron: Place the generated JSON files in the project's language resource directory
 
-1. 启动应用程序
-   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/ktIJ4k20250225013727.png)
-2. 在设置中配置 AI 服务的 API Key
-   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/xTfNrr20250224113359.png)
-3. 选择目标平台（iOS/Flutter/Electron）
-4. 选择源文件：
-   - iOS: 选择 `.xcstrings` 或 `.strings` 文件
-   - Flutter: 选择 `.arb` 文件
-   - Electron: 选择 `.json` 文件
-5. 选择目标语言
-6. 选择保存位置
-7. 点击"开始转换"
-8. 等待转换完成
-9. 将生成的文件添加到你的项目中：
-   - iOS: 添加 `.xcstrings` 或 `.strings` 文件到 Xcode 项目
-   - Flutter: 将 `.arb` 文件放入 `lib/l10n` 目录
-   - Electron: 将生成的 JSON 文件放入项目的语言资源目录
+## System Requirements
 
-## 系统要求
+- macOS 13.0 or later
+- For iOS development: Xcode 15.0 or later (for .xcstrings support)
+- For Flutter development: Flutter SDK
+- For Electron development: Node.js environment
 
-- macOS 13.0 或更高版本
-- 对于 iOS 开发：Xcode 15.0 或更高版本（用于 .xcstrings 支持）
-- 对于 Flutter 开发：Flutter SDK
-- 对于 Electron 开发：Node.js 环境
+## Installation
 
-## 安装
+As this is an open-source project, it has not been notarized by Apple, and some additional steps are required during installation:
 
-由于这是一个开源项目，目前没有经过 Apple 公证，安装时需要一些额外步骤：
+1. Download the latest .zip file from the Releases page
+2. Unzip the file
+3. Drag the .app file into the Applications folder
+4. On the first run:
+   - Right-click the application icon
+   - Select "Open"
+   - In the pop-up warning dialog, select "Open"
 
-1. 从 Releases 页面下载最新的 .zip 文件
-2. 解压缩文件
-3. 将 .app 文件拖入 Applications 文件夹
-4. 首次运行时：
-   - 右键点击应用图标
-   - 选择"打开"
-   - 在弹出的警告对话框中选择"打开"
-   
+**Note**: Since the application has not been signed by Apple, the system will display a security warning on the first run. This is normal. If you are concerned about security, you can review the source code and compile it yourself.
 
-注意：由于应用没有经过 Apple 签名，首次运行时系统会显示安全警告，这是正常的。如果你担心安全问题，可以查看源代码并自行编译。
+### Building from Source
 
-### 从源码构建
+If you prefer to build the application yourself:
 
-如果你更倾向于自己构建应用：
-
-1. 克隆仓库：
+1. Clone the repository:
    ```bash
    git clone https://github.com/aSynch1889/LanguageTool.git
    ```
-2. 使用 Xcode 打开项目
-3. 选择 Product > Build
-4. 构建完成后，应用会出现在 Xcode 的 product文件夹中
+2. Open the project using Xcode
+3. Select Product > Build
+4. Once built, the application will appear in the product folder of Xcode
 
-## 开发环境
+## Development Environment
 
 - Swift 5.9
 - SwiftUI
 - Xcode 15.0+
 
-## 注意事项
+## Notes
 
-- 使用前需要配置有效的 DeepSeek AI 或者 Gemini（免费但限制地区） 服务 API Key
-- 建议在使用前备份原有的本地化文件
-- 翻译结果可能需要人工审核以确保准确性
-- 不同平台的本地化文件格式有所不同，请确保选择正确的平台
-- deepseek API [申请地址](https://platform.deepseek.com/api_keys)
-- Gemini API [申请地址](https://aistudio.google.com/app/apikey?hl=zh-cn)
+- You need to configure a valid DeepSeek AI or Gemini service API Key before use
+- It is recommended to back up existing localization files before use
+- Translation results may require manual review to ensure accuracy
+- Different platforms have different localization file formats, please ensure to select the correct platform
+- deepseek [application portal](https://platform.deepseek.com/api_keys)
+- Gemini api [application portal](https://aistudio.google.com/app/apikey?hl=zh-cn)
 
-## 贡献
+## Contribution
 
-欢迎提交 Issue 和 Pull Request！
+Feel free to submit Issues and Pull Requests!
 
-## 许可证
+## License
 
-本项目采用 MIT 许可证。详见 [LICENSE](LICENSE) 文件。
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## 致谢
+## Acknowledgments
 
-- DeepSeek AI、Gemini 提供翻译服务
-- SwiftUI 框架
-- 所有贡献者和用户
+- DeepSeek AI and Gemini for providing translation services
+- SwiftUI framework
+- All contributors and users
 
-## 联系方式
+## Contact
 
-如有问题或建议，请通过 GitHub Issues 与我们联系。
-
----
-
-Made with ❤️ by [华子]
+If you have any questions or suggestions, please contact us via GitHub Issues.
