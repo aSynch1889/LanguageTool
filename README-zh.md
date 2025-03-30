@@ -30,9 +30,9 @@ Language Tool 是一个 macOS 应用程序，用于自动化生成多平台的�
 ## 使用方法
 
 1. 启动应用程序
-   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/ktIJ4k20250225013727.png)
+   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/s0edU520250331001441.png)
 2. 在设置中配置 AI 服务的 API Key
-   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/xTfNrr20250224113359.png)
+   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/7Rp8GC20250331001235.png)
 3. 选择目标平台（iOS/Flutter/Electron）
 4. 选择源文件：
    - iOS: 选择 `.xcstrings` 或 `.strings` 文件

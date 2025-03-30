@@ -30,9 +30,9 @@ Including but not limited to:
 ## How to Use
 
 1. Launch the application
-   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/qaVqGx20250226155114.png)
+   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/TvuKkX20250331001509.png)
 2. Configure the API Key for the AI service in the settings
-   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/NzwOzR20250226155150.png)
+   ![](https://raw.githubusercontent.com/aSynch1889/image/master/uPic/RFS8Kk20250331001528.png)
 3. Select the target platform (iOS/Flutter/Electron)
 4. Choose the source file:
    - iOS: Select `.xcstrings` or `.strings` files
