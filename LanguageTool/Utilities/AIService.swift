@@ -3,8 +3,21 @@ import SwiftUI
 
 protocol AIServiceProtocol {
     var baseURL: String { get }
-    func buildRequestBody(messages: [Message]) -> [String: Any]
+    func buildRequestBody(messages: [Message], translationOptions: [String: String]?) -> [String: Any]
     func parseResponse(data: Data) throws -> String
+}
+
+// 为 AIServiceProtocol 提供默认实现
+extension AIServiceProtocol {
+    func buildRequestBody(messages: [Message], translationOptions: [String: String]? = nil) -> [String: Any] {
+        // 默认实现忽略 translationOptions
+        buildRequestBody(messages: messages)
+    }
+    
+    // 为了向后兼容，保留原来的方法
+    func buildRequestBody(messages: [Message]) -> [String: Any] {
+        fatalError("This method must be implemented by concrete types")
+    }
 }
 
 struct Message: Codable {
@@ -45,7 +58,7 @@ class AIService {
         case .gemini:
             return try await translateWithGemini(text: text, to: targetLanguage)
         case .aliyun:
-            return try await makeAliyunRequest(prompt: text)
+            return try await makeAliyunRequest(prompt: text, targetLanguage: targetLanguage)
         }
     }
     
@@ -65,9 +78,16 @@ class AIService {
         
         let messages = [Message(role: "user", content: prompt)]
         
+        // 创建翻译选项
+        let translationOptions = [
+            "source_lang": "auto",
+            "target_lang": targetLanguage
+        ]
+        
         // 发送翻译请求
         let response = try await withCheckedThrowingContinuation { continuation in
-            sendMessage(messages: messages) { result in
+            let service = AliyunService()
+            sendMessage(messages: messages, service: service, translationOptions: translationOptions) { result in
                 switch result {
                 case .success(let content):
                     continuation.resume(returning: content)
@@ -250,23 +270,21 @@ class AIService {
         return apiKeyToUse
     }
 
-    private func makeAliyunRequest(prompt: String) async throws -> String {
+    private func makeAliyunRequest(prompt: String, targetLanguage: String) async throws -> String {
+        let messages = [Message(role: "user", content: prompt)]
+        let translationOptions = [
+            "source_lang": "auto",
+            "target_lang": targetLanguage
+        ]
+        
+        let service = AliyunService()
+        let requestBody = service.buildRequestBody(messages: messages, translationOptions: translationOptions)
+        
         let url = URL(string: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(aliyunApiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let requestBody: [String: Any] = [
-            "model": "qwen-mt-turbo",
-            "messages": [
-                ["role": "user", "content": prompt]
-            ],
-            "translation_options": [
-                "source_lang": "auto",
-                "target_lang": "English"
-            ]
-        ]
         
         request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
         
@@ -295,7 +313,7 @@ class AIService {
 
 // 扩展 AIService 以实现协议
 extension AIService {
-    func sendMessage<T: AIServiceProtocol>(messages: [Message], service: T, completion: @escaping (Result<String, AIError>) -> Void) {
+    func sendMessage<T: AIServiceProtocol>(messages: [Message], service: T, translationOptions: [String: String]? = nil, completion: @escaping (Result<String, AIError>) -> Void) {
         let apiKeyToUse: String
         switch selectedService {
         case .deepseek:
@@ -345,7 +363,7 @@ extension AIService {
             print()
         }
         
-        let body = service.buildRequestBody(messages: messages)
+        let body = service.buildRequestBody(messages: messages, translationOptions: translationOptions)
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else {
             completion(.failure(.jsonError(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "JSON 序列化失败"]))))
