@@ -23,29 +23,6 @@ class AIService {
         AppSettings.shared.apiKey
     }
     
-    enum AIError: Error {
-        case invalidURL
-        case networkError(Error)
-        case invalidResponse
-        case jsonError(Error)
-        case invalidConfiguration(String)
-        
-        var localizedDescription: String {
-            switch self {
-            case .invalidConfiguration(let message):
-                return "⚠️ 配置错误: \(message)"
-            case .invalidURL:
-                return "❌ URL 创建失败"
-            case .networkError(let error):
-                return "❌ 网络错误: \(error.localizedDescription)"
-            case .invalidResponse:
-                return "⚠️ 无效的响应"
-            case .jsonError(let error):
-                return "❌ JSON 错误: \(error.localizedDescription)"
-            }
-        }
-    }
-    
     func sendMessage(messages: [Message], completion: @escaping (Result<String, AIError>) -> Void) {
         let service: AIServiceProtocol
         
@@ -296,11 +273,11 @@ class AIService {
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw AIServiceError.invalidResponse
+            throw AIError.invalidResponse
         }
         
         guard httpResponse.statusCode == 200 else {
-            throw AIServiceError.requestFailed(statusCode: httpResponse.statusCode)
+            throw AIError.apiError("HTTP Status: \(httpResponse.statusCode)")
         }
         
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -308,7 +285,7 @@ class AIService {
               let firstChoice = choices.first,
               let message = firstChoice["message"] as? [String: Any],
               let content = message["content"] as? String else {
-            throw AIServiceError.invalidData
+            throw AIError.invalidResponse
         }
         
         return content

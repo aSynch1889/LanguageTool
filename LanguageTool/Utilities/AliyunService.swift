@@ -26,7 +26,7 @@ class AliyunService: AIServiceProtocol {
               let firstChoice = choices.first,
               let message = firstChoice["message"] as? [String: Any],
               let content = message["content"] as? String else {
-            throw AIServiceError.invalidData
+            throw AIError.invalidResponse
         }
         
         return content
