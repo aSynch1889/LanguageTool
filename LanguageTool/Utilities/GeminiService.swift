@@ -5,7 +5,7 @@ struct GeminiService: AIServiceProtocol {
         return "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
     }
     
-    func buildRequestBody(messages: [Message]) -> [String: Any] {
+    func buildRequestBody(messages: [Message], translationOptions: [String: String]? = nil) -> [String: Any] {
         return [
             "contents": [
                 [
@@ -27,7 +27,7 @@ struct GeminiService: AIServiceProtocol {
            let message = error["message"] as? String {
             if message.contains("quota") {
                 throw AIError.rateLimitExceeded
-            } else if message.contains("API key") {
+            } else if message.contains("API key") || message.contains("authentication") {
                 throw AIError.unauthorized
             }
             throw AIError.apiError(message)

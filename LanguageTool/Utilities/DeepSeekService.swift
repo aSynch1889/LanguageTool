@@ -5,7 +5,7 @@ struct DeepSeekService: AIServiceProtocol {
         return "https://api.deepseek.com/v1/chat/completions"
     }
     
-    func buildRequestBody(messages: [Message]) -> [String: Any] {
+    func buildRequestBody(messages: [Message], translationOptions: [String: String]? = nil) -> [String: Any] {
         return [
             "model": "deepseek-chat",
             "messages": messages.map { ["role": $0.role, "content": $0.content] }
