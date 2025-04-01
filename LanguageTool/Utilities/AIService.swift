@@ -7,19 +7,6 @@ protocol AIServiceProtocol {
     func parseResponse(data: Data) throws -> String
 }
 
-// 为 AIServiceProtocol 提供默认实现
-extension AIServiceProtocol {
-    func buildRequestBody(messages: [Message], translationOptions: [String: String]? = nil) -> [String: Any] {
-        // 默认实现忽略 translationOptions
-        buildRequestBody(messages: messages)
-    }
-    
-    // 为了向后兼容，保留原来的方法
-    func buildRequestBody(messages: [Message]) -> [String: Any] {
-        fatalError("This method must be implemented by concrete types")
-    }
-}
-
 struct Message: Codable {
     let role: String
     let content: String
@@ -78,15 +65,27 @@ class AIService {
         
         let messages = [Message(role: "user", content: prompt)]
         
-        // 创建翻译选项
-        let translationOptions = [
-            "source_lang": "auto",
-            "target_lang": targetLanguage
-        ]
+        // 根据选择的服务创建对应的实例
+        let service: AIServiceProtocol
+        let translationOptions: [String: String]?
+        
+        switch selectedService {
+        case .deepseek:
+            service = DeepSeekService()
+            translationOptions = nil
+        case .gemini:
+            service = GeminiService()
+            translationOptions = nil
+        case .aliyun:
+            service = AliyunService()
+            translationOptions = [
+                "source_lang": "auto",
+                "target_lang": targetLanguage
+            ]
+        }
         
         // 发送翻译请求
         let response = try await withCheckedThrowingContinuation { continuation in
-            let service = AliyunService()
             sendMessage(messages: messages, service: service, translationOptions: translationOptions) { result in
                 switch result {
                 case .success(let content):
@@ -352,15 +351,16 @@ extension AIService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // 修改认证头设置
         switch selectedService {
         case .deepseek:
             request.setValue("Bearer \(apiKeyToUse)", forHTTPHeaderField: "Authorization")
         case .gemini:
-            request.setValue("Bearer \(apiKeyToUse)", forHTTPHeaderField: "Authorization")
+            // Gemini 不需要认证头，因为 API key 已经在 URL 中了
+            break
         case .aliyun:
-            request.setValue("Bearer \(apiKeyToUse)", forHTTPHeaderField: "Authorization")
-        default:
-            print()
+            request.setValue("Bearer \(aliyunApiKey)", forHTTPHeaderField: "Authorization")
         }
         
         let body = service.buildRequestBody(messages: messages, translationOptions: translationOptions)
