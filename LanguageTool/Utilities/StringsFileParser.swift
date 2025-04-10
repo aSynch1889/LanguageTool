@@ -76,33 +76,23 @@ class StringsFileParser {
             
             // 为每种语言创建翻译
             for language in languages {
-                if language == "zh-Hans" {
-                    // 源语言使用原始值
+                do {
+                    // 使用 AI 服务翻译
+                    let translation = try await AIService.shared.translate(text: sourceValue, to: language)
                     localizationsDict[language] = [
                         "stringUnit": [
                             "state": "translated",
-                            "value": sourceValue
+                            "value": translation
                         ]
                     ]
-                } else {
-                    do {
-                        // 使用 AI 服务翻译
-                        let translation = try await AIService.shared.translate(text: sourceValue, to: language)
-                        localizationsDict[language] = [
-                            "stringUnit": [
-                                "state": "translated",
-                                "value": translation
-                            ]
+                } catch {
+                    print("翻译失败 [\(language)]: \(error.localizedDescription)")
+                    localizationsDict[language] = [
+                        "stringUnit": [
+                            "state": "needs_review",
+                            "value": ""
                         ]
-                    } catch {
-                        print("翻译失败 [\(language)]: \(error.localizedDescription)")
-                        localizationsDict[language] = [
-                            "stringUnit": [
-                                "state": "needs_review",
-                                "value": ""
-                            ]
-                        ]
-                    }
+                    ]
                 }
             }
             
@@ -156,41 +146,31 @@ class StringsFileParser {
                             attributes: nil
                         )
                         
-                        if language.code == "zh-Hans" {
-                            let result = generateStringsFile(
-                                translations: translations,
-                                to: stringsURL.path
-                            )
-                            if case .failure(let error) = result {
-                                throw error
+                        // 批量翻译优化
+                        let values = Array(translations.values)
+                        let keys = Array(translations.keys)
+                        
+                        print("开始批量翻译: \(language.code)")
+                        let translatedValues = try await AIService.shared.batchTranslate(
+                            texts: values,
+                            to: language.code
+                        )
+                        
+                        // 将翻译结果与键重新组合
+                        var translatedDict: [String: String] = [:]
+                        for (index, key) in keys.enumerated() {
+                            if index < translatedValues.count {
+                                translatedDict[key] = translatedValues[index]
                             }
-                        } else {
-                            // 批量翻译优化
-                            let values = Array(translations.values)
-                            let keys = Array(translations.keys)
-                            
-                            print("开始批量翻译: \(language.code)")
-                            let translatedValues = try await AIService.shared.batchTranslate(
-                                texts: values,
-                                to: language.code
-                            )
-                            
-                            // 将翻译结果与键重新组合
-                            var translatedDict: [String: String] = [:]
-                            for (index, key) in keys.enumerated() {
-                                if index < translatedValues.count {
-                                    translatedDict[key] = translatedValues[index]
-                                }
-                            }
-                            
-                            print("生成翻译文件: \(language.code)")
-                            let result = generateStringsFile(
-                                translations: translatedDict,
-                                to: stringsURL.path
-                            )
-                            if case .failure(let error) = result {
-                                throw error
-                            }
+                        }
+                        
+                        print("生成翻译文件: \(language.code)")
+                        let result = generateStringsFile(
+                            translations: translatedDict,
+                            to: stringsURL.path
+                        )
+                        if case .failure(let error) = result {
+                            throw error
                         }
                     }
                     return .success("Conversion successful!".localized)

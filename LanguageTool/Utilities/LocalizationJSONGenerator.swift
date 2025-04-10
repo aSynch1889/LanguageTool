@@ -25,8 +25,37 @@ class LocalizationJSONGenerator {
         
         // 为每种语言批量翻译所有键
         for language in languages {
-            if language == sourceLanguage {
-                // 源语言不需要翻译
+            do {
+                // 使用优化后的批量翻译方法
+                print("Starting batch translation [\(language)]...")
+                let translations = try await AIService.shared.batchTranslate(
+                    texts: keys,
+                    to: languageNames[language] ?? language
+                )
+                
+                // 将翻译结果添加到字典中
+                for (index, key) in keys.enumerated() {
+                    if stringsDict[key] == nil {
+                        stringsDict[key] = ["localizations": [:]]
+                    }
+                    if var localizations = stringsDict[key] as? [String: Any],
+                       var localizationsDict = localizations["localizations"] as? [String: Any],
+                       index < translations.count {
+                        localizationsDict[language] = [
+                            "stringUnit": [
+                                "state": "translated",
+                                "value": translations[index]
+                            ]
+                        ]
+                        localizations["localizations"] = localizationsDict
+                        stringsDict[key] = localizations
+                    }
+                }
+                
+                print("✅ Batch translation successful [\(language)]: \(keys.count) entries")
+            } catch {
+                print("❌ Batch translation failed [\(language)]: \(error.localizedDescription)")
+                // 翻译失败时为所有键设置空值
                 for key in keys {
                     if stringsDict[key] == nil {
                         stringsDict[key] = ["localizations": [:]]
@@ -35,61 +64,12 @@ class LocalizationJSONGenerator {
                        var localizationsDict = localizations["localizations"] as? [String: Any] {
                         localizationsDict[language] = [
                             "stringUnit": [
-                                "state": "translated",
-                                "value": key
+                                "state": "needs_review",
+                                "value": ""
                             ]
                         ]
                         localizations["localizations"] = localizationsDict
                         stringsDict[key] = localizations
-                    }
-                }
-            } else {
-                do {
-                    // 使用优化后的批量翻译方法
-                    print("Starting batch translation [\(language)]...")
-                    let translations = try await AIService.shared.batchTranslate(
-                        texts: keys,
-                        to: languageNames[language] ?? language
-                    )
-                    
-                    // 将翻译结果添加到字典中
-                    for (index, key) in keys.enumerated() {
-                        if stringsDict[key] == nil {
-                            stringsDict[key] = ["localizations": [:]]
-                        }
-                        if var localizations = stringsDict[key] as? [String: Any],
-                           var localizationsDict = localizations["localizations"] as? [String: Any],
-                           index < translations.count {
-                            localizationsDict[language] = [
-                                "stringUnit": [
-                                    "state": "translated",
-                                    "value": translations[index]
-                                ]
-                            ]
-                            localizations["localizations"] = localizationsDict
-                            stringsDict[key] = localizations
-                        }
-                    }
-                    
-                    print("✅ Batch translation successful [\(language)]: \(keys.count) entries")
-                } catch {
-                    print("❌ Batch translation failed [\(language)]: \(error.localizedDescription)")
-                    // 翻译失败时为所有键设置空值
-                    for key in keys {
-                        if stringsDict[key] == nil {
-                            stringsDict[key] = ["localizations": [:]]
-                        }
-                        if var localizations = stringsDict[key] as? [String: Any],
-                           var localizationsDict = localizations["localizations"] as? [String: Any] {
-                            localizationsDict[language] = [
-                                "stringUnit": [
-                                    "state": "needs_review",
-                                    "value": ""
-                                ]
-                            ]
-                            localizations["localizations"] = localizationsDict
-                            stringsDict[key] = localizations
-                        }
                     }
                 }
             }
