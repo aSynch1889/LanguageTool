@@ -397,6 +397,9 @@
         }
       }
     },
+    "en (English)" : {
+
+    },
     "English" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -526,6 +529,9 @@
           }
         }
       }
+    },
+    "fr (French)" : {
+
     },
     "Input Message" : {
       "extractionState" : "stale",
@@ -722,6 +728,9 @@
         }
       }
     },
+    "ja (Japanese)" : {
+
+    },
     "Japanese" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -788,6 +797,9 @@
       }
     },
     "Key" : {
+
+    },
+    "ko (Korean)" : {
 
     },
     "Korean" : {
@@ -3263,6 +3275,9 @@
         }
       }
     },
+    "th (Thai)" : {
+
+    },
     "Traditional Chinese" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3458,6 +3473,12 @@
         }
       }
     },
+    "zh-Hans (Simplified Chinese)" : {
+
+    },
+    "zh-Hant (Traditional Chinese)" : {
+
+    },
     "仅对勾选了 \"翻译\" 的内容进行翻译。" : {
 
     },
@@ -3480,9 +3501,6 @@
 
     },
     "翻译" : {
-
-    },
-    "翻译内容" : {
 
     },
     "输入消息" : {

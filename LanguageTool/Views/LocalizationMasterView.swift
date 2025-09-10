@@ -61,7 +61,7 @@ struct LocalizationMasterView: View {
             
             Divider()
             
-            // 使用 SwiftUI Table 替代手动实现的表格
+            // 使用 SwiftUI Table，为每个语言创建独立的列
             Table(filteredTranslations, selection: $selection) {
                 // 翻译选择列
                 TableColumn("翻译") { (item: TranslationItem) in
@@ -77,21 +77,68 @@ struct LocalizationMasterView: View {
                 }
                 .width(min: 100, ideal: 200)
                 
-                // 语言翻译列
-                TableColumn("翻译内容") { (item: TranslationItem) in
-                    TranslationItemLanguagesView(
-                        item: item,
-                        availableLanguages: availableLanguages,
-                        updateItem: { updatedItem in
-                            if let index = viewModel.translationItems.firstIndex(where: { $0.id == item.id }) {
-                                viewModel.translationItems[index] = updatedItem
-                            }
-                        }
-                    )
-                    .opacity(item.isSelected ? 1.0 : 0.5)
-                    .disabled(!item.isSelected)
+                // 英语列
+                TableColumn("en (English)") { (item: TranslationItem) in
+                    TextField("", text: bindingForTranslation(item, languageCode: "en"))
+                        .textFieldStyle(.plain)
+                        .opacity(item.isSelected ? 1.0 : 0.5)
+                        .disabled(!item.isSelected)
                 }
-                .width(min: 300, ideal: 500)
+                .width(min: 120, ideal: 150)
+                
+                // 法语列
+                TableColumn("fr (French)") { (item: TranslationItem) in
+                    TextField("", text: bindingForTranslation(item, languageCode: "fr"))
+                        .textFieldStyle(.plain)
+                        .opacity(item.isSelected ? 1.0 : 0.5)
+                        .disabled(!item.isSelected)
+                }
+                .width(min: 120, ideal: 150)
+                
+                // 日语列
+                TableColumn("ja (Japanese)") { (item: TranslationItem) in
+                    TextField("", text: bindingForTranslation(item, languageCode: "ja"))
+                        .textFieldStyle(.plain)
+                        .opacity(item.isSelected ? 1.0 : 0.5)
+                        .disabled(!item.isSelected)
+                }
+                .width(min: 120, ideal: 150)
+                
+                // 韩语列
+                TableColumn("ko (Korean)") { (item: TranslationItem) in
+                    TextField("", text: bindingForTranslation(item, languageCode: "ko"))
+                        .textFieldStyle(.plain)
+                        .opacity(item.isSelected ? 1.0 : 0.5)
+                        .disabled(!item.isSelected)
+                }
+                .width(min: 120, ideal: 150)
+                
+                // 泰语列
+                TableColumn("th (Thai)") { (item: TranslationItem) in
+                    TextField("", text: bindingForTranslation(item, languageCode: "th"))
+                        .textFieldStyle(.plain)
+                        .opacity(item.isSelected ? 1.0 : 0.5)
+                        .disabled(!item.isSelected)
+                }
+                .width(min: 120, ideal: 150)
+                
+                // 简体中文列
+                TableColumn("zh-Hans (Simplified Chinese)") { (item: TranslationItem) in
+                    TextField("", text: bindingForTranslation(item, languageCode: "zh-Hans"))
+                        .textFieldStyle(.plain)
+                        .opacity(item.isSelected ? 1.0 : 0.5)
+                        .disabled(!item.isSelected)
+                }
+                .width(min: 120, ideal: 150)
+                
+                // 繁体中文列
+                TableColumn("zh-Hant (Traditional Chinese)") { (item: TranslationItem) in
+                    TextField("", text: bindingForTranslation(item, languageCode: "zh-Hant"))
+                        .textFieldStyle(.plain)
+                        .opacity(item.isSelected ? 1.0 : 0.5)
+                        .disabled(!item.isSelected)
+                }
+                .width(min: 120, ideal: 150)
                 
                 // Comment 列
                 TableColumn("Comment") { (item: TranslationItem) in
@@ -171,47 +218,6 @@ struct LocalizationMasterView: View {
     }
 
     // 辅助函数：获取语言的显示名称
-    private func getLanguageDisplay(for code: String) -> String {
-        let languageName = Locale.current.localizedString(forLanguageCode: code) ?? code
-        return "\(code) (\(languageName))"
-    }
-}
-
-struct TranslationItemLanguagesView: View {
-    let item: TranslationItem
-    let availableLanguages: [String]
-    let updateItem: (TranslationItem) -> Void
-    
-    var body: some View {
-        HStack(spacing: 8) {
-            ForEach(availableLanguages, id: \.self) { languageCode in
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(getLanguageDisplay(for: languageCode))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    TextField(
-                        getLanguageDisplay(for: languageCode),
-                        text: bindingForLanguage(languageCode)
-                    )
-                    .textFieldStyle(.roundedBorder)
-                    .frame(minWidth: 120)
-                }
-            }
-        }
-    }
-    
-    private func bindingForLanguage(_ languageCode: String) -> Binding<String> {
-        Binding(
-            get: { item.translations[languageCode] ?? "" },
-            set: { newValue in
-                var updatedItem = item
-                updatedItem.translations[languageCode] = newValue
-                updateItem(updatedItem)
-            }
-        )
-    }
-    
     private func getLanguageDisplay(for code: String) -> String {
         let languageName = Locale.current.localizedString(forLanguageCode: code) ?? code
         return "\(code) (\(languageName))"
