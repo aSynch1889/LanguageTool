@@ -60,3 +60,6 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+Localizable1.xcstrings
+Localizable2.xcstrings
+Localizable_副本.xcstrings

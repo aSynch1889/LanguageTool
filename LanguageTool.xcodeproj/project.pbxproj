@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		894EABC82D6D6BBA00F1BE09 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 894EABC72D6D6BBA00F1BE09 /* Localizable.xcstrings */; };
+		8992F1492DE1F3B500877509 /* SwiftSyntax in Frameworks */ = {isa = PBXBuildFile; productRef = 8992F1482DE1F3B500877509 /* SwiftSyntax */; };
+		8992F14B2DE1F42A00877509 /* SwiftParser in Frameworks */ = {isa = PBXBuildFile; productRef = 8992F14A2DE1F42A00877509 /* SwiftParser */; };
+		8992F14D2DE1F44400877509 /* SwiftOperators in Frameworks */ = {isa = PBXBuildFile; productRef = 8992F14C2DE1F44400877509 /* SwiftOperators */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +44,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8992F14D2DE1F44400877509 /* SwiftOperators in Frameworks */,
+				8992F1492DE1F3B500877509 /* SwiftSyntax in Frameworks */,
+				8992F14B2DE1F42A00877509 /* SwiftParser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +90,9 @@
 			);
 			name = LanguageTool;
 			packageProductDependencies = (
+				8992F1482DE1F3B500877509 /* SwiftSyntax */,
+				8992F14A2DE1F42A00877509 /* SwiftParser */,
+				8992F14C2DE1F44400877509 /* SwiftOperators */,
 			);
 			productName = LanguageTool;
 			productReference = 89D94CC12D5CC564006DE9FB /* LanguageTool.app */;
@@ -154,6 +163,9 @@
 			);
 			mainGroup = 89D94CB82D5CC564006DE9FB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8992F1472DE1F3B500877509 /* XCRemoteSwiftPackageReference "swift-syntax" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 89D94CC22D5CC564006DE9FB /* Products */;
 			projectDirPath = "";
@@ -400,6 +412,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8992F1472DE1F3B500877509 /* XCRemoteSwiftPackageReference "swift-syntax" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swiftlang/swift-syntax.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 601.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8992F1482DE1F3B500877509 /* SwiftSyntax */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8992F1472DE1F3B500877509 /* XCRemoteSwiftPackageReference "swift-syntax" */;
+			productName = SwiftSyntax;
+		};
+		8992F14A2DE1F42A00877509 /* SwiftParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8992F1472DE1F3B500877509 /* XCRemoteSwiftPackageReference "swift-syntax" */;
+			productName = SwiftParser;
+		};
+		8992F14C2DE1F44400877509 /* SwiftOperators */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8992F1472DE1F3B500877509 /* XCRemoteSwiftPackageReference "swift-syntax" */;
+			productName = SwiftOperators;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 89D94CB92D5CC564006DE9FB /* Project object */;
 }
