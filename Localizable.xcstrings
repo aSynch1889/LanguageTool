@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
     " (Optional)" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -198,9 +195,6 @@
           }
         }
       }
-    },
-    "Comment" : {
-
     },
     "Conversion successful!" : {
       "extractionState" : "stale",
@@ -397,9 +391,6 @@
         }
       }
     },
-    "en (English)" : {
-
-    },
     "English" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -529,9 +520,6 @@
           }
         }
       }
-    },
-    "fr (French)" : {
-
     },
     "Input Message" : {
       "extractionState" : "stale",
@@ -728,9 +716,6 @@
         }
       }
     },
-    "ja (Japanese)" : {
-
-    },
     "Japanese" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -795,12 +780,6 @@
           }
         }
       }
-    },
-    "Key" : {
-
-    },
-    "ko (Korean)" : {
-
     },
     "Korean" : {
       "extractionState" : "stale",
@@ -3275,9 +3254,6 @@
         }
       }
     },
-    "th (Thai)" : {
-
-    },
     "Traditional Chinese" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3473,12 +3449,6 @@
         }
       }
     },
-    "zh-Hans (Simplified Chinese)" : {
-
-    },
-    "zh-Hant (Traditional Chinese)" : {
-
-    },
     "仅对勾选了 \"翻译\" 的内容进行翻译。" : {
 
     },
@@ -3498,9 +3468,6 @@
 
     },
     "立即翻译" : {
-
-    },
-    "翻译" : {
 
     },
     "输入消息" : {

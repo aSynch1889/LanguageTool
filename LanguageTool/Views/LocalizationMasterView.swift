@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct LocalizationMasterView: View {
     @State private var remainingTrials = 4
@@ -61,98 +62,17 @@ struct LocalizationMasterView: View {
             
             Divider()
             
-            // 使用 SwiftUI Table，为每个语言创建独立的列
-            Table(filteredTranslations, selection: $selection) {
-                // 翻译选择列
-                TableColumn("翻译") { (item: TranslationItem) in
-                    Toggle("", isOn: bindingForIsSelected(item))
-                        .toggleStyle(.checkbox)
+            // 使用 NSTableView 实现真正的动态列
+            NSTableViewRepresentable(
+                items: filteredTranslations,
+                availableLanguages: availableLanguages,
+                translateSelectedOnly: $translateSelectedOnly,
+                onItemUpdate: { updatedItem in
+                    if let index = viewModel.translationItems.firstIndex(where: { $0.id == updatedItem.id }) {
+                        viewModel.translationItems[index] = updatedItem
+                    }
                 }
-                .width(min: 50, ideal: 60, max: 80)
-                
-                // Key 列
-                TableColumn("Key") { (item: TranslationItem) in
-                    Text(item.key)
-                        .opacity(item.isSelected ? 1.0 : 0.5)
-                }
-                .width(min: 100, ideal: 200)
-                
-                // 英语列
-                TableColumn("en (English)") { (item: TranslationItem) in
-                    TextField("", text: bindingForTranslation(item, languageCode: "en"))
-                        .textFieldStyle(.plain)
-                        .opacity(item.isSelected ? 1.0 : 0.5)
-                        .disabled(!item.isSelected)
-                }
-                .width(min: 120, ideal: 150)
-                
-                // 法语列
-                TableColumn("fr (French)") { (item: TranslationItem) in
-                    TextField("", text: bindingForTranslation(item, languageCode: "fr"))
-                        .textFieldStyle(.plain)
-                        .opacity(item.isSelected ? 1.0 : 0.5)
-                        .disabled(!item.isSelected)
-                }
-                .width(min: 120, ideal: 150)
-                
-                // 日语列
-                TableColumn("ja (Japanese)") { (item: TranslationItem) in
-                    TextField("", text: bindingForTranslation(item, languageCode: "ja"))
-                        .textFieldStyle(.plain)
-                        .opacity(item.isSelected ? 1.0 : 0.5)
-                        .disabled(!item.isSelected)
-                }
-                .width(min: 120, ideal: 150)
-                
-                // 韩语列
-                TableColumn("ko (Korean)") { (item: TranslationItem) in
-                    TextField("", text: bindingForTranslation(item, languageCode: "ko"))
-                        .textFieldStyle(.plain)
-                        .opacity(item.isSelected ? 1.0 : 0.5)
-                        .disabled(!item.isSelected)
-                }
-                .width(min: 120, ideal: 150)
-                
-                // 泰语列
-                TableColumn("th (Thai)") { (item: TranslationItem) in
-                    TextField("", text: bindingForTranslation(item, languageCode: "th"))
-                        .textFieldStyle(.plain)
-                        .opacity(item.isSelected ? 1.0 : 0.5)
-                        .disabled(!item.isSelected)
-                }
-                .width(min: 120, ideal: 150)
-                
-                // 简体中文列
-                TableColumn("zh-Hans (Simplified Chinese)") { (item: TranslationItem) in
-                    TextField("", text: bindingForTranslation(item, languageCode: "zh-Hans"))
-                        .textFieldStyle(.plain)
-                        .opacity(item.isSelected ? 1.0 : 0.5)
-                        .disabled(!item.isSelected)
-                }
-                .width(min: 120, ideal: 150)
-                
-                // 繁体中文列
-                TableColumn("zh-Hant (Traditional Chinese)") { (item: TranslationItem) in
-                    TextField("", text: bindingForTranslation(item, languageCode: "zh-Hant"))
-                        .textFieldStyle(.plain)
-                        .opacity(item.isSelected ? 1.0 : 0.5)
-                        .disabled(!item.isSelected)
-                }
-                .width(min: 120, ideal: 150)
-                
-                // Comment 列
-                TableColumn("Comment") { (item: TranslationItem) in
-                    TextField(
-                        "Comment",
-                        text: bindingForComment(item)
-                    )
-                    .textFieldStyle(.plain)
-                    .opacity(item.isSelected ? 1.0 : 0.5)
-                    .disabled(!item.isSelected)
-                }
-                .width(min: 100, ideal: 150)
-            }
-            .tableStyle(.inset(alternatesRowBackgrounds: true))
+            )
             
             Divider()
             
@@ -221,6 +141,200 @@ struct LocalizationMasterView: View {
     private func getLanguageDisplay(for code: String) -> String {
         let languageName = Locale.current.localizedString(forLanguageCode: code) ?? code
         return "\(code) (\(languageName))"
+    }
+}
+
+struct NSTableViewRepresentable: NSViewRepresentable {
+    let items: [TranslationItem]
+    let availableLanguages: [String]
+    @Binding var translateSelectedOnly: Bool
+    let onItemUpdate: (TranslationItem) -> Void
+    
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSScrollView()
+        let tableView = NSTableView()
+        
+        // 配置 tableView
+        tableView.style = .inset
+        tableView.usesAlternatingRowBackgroundColors = true
+        tableView.headerView = NSTableHeaderView()
+        tableView.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
+        
+        // 创建数据源和代理
+        let coordinator = context.coordinator
+        tableView.dataSource = coordinator
+        tableView.delegate = coordinator
+        coordinator.tableView = tableView
+        coordinator.onItemUpdate = onItemUpdate
+        
+        // 配置 scrollView
+        scrollView.documentView = tableView
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = true
+        scrollView.autohidesScrollers = false
+        
+        return scrollView
+    }
+    
+    func updateNSView(_ nsView: NSScrollView, context: Context) {
+        guard let tableView = nsView.documentView as? NSTableView else { return }
+        let coordinator = context.coordinator
+        
+        // 更新数据
+        coordinator.items = items
+        coordinator.availableLanguages = availableLanguages
+        coordinator.translateSelectedOnly = translateSelectedOnly
+        
+        // 重新创建列结构（如果语言发生变化）
+        coordinator.setupColumns()
+        
+        // 重新加载数据
+        tableView.reloadData()
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+    
+    class Coordinator: NSObject, NSTableViewDataSource, NSTableViewDelegate {
+        var tableView: NSTableView?
+        var items: [TranslationItem] = []
+        var availableLanguages: [String] = []
+        var translateSelectedOnly = false
+        var onItemUpdate: ((TranslationItem) -> Void)?
+        
+        private var currentLanguages: [String] = []
+        
+        func setupColumns() {
+            guard let tableView = tableView else { return }
+            
+            // 如果语言没有变化，不需要重新设置列
+            if currentLanguages == availableLanguages {
+                return
+            }
+            
+            // 清除现有列
+            tableView.tableColumns.forEach { tableView.removeTableColumn($0) }
+            
+            // 创建翻译选择列
+            let checkboxColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("checkbox"))
+            checkboxColumn.title = "翻译"
+            checkboxColumn.width = 60
+            checkboxColumn.minWidth = 60
+            checkboxColumn.maxWidth = 60
+            tableView.addTableColumn(checkboxColumn)
+            
+            // 创建 Key 列
+            let keyColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("key"))
+            keyColumn.title = "Key"
+            keyColumn.width = 200
+            keyColumn.minWidth = 100
+            tableView.addTableColumn(keyColumn)
+            
+            // 动态创建语言列
+            for languageCode in availableLanguages {
+                let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(languageCode))
+                let languageName = Locale.current.localizedString(forLanguageCode: languageCode) ?? languageCode
+                column.title = "\(languageCode) (\(languageName))"
+                column.width = 150
+                column.minWidth = 120
+                tableView.addTableColumn(column)
+            }
+            
+            // 创建 Comment 列
+            let commentColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("comment"))
+            commentColumn.title = "Comment"
+            commentColumn.width = 150
+            commentColumn.minWidth = 100
+            tableView.addTableColumn(commentColumn)
+            
+            currentLanguages = availableLanguages
+        }
+        
+        // MARK: - NSTableViewDataSource
+        
+        func numberOfRows(in tableView: NSTableView) -> Int {
+            return items.count
+        }
+        
+        // MARK: - NSTableViewDelegate
+        
+        func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+            guard row < items.count else { return nil }
+            let item = items[row]
+            let identifier = tableColumn?.identifier
+            
+            if identifier?.rawValue == "checkbox" {
+                // 复选框列
+                let view = NSButton(checkboxWithTitle: "", target: self, action: #selector(checkboxChanged(_:)))
+                view.state = item.isSelected ? .on : .off
+                view.tag = row
+                return view
+                
+            } else if identifier?.rawValue == "key" {
+                // Key 列
+                let view = NSTextField(labelWithString: item.key)
+                view.alphaValue = item.isSelected ? 1.0 : 0.5
+                return view
+                
+            } else if identifier?.rawValue == "comment" {
+                // Comment 列
+                let view = NSTextField()
+                view.stringValue = item.comment
+                view.isEditable = item.isSelected
+                view.isSelectable = true
+                view.alphaValue = item.isSelected ? 1.0 : 0.5
+                view.tag = row
+                view.target = self
+                view.action = #selector(commentChanged(_:))
+                return view
+                
+            } else if let languageCode = identifier?.rawValue, availableLanguages.contains(languageCode) {
+                // 语言列
+                let view = NSTextField()
+                view.stringValue = item.translations[languageCode] ?? ""
+                view.isEditable = item.isSelected
+                view.isSelectable = true
+                view.alphaValue = item.isSelected ? 1.0 : 0.5
+                view.tag = row * 1000 + (availableLanguages.firstIndex(of: languageCode) ?? 0)
+                view.target = self
+                view.action = #selector(languageFieldChanged(_:))
+                return view
+            }
+            
+            return nil
+        }
+        
+        @objc func checkboxChanged(_ sender: NSButton) {
+            let row = sender.tag
+            guard row < items.count else { return }
+            
+            var updatedItem = items[row]
+            updatedItem.isSelected = sender.state == .on
+            onItemUpdate?(updatedItem)
+        }
+        
+        @objc func commentChanged(_ sender: NSTextField) {
+            let row = sender.tag
+            guard row < items.count else { return }
+            
+            var updatedItem = items[row]
+            updatedItem.comment = sender.stringValue
+            onItemUpdate?(updatedItem)
+        }
+        
+        @objc func languageFieldChanged(_ sender: NSTextField) {
+            let tag = sender.tag
+            let row = tag / 1000
+            let languageIndex = tag % 1000
+            
+            guard row < items.count, languageIndex < availableLanguages.count else { return }
+            
+            let languageCode = availableLanguages[languageIndex]
+            var updatedItem = items[row]
+            updatedItem.translations[languageCode] = sender.stringValue
+            onItemUpdate?(updatedItem)
+        }
     }
 }
 
