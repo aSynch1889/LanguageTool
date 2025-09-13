@@ -206,5 +206,18 @@ class AIServiceV2 {
             responseParser: AliyunResponseParser()
         )
         providerRegistry.register(aliyunConfig)
+
+        // Register Kimi
+        let kimiConfig = AIProviderConfig(
+            id: "kimi",
+            name: "kimi",
+            displayName: "Kimi",
+            baseURL: "https://api.moonshot.cn/v1/chat/completions",
+            model: "moonshot-v1-8k",
+            authType: .bearer(token: ""),
+            requestBuilder: KimiRequestBuilder(),
+            responseParser: KimiResponseParser()
+        )
+        providerRegistry.register(kimiConfig)
     }
 }
