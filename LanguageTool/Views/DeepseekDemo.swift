@@ -11,7 +11,7 @@ struct DeepseekDemo: View {
         isLoading = true
         messages.append(Message(role: "user", content: inputText))
         
-        AIService.shared.sendMessage(messages: messages) { result in
+        AIServiceV2.shared.sendMessage(messages: messages) { result in
             DispatchQueue.main.async {
                 isLoading = false
                 switch result {
@@ -30,7 +30,7 @@ struct DeepseekDemo: View {
 //            Message(role: "user", content: "牛顿第一定律...")
 //        ]
 //
-//        AIService.shared.sendMessage(messages: messages) { result in
+//        AIServiceV2.shared.sendMessage(messages: messages) { result in
 //            switch result {
 //            case .success(let translation):
 //                print("翻译结果：\(translation)")

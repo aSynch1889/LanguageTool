@@ -160,7 +160,7 @@ class ARBFileHandler {
                 print("正在处理语言: \(language)")
                 
                 // 使用 AIService 进行批量翻译
-                let translations = try await AIService.shared.batchTranslate(
+                let translations = try await AIServiceV2.shared.batchTranslate(
                     texts: translatableContent,
                     to: language
                 )

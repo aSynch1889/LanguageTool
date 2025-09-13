@@ -78,7 +78,7 @@ class StringsFileParser {
             for language in languages {
                 do {
                     // 使用 AI 服务翻译
-                    let translation = try await AIService.shared.translate(text: sourceValue, to: language)
+                    let translation = try await AIServiceV2.shared.translate(text: sourceValue, to: language)
                     localizationsDict[language] = [
                         "stringUnit": [
                             "state": "translated",
@@ -151,7 +151,7 @@ class StringsFileParser {
                         let keys = Array(translations.keys)
                         
                         print("开始批量翻译: \(language.code)")
-                        let translatedValues = try await AIService.shared.batchTranslate(
+                        let translatedValues = try await AIServiceV2.shared.batchTranslate(
                             texts: values,
                             to: language.code
                         )

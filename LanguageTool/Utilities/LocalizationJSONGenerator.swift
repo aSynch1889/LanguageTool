@@ -28,7 +28,7 @@ class LocalizationJSONGenerator {
             do {
                 // 使用优化后的批量翻译方法
                 print("Starting batch translation [\(language)]...")
-                let translations = try await AIService.shared.batchTranslate(
+                let translations = try await AIServiceV2.shared.batchTranslate(
                     texts: keys,
                     to: languageNames[language] ?? language
                 )

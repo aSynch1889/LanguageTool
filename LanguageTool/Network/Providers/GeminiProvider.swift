@@ -1,11 +1,9 @@
-import SwiftUI
+import Foundation
 
-struct GeminiService: AIServiceProtocol {
-    var baseURL: String {
-        return "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-    }
-    
-    func buildRequestBody(messages: [Message], translationOptions: [String: String]? = nil) -> [String: Any] {
+// MARK: - Gemini Request Builder
+
+struct GeminiRequestBuilder: RequestBuilder {
+    func buildRequest(messages: [Message], translationOptions: [String: String]?) -> [String: Any] {
         return [
             "contents": [
                 [
@@ -18,11 +16,15 @@ struct GeminiService: AIServiceProtocol {
             ]
         ]
     }
-    
+}
+
+// MARK: - Gemini Response Parser
+
+struct GeminiResponseParser: ResponseParser {
     func parseResponse(data: Data) throws -> String {
         let jsonResponse = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        
-        // 检查错误响应
+
+        // Check for error response
         if let error = jsonResponse?["error"] as? [String: Any],
            let message = error["message"] as? String {
             if message.contains("quota") {
@@ -32,8 +34,8 @@ struct GeminiService: AIServiceProtocol {
             }
             throw AIError.apiError(message)
         }
-        
-        // 解析正常响应
+
+        // Parse successful response
         if let candidates = jsonResponse?["candidates"] as? [[String: Any]],
            let firstCandidate = candidates.first,
            let content = firstCandidate["content"] as? [String: Any],

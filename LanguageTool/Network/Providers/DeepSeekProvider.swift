@@ -1,21 +1,26 @@
-import SwiftUI
+import Foundation
 
-struct DeepSeekService: AIServiceProtocol {
-    var baseURL: String {
-        return "https://api.deepseek.com/v1/chat/completions"
-    }
-    
-    func buildRequestBody(messages: [Message], translationOptions: [String: String]? = nil) -> [String: Any] {
+// MARK: - DeepSeek Request Builder
+
+struct DeepSeekRequestBuilder: RequestBuilder {
+    func buildRequest(messages: [Message], translationOptions: [String: String]?) -> [String: Any] {
         return [
             "model": "deepseek-chat",
-            "messages": messages.map { ["role": $0.role, "content": $0.content] }
+            "messages": messages.map { [
+                "role": $0.role,
+                "content": $0.content
+            ]}
         ]
     }
-    
+}
+
+// MARK: - DeepSeek Response Parser
+
+struct DeepSeekResponseParser: ResponseParser {
     func parseResponse(data: Data) throws -> String {
         let jsonDict = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        
-        // 检查错误响应
+
+        // Check for error response
         if let error = jsonDict?["error"] as? [String: Any],
            let message = error["message"] as? String {
             if message.contains("rate limit") {
@@ -25,8 +30,8 @@ struct DeepSeekService: AIServiceProtocol {
             }
             throw AIError.apiError(message)
         }
-        
-        // 解析正常响应
+
+        // Parse successful response
         if let choices = jsonDict?["choices"] as? [[String: Any]],
            let firstChoice = choices.first,
            let message = firstChoice["message"] as? [String: Any],

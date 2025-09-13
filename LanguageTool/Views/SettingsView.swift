@@ -1,10 +1,8 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("apiKey") private var apiKey: String = ""
-    @AppStorage("selectedAIService") private var selectedService: AIServiceType = .deepseek
-    @AppStorage("geminiApiKey") private var geminiApiKey: String = ""
-    @AppStorage("aliyunApiKey") private var aliyunApiKey: String = ""
+    @StateObject private var providerManager = AIProviderManager.shared
+    @StateObject private var providerRegistry = AIProviderRegistry.shared
     @AppStorage("appLanguage") private var appLanguage: String = "en"  // 默认为英语
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false // 添加暗黑模式存储
     
@@ -31,21 +29,23 @@ struct SettingsView: View {
         Form {
             Section(header: Text("API Settings".localized)) {
                 // AI 服务选择
-                Picker("AI Service".localized, selection: $selectedService) {
-                    ForEach(AIServiceType.allCases, id: \.self) { service in
-                        Text(service.description).tag(service)
+                Picker("AI Service".localized, selection: $providerManager.selectedProviderId) {
+                    ForEach(providerRegistry.allProviders()) { provider in
+                        Text(provider.displayName).tag(provider.id)
                     }
                 }
-                
-                switch selectedService {
-                case .deepseek:
-                    SecureField("DeepSeek API Key".localized, text: $apiKey)
-                        .textFieldStyle(.roundedBorder)
-                case .gemini:
-                    SecureField("Gemini API Key".localized, text: $geminiApiKey)
-                        .textFieldStyle(.roundedBorder)
-                case .aliyun:
-                    SecureField("Aliyun API Key".localized, text: $aliyunApiKey)
+                .onChange(of: providerManager.selectedProviderId) { _, newValue in
+                    providerManager.setSelectedProvider(newValue)
+                }
+
+                // 动态生成API Key输入框
+                if let selectedProvider = providerManager.getSelectedProvider() {
+                    let apiKeyBinding = Binding<String>(
+                        get: { providerManager.getApiKey(for: selectedProvider.id) },
+                        set: { providerManager.setApiKey($0, for: selectedProvider.id) }
+                    )
+
+                    SecureField("\(selectedProvider.displayName) API Key".localized, text: apiKeyBinding)
                         .textFieldStyle(.roundedBorder)
                 }
             }
