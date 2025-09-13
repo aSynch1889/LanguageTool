@@ -99,13 +99,54 @@ class AIProviderManager: ObservableObject {
     }
 
     private func loadApiKeys() {
-        for providerId in AIProviderRegistry.shared.providerIds() {
+        // 迁移旧的API密钥格式到新格式
+        migrateOldApiKeys()
+
+        // 加载新格式的API密钥
+        let knownProviders = ["deepseek", "gemini", "aliyun"]
+        for providerId in knownProviders {
             let key = userDefaults.string(forKey: apiKeyPrefix + providerId) ?? ""
             apiKeys[providerId] = key
         }
     }
 
     private func loadSelectedProvider() {
-        selectedProviderId = userDefaults.string(forKey: "selectedAIProvider") ?? "deepseek"
+        // 迁移旧的选择格式到新格式
+        if let oldService = userDefaults.string(forKey: "selectedAIService") {
+            let newProviderId: String
+            switch oldService {
+            case "DeepSeek":
+                newProviderId = "deepseek"
+            case "Gemini":
+                newProviderId = "gemini"
+            case "aliyun":
+                newProviderId = "aliyun"
+            default:
+                newProviderId = "deepseek"
+            }
+            selectedProviderId = newProviderId
+            userDefaults.set(newProviderId, forKey: "selectedAIProvider")
+            userDefaults.removeObject(forKey: "selectedAIService")
+        } else {
+            selectedProviderId = userDefaults.string(forKey: "selectedAIProvider") ?? "deepseek"
+        }
+    }
+
+    private func migrateOldApiKeys() {
+        // 迁移旧的API密钥
+        if let oldDeepSeekKey = userDefaults.string(forKey: "apiKey"), !oldDeepSeekKey.isEmpty {
+            apiKeys["deepseek"] = oldDeepSeekKey
+            userDefaults.set(oldDeepSeekKey, forKey: apiKeyPrefix + "deepseek")
+        }
+
+        if let oldGeminiKey = userDefaults.string(forKey: "geminiApiKey"), !oldGeminiKey.isEmpty {
+            apiKeys["gemini"] = oldGeminiKey
+            userDefaults.set(oldGeminiKey, forKey: apiKeyPrefix + "gemini")
+        }
+
+        if let oldAliyunKey = userDefaults.string(forKey: "aliyunApiKey"), !oldAliyunKey.isEmpty {
+            apiKeys["aliyun"] = oldAliyunKey
+            userDefaults.set(oldAliyunKey, forKey: apiKeyPrefix + "aliyun")
+        }
     }
 }

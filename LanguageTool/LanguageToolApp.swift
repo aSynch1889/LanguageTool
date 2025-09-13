@@ -12,6 +12,9 @@ struct LanguageToolApp: App {
             UserDefaults.standard.set("en", forKey: "appLanguage")
             LocalizationManager.shared.setLanguage("en")
         }
+
+        // 初始化AI服务，确保默认提供者被注册
+        _ = AIServiceV2.shared
     }
 
     var sharedModelContainer: ModelContainer = {
