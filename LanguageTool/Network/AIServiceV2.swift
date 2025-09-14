@@ -219,5 +219,18 @@ class AIServiceV2 {
             responseParser: KimiResponseParser()
         )
         providerRegistry.register(kimiConfig)
+
+        // Register GLM
+        let glmConfig = AIProviderConfig(
+            id: "glm",
+            name: "glm",
+            displayName: "GLM-4.5",
+            baseURL: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+            model: "glm-4.5",
+            authType: .bearer(token: ""),
+            requestBuilder: GLMRequestBuilder(),
+            responseParser: GLMResponseParser()
+        )
+        providerRegistry.register(glmConfig)
     }
 }

@@ -103,7 +103,7 @@ class AIProviderManager: ObservableObject {
         migrateOldApiKeys()
 
         // 加载新格式的API密钥
-        let knownProviders = ["deepseek", "gemini", "aliyun", "kimi"]
+        let knownProviders = ["deepseek", "gemini", "aliyun", "kimi", "glm"]
         for providerId in knownProviders {
             let key = userDefaults.string(forKey: apiKeyPrefix + providerId) ?? ""
             apiKeys[providerId] = key
