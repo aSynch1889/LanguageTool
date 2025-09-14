@@ -66,14 +66,34 @@
         }
       }
     },
-    "%lld selected" : {
-
-    },
-    "%lld shown" : {
-
-    },
     "Actions" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actions"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクション"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "작업"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作"
+          }
+        }
+      }
     },
     "API Settings" : {
       "extractionState" : "stale",
@@ -205,17 +225,34 @@
         }
       }
     },
-    "Clear All" : {
-
-    },
-    "Click to browse or drag & drop files here" : {
-
-    },
-    "Common" : {
-
-    },
-    "Conversion Results" : {
-
+    "Choose Input File" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose Input File"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "入力ファイルを選択"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "입력 파일 선택"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择输入文件"
+          }
+        }
+      }
     },
     "Conversion successful!" : {
       "extractionState" : "stale",
@@ -542,11 +579,63 @@
         }
       }
     },
-    "Export to Excel" : {
-
+    "File Selected" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File Selected"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイル選択済み"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일 선택됨"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件已选择"
+          }
+        }
+      }
     },
-    "File Selection" : {
-
+    "Input File" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Input File"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "入力ファイル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "입력 파일"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入文件"
+          }
+        }
+      }
     },
     "Input Message" : {
       "extractionState" : "stale",
@@ -612,9 +701,6 @@
           }
         }
       }
-    },
-    "Input: %@" : {
-
     },
     "Interface Language" : {
       "extractionState" : "stale",
@@ -1009,9 +1095,6 @@
         }
       }
     },
-    "New Window" : {
-
-    },
     "No file selected" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1208,10 +1291,33 @@
       }
     },
     "Output Location" : {
-
-    },
-    "Output: %@" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Output Location (Optional)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出力場所（任意）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "출력 위치 (선택사항)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输出位置（可选）"
+          }
+        }
+      }
     },
     "Platform" : {
       "extractionState" : "stale",
@@ -1539,6 +1645,7 @@
       }
     },
     "Reset" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1732,9 +1839,6 @@
         }
       }
     },
-    "Search languages..." : {
-
-    },
     "Select" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1801,6 +1905,7 @@
       }
     },
     "Select All" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2385,6 +2490,7 @@
       }
     },
     "Select Platform" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2514,6 +2620,7 @@
       }
     },
     "Select Target Languages" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2576,9 +2683,6 @@
           }
         }
       }
-    },
-    "Selected Files" : {
-
     },
     "Send" : {
       "extractionState" : "stale",
@@ -2646,6 +2750,7 @@
       }
     },
     "Show in Finder" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2774,10 +2879,8 @@
         }
       }
     },
-    "Skip Existing Translations" : {
-
-    },
     "Start Conversion" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3232,6 +3335,7 @@
       }
     },
     "Sync to Source" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3294,9 +3398,6 @@
           }
         }
       }
-    },
-    "This may take a few minutes depending on the number of languages selected" : {
-
     },
     "Traditional Chinese" : {
       "extractionState" : "stale",
@@ -3364,6 +3465,7 @@
       }
     },
     "Translating..." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3426,9 +3528,6 @@
           }
         }
       }
-    },
-    "Translation Options" : {
-
     },
     "Translation Service" : {
       "extractionState" : "stale",
@@ -3494,9 +3593,6 @@
           }
         }
       }
-    },
-    "When enabled, only missing translations will be generated. Existing translations will be preserved." : {
-
     },
     "仅对勾选了 \"翻译\" 的内容进行翻译。" : {
 
