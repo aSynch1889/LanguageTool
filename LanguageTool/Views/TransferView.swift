@@ -60,7 +60,7 @@ struct TransferView: View {
     
     private var platformSelectionCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Select Platform", systemImage: "apps.iphone")
+            Label("Select Platform".localized, systemImage: "apps.iphone")
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(.primary)
 
@@ -80,14 +80,14 @@ struct TransferView: View {
     
     private var fileSelectionCard: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Label("File Selection", systemImage: "doc.badge.plus")
+            Label("File Selection".localized, systemImage: "doc.badge.plus")
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(.primary)
 
             VStack(alignment: .leading, spacing: 16) {
                 ModernFileSelector(
-                    title: "Choose Input File",
-                    subtitle: "Input File",
+                    title: "Choose Input File".localized,
+                    subtitle: "Input File".localized,
                     selectedPath: viewModel.isInputSelected ? viewModel.inputPath : nil,
                     isSelected: viewModel.isInputSelected,
                     onSelect: viewModel.selectInputFile,
@@ -95,8 +95,8 @@ struct TransferView: View {
                 )
 
                 ModernFileSelector(
-                    title: "Choose Output Location",
-                    subtitle: "Output Location (Optional)",
+                    title: "Choose Output Location".localized,
+                    subtitle: "Output Location (Optional)".localized,
                     selectedPath: viewModel.isOutputSelected ? viewModel.outputPath : nil,
                     isSelected: viewModel.isOutputSelected,
                     onSelect: viewModel.selectOutputPath,
@@ -110,7 +110,7 @@ struct TransferView: View {
                     Divider()
 
                     HStack {
-                        Text("Selected Files")
+                        Text("Selected Files".localized)
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(.secondary)
 
@@ -131,7 +131,7 @@ struct TransferView: View {
                                     .foregroundStyle(.blue)
                                     .font(.caption2)
 
-                                Text("Input: \(URL(fileURLWithPath: viewModel.inputPath).lastPathComponent)")
+                                Text("Input: \(URL(fileURLWithPath: viewModel.inputPath).lastPathComponent)".localized)
                                     .font(.caption)
                                     .foregroundStyle(.primary)
 
@@ -146,7 +146,7 @@ struct TransferView: View {
                                     .foregroundStyle(.green)
                                     .font(.caption2)
 
-                                Text("Output: \(URL(fileURLWithPath: viewModel.outputPath).lastPathComponent)")
+                                Text("Output: \(URL(fileURLWithPath: viewModel.outputPath).lastPathComponent)".localized)
                                     .font(.caption)
                                     .foregroundStyle(.primary)
 
@@ -168,13 +168,13 @@ struct TransferView: View {
     private var languageSelectionCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Label("Select Target Languages", systemImage: "globe")
+                Label("Select Target Languages".localized, systemImage: "globe")
                     .font(.headline.weight(.semibold))
                     .foregroundStyle(.primary)
 
                 Spacer()
 
-                Text("\(viewModel.selectedLanguages.count) selected")
+                Text("\(viewModel.selectedLanguages.count) selected".localized)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -187,7 +187,7 @@ struct TransferView: View {
                             .foregroundStyle(.secondary)
                             .font(.caption)
 
-                        TextField("Search languages...", text: $searchText)
+                        TextField("Search languages...".localized, text: $searchText)
                             .textFieldStyle(.plain)
                             .onSubmit {
                                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -225,19 +225,19 @@ struct TransferView: View {
                 // Quick action buttons
                 HStack(spacing: 8) {
                     Button(action: selectAllFiltered) {
-                        Label("Select All", systemImage: "checkmark.circle")
+                        Label("Select All".localized, systemImage: "checkmark.circle")
                             .font(.caption)
                     }
                     .buttonStyle(.borderless)
 
                     Button(action: clearAllFiltered) {
-                        Label("Clear All", systemImage: "xmark.circle")
+                        Label("Clear All".localized, systemImage: "xmark.circle")
                             .font(.caption)
                     }
                     .buttonStyle(.borderless)
 
                     Button(action: selectCommonLanguages) {
-                        Label("Common", systemImage: "star.circle")
+                        Label("Common".localized, systemImage: "star.circle")
                             .font(.caption)
                     }
                     .buttonStyle(.borderless)
@@ -245,7 +245,7 @@ struct TransferView: View {
                     Spacer()
 
                     if !searchText.isEmpty || selectedCategory != .all {
-                        Text("\(filteredLanguages.count) shown")
+                        Text("\(filteredLanguages.count) shown".localized)
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
                             .transition(.opacity.combined(with: .move(edge: .trailing)))
@@ -278,15 +278,15 @@ struct TransferView: View {
 
     private var translationOptionsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Translation Options", systemImage: "gearshape")
+            Label("Translation Options".localized, systemImage: "gearshape")
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(.primary)
 
             VStack(alignment: .leading, spacing: 8) {
-                Toggle("Skip Existing Translations", isOn: $viewModel.skipExistingTranslations)
+                Toggle("Skip Existing Translations".localized, isOn: $viewModel.skipExistingTranslations)
                     .toggleStyle(SwitchToggleStyle())
 
-                Text("When enabled, only missing translations will be generated. Existing translations will be preserved.")
+                Text("When enabled, only missing translations will be generated. Existing translations will be preserved.".localized)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -297,7 +297,7 @@ struct TransferView: View {
 
     private var actionButtonsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Actions", systemImage: "play.circle")
+            Label("Actions".localized, systemImage: "play.circle")
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(.primary)
 
@@ -308,7 +308,7 @@ struct TransferView: View {
                 }) {
                     HStack {
                         Image(systemName: "arrow.right.circle.fill")
-                        Text("Start Conversion")
+                        Text("Start Conversion".localized)
                         Spacer()
                     }
                     .padding(.vertical, 8)
@@ -322,7 +322,7 @@ struct TransferView: View {
                     Button(action: viewModel.resetAll) {
                         HStack(spacing: 6) {
                             Image(systemName: "arrow.counterclockwise")
-                            Text("Reset")
+                            Text("Reset".localized)
                         }
                     }
                     .buttonStyle(.bordered)
@@ -331,7 +331,7 @@ struct TransferView: View {
                     Button(action: viewModel.openInNewWindow) {
                         HStack(spacing: 6) {
                             Image(systemName: "plus.rectangle.on.rectangle")
-                            Text("New Window")
+                            Text("New Window".localized)
                         }
                     }
                     .buttonStyle(.bordered)
@@ -344,7 +344,7 @@ struct TransferView: View {
     
     private var resultsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Conversion Results", systemImage: viewModel.conversionResult.hasPrefix("✅") ? "checkmark.circle" : "xmark.circle")
+            Label("Conversion Results".localized, systemImage: viewModel.conversionResult.hasPrefix("✅") ? "checkmark.circle" : "xmark.circle")
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(viewModel.conversionResult.hasPrefix("✅") ? .green : .red)
 
@@ -354,7 +354,7 @@ struct TransferView: View {
 
             if viewModel.showSuccessActions {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Output Location")
+                    Text("Output Location".localized)
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.secondary)
 
@@ -377,19 +377,19 @@ struct TransferView: View {
                     // Action buttons
                     HStack(spacing: 12) {
                         Button(action: viewModel.openInFinder) {
-                            Label("Show in Finder", systemImage: "folder")
+                            Label("Show in Finder".localized, systemImage: "folder")
                                 .font(.subheadline)
                         }
                         .buttonStyle(.bordered)
 
                         Button(action: viewModel.syncToSource) {
-                            Label("Sync to Source", systemImage: "arrow.triangle.2.circlepath")
+                            Label("Sync to Source".localized, systemImage: "arrow.triangle.2.circlepath")
                                 .font(.subheadline)
                         }
                         .buttonStyle(.bordered)
 
                         Button(action: viewModel.exportToExcel) {
-                            Label("Export to Excel", systemImage: "arrow.down.doc")
+                            Label("Export to Excel".localized, systemImage: "arrow.down.doc")
                                 .font(.subheadline)
                         }
                         .buttonStyle(.bordered)
@@ -409,10 +409,10 @@ struct TransferView: View {
                 .scaleEffect(1.2)
 
             VStack(spacing: 4) {
-                Text("Translating...")
+                Text("Translating...".localized)
                     .font(.headline.weight(.medium))
 
-                Text("This may take a few minutes depending on the number of languages selected")
+                Text("This may take a few minutes depending on the number of languages selected".localized)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -477,7 +477,7 @@ struct ModernFileSelector: View {
                         .animation(.easeInOut(duration: 0.2), value: isSelected)
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(isSelected ? "File Selected" : title)
+                        Text(isSelected ? "File Selected".localized : title)
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(.primary)
 
@@ -487,7 +487,7 @@ struct ModernFileSelector: View {
                                 .lineLimit(1)
                                 .foregroundStyle(.secondary)
                         } else {
-                            Text("Click to browse or drag & drop files here")
+                            Text("Click to browse or drag & drop files here".localized)
                                 .font(.caption)
                                 .foregroundStyle(.tertiary)
                         }
