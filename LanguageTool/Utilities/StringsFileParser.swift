@@ -62,7 +62,9 @@ class StringsFileParser {
     }
     
     /// 将 .strings 格式转换为 .xcstrings 格式
-    static func convertToXCStrings(translations: [String: String], languages: [String]) async -> Result<Data, Error> {
+    static func convertToXCStrings(translations: [String: String],
+                                 languages: [String],
+                                 skipExistingTranslations: Bool = true) async -> Result<Data, Error> {
         var xcstringsDict: [String: Any] = [
             "version": "1.0",
             "sourceLanguage": "zh-Hans",
@@ -71,32 +73,67 @@ class StringsFileParser {
         
         var stringsDict: [String: Any] = [:]
         
-        for (key, sourceValue) in translations {
-            var localizationsDict: [String: Any] = [:]
-            
-            // 为每种语言创建翻译
-            for language in languages {
-                do {
-                    // 使用 AI 服务翻译
-                    let translation = try await AIServiceV2.shared.translate(text: sourceValue, to: language)
-                    localizationsDict[language] = [
-                        "stringUnit": [
-                            "state": "translated",
-                            "value": translation
+        // 批量翻译优化
+        for language in languages {
+            let keys = Array(translations.keys)
+            let values = keys.map { translations[$0] ?? "" }
+
+            // 检查是否有已存在的翻译（这里.strings文件通常只有基础语言）
+            let existingTranslations: [String?] = Array(repeating: nil, count: values.count)
+
+            do {
+                let result = try await AIServiceV2.shared.batchTranslateWithExisting(
+                    texts: values,
+                    to: language,
+                    existingTranslations: existingTranslations,
+                    skipExisting: skipExistingTranslations
+                )
+                let translatedValues = result.translations
+
+                for (index, key) in keys.enumerated() {
+                    if stringsDict[key] == nil {
+                        stringsDict[key] = ["localizations": [:] as [String: Any]]
+                    }
+
+                    if var keyData = stringsDict[key] as? [String: Any],
+                       var localizationsDict = keyData["localizations"] as? [String: Any] {
+
+                        let translationValue = index < translatedValues.count ? translatedValues[index] : ""
+                        localizationsDict[language] = [
+                            "stringUnit": [
+                                "state": translationValue.isEmpty ? "needs_review" : "translated",
+                                "value": translationValue
+                            ]
                         ]
-                    ]
-                } catch {
-                    print("翻译失败 [\(language)]: \(error.localizedDescription)")
-                    localizationsDict[language] = [
-                        "stringUnit": [
-                            "state": "needs_review",
-                            "value": ""
+                        keyData["localizations"] = localizationsDict
+                        stringsDict[key] = keyData
+                    }
+                }
+
+                print("✅ 批量翻译完成: \(language) - \(result.statistics.summary)")
+            } catch {
+                print("❌ 批量翻译失败 [\(language)]: \(error.localizedDescription)")
+
+                // 失败时为所有key创建需要审查的条目
+                for key in keys {
+                    if stringsDict[key] == nil {
+                        stringsDict[key] = ["localizations": [:] as [String: Any]]
+                    }
+
+                    if var keyData = stringsDict[key] as? [String: Any],
+                       var localizationsDict = keyData["localizations"] as? [String: Any] {
+
+                        localizationsDict[language] = [
+                            "stringUnit": [
+                                "state": "needs_review",
+                                "value": ""
+                            ]
                         ]
-                    ]
+                        keyData["localizations"] = localizationsDict
+                        stringsDict[key] = keyData
+                    }
                 }
             }
-            
-            stringsDict[key] = ["localizations": localizationsDict]
         }
         
         xcstringsDict["strings"] = stringsDict
@@ -109,10 +146,11 @@ class StringsFileParser {
     }
     
     /// 处理 .strings 文件的转换
-    static func processStringsFile(from inputPath: String, 
-                                 to outputPath: String, 
+    static func processStringsFile(from inputPath: String,
+                                 to outputPath: String,
                                  format: LocalizationFormat,
-                                 languages: Set<Language>) async -> Result<String, Error> {
+                                 languages: Set<Language>,
+                                 skipExistingTranslations: Bool = true) async -> Result<String, Error> {
         do {
             let parseResult = parseStringsFile(at: inputPath)
             switch parseResult {
@@ -121,7 +159,8 @@ class StringsFileParser {
                     // 转换为 xcstrings
                     let xcstringsResult = await convertToXCStrings(
                         translations: translations,
-                        languages: Array(languages).map { $0.code }
+                        languages: Array(languages).map { $0.code },
+                        skipExistingTranslations: skipExistingTranslations
                     )
                     
                     switch xcstringsResult {

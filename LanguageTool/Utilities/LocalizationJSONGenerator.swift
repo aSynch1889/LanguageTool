@@ -2,7 +2,11 @@ import Foundation
 import AppKit
 
 class LocalizationJSONGenerator {
-    static func generateJSON(for keys: [String], languages: [String], sourceLanguage: String) async -> Data? {
+    static func generateJSON(for keys: [String],
+                           languages: [String],
+                           sourceLanguage: String,
+                           existingTranslations: [String: [String: String]] = [:],
+                           skipExistingTranslations: Bool = true) async -> Data? {
         var localizationData: [String: Any] = [
             "version": "1.0",
             "sourceLanguage": sourceLanguage,
@@ -26,12 +30,21 @@ class LocalizationJSONGenerator {
         // 为每种语言批量翻译所有键
         for language in languages {
             do {
-                // 使用优化后的批量翻译方法
+                // 使用优化后的批量翻译方法，支持跳过已有翻译
                 print("Starting batch translation [\(language)]...")
-                let translations = try await AIServiceV2.shared.batchTranslate(
+
+                // 准备现有翻译数组
+                let existingTranslationsForLanguage = keys.map { key -> String? in
+                    return existingTranslations[key]?[language]
+                }
+
+                let result = try await AIServiceV2.shared.batchTranslateWithExisting(
                     texts: keys,
-                    to: languageNames[language] ?? language
+                    to: languageNames[language] ?? language,
+                    existingTranslations: existingTranslationsForLanguage,
+                    skipExisting: skipExistingTranslations
                 )
+                let translations = result.translations
                 
                 // 将翻译结果添加到字典中
                 for (index, key) in keys.enumerated() {
@@ -52,7 +65,7 @@ class LocalizationJSONGenerator {
                     }
                 }
                 
-                print("✅ Batch translation successful [\(language)]: \(keys.count) entries")
+                print("✅ Batch translation successful [\(language)]: \(result.statistics.summary)")
             } catch {
                 print("❌ Batch translation failed [\(language)]: \(error.localizedDescription)")
                 // 翻译失败时为所有键设置空值

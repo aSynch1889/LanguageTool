@@ -2,6 +2,21 @@ import Foundation
 
 // MARK: - AI Service V2 - New Architecture
 
+struct TranslationStatistics {
+    let totalTexts: Int
+    let existingTranslations: Int
+    let newTranslations: Int
+    let skippedTranslations: Int
+
+    var summary: String {
+        if skippedTranslations > 0 {
+            return "Successfully translated \(newTranslations) new items, skipped \(skippedTranslations) existing translations".localized
+        } else {
+            return "Successfully translated \(newTranslations) items".localized
+        }
+    }
+}
+
 class AIServiceV2 {
     static let shared = AIServiceV2()
 
@@ -92,6 +107,64 @@ class AIServiceV2 {
         )
 
         return try parseBatchTranslationResponse(response: response, separator: separator, expectedCount: texts.count)
+    }
+
+    func batchTranslateWithExisting(texts: [String],
+                                  to targetLanguage: String,
+                                  existingTranslations: [String?],
+                                  skipExisting: Bool = true) async throws -> (translations: [String], statistics: TranslationStatistics) {
+
+        guard texts.count == existingTranslations.count else {
+            throw AIError.invalidConfiguration("Texts and existing translations arrays must have same length")
+        }
+
+        if !skipExisting {
+            let allTranslations = try await batchTranslate(texts: texts, to: targetLanguage)
+            let statistics = TranslationStatistics(
+                totalTexts: texts.count,
+                existingTranslations: 0,
+                newTranslations: allTranslations.count,
+                skippedTranslations: 0
+            )
+            return (allTranslations, statistics)
+        }
+
+        var result: [String] = []
+        var textsToTranslate: [String] = []
+        var indicesToTranslate: [Int] = []
+        var skippedCount = 0
+
+        for (index, text) in texts.enumerated() {
+            if let existingTranslation = existingTranslations[index], !existingTranslation.isEmpty {
+                result.append(existingTranslation)
+                skippedCount += 1
+            } else {
+                result.append("")
+                textsToTranslate.append(text)
+                indicesToTranslate.append(index)
+            }
+        }
+
+        var newTranslationsCount = 0
+        if !textsToTranslate.isEmpty {
+            let newTranslations = try await batchTranslate(texts: textsToTranslate, to: targetLanguage)
+            newTranslationsCount = newTranslations.count
+
+            for (translationIndex, resultIndex) in indicesToTranslate.enumerated() {
+                if translationIndex < newTranslations.count {
+                    result[resultIndex] = newTranslations[translationIndex]
+                }
+            }
+        }
+
+        let statistics = TranslationStatistics(
+            totalTexts: texts.count,
+            existingTranslations: skippedCount,
+            newTranslations: newTranslationsCount,
+            skippedTranslations: skippedCount
+        )
+
+        return (result, statistics)
     }
 
     // MARK: - Private Implementation

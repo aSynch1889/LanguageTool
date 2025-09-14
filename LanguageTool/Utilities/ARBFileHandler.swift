@@ -137,9 +137,10 @@ class ARBFileHandler {
     }
     
     /// 处理 ARB 文件转换
-    static func processARBFile(from inputPath: String, 
-                             to outputPath: String, 
-                             languages: [String]) async -> Result<String, Error> {
+    static func processARBFile(from inputPath: String,
+                             to outputPath: String,
+                             languages: [String],
+                             skipExistingTranslations: Bool = true) async -> Result<String, Error> {
         do {
             // 读取原始 ARB 文件
             let inputURL = URL(fileURLWithPath: inputPath)
@@ -159,11 +160,17 @@ class ARBFileHandler {
             for language in languages {
                 print("正在处理语言: \(language)")
                 
-                // 使用 AIService 进行批量翻译
-                let translations = try await AIServiceV2.shared.batchTranslate(
+                // 使用 AIService 进行批量翻译，支持跳过已有翻译
+                // 对于ARB文件，由于输入通常只有基础语言，所以existingTranslations都为nil
+                let existingTranslations: [String?] = Array(repeating: nil, count: translatableContent.count)
+
+                let result = try await AIServiceV2.shared.batchTranslateWithExisting(
                     texts: translatableContent,
-                    to: language
+                    to: language,
+                    existingTranslations: existingTranslations,
+                    skipExisting: skipExistingTranslations
                 )
+                let translations = result.translations
                 
                 // 生成目标语言的 ARB 文件
                 let translatedARB = generateARBFile(

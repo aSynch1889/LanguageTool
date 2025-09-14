@@ -83,7 +83,7 @@ class JsonUtils {
     }
 
     /// 从 JSON 文件中提取所有需要翻译的值和源语言
-    static func extractValuesFromXCStrings(from inputFilePath: String) -> (values: [String], sourceLanguage: String)? {
+    static func extractValuesFromXCStrings(from inputFilePath: String) -> (values: [String], sourceLanguage: String, existingTranslations: [String: [String: String]])? {
         do {
             guard let jsonData = try? Data(contentsOf: URL(fileURLWithPath: inputFilePath)),
                   let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
@@ -94,20 +94,36 @@ class JsonUtils {
             }
 
             var values = Set<String>()
+            var existingTranslations: [String: [String: String]] = [:]
 
             // 遍历 strings 下的所有条目
-            for (_, entry) in strings {
+            for (key, entry) in strings {
                 if let entryDict = entry as? [String: Any],
-                   let localizations = entryDict["localizations"] as? [String: Any],
-                   let sourceLocalization = localizations[sourceLanguage] as? [String: Any],
-                   let stringUnit = sourceLocalization["stringUnit"] as? [String: Any],
-                   let value = stringUnit["value"] as? String {
-                    values.insert(value)
+                   let localizations = entryDict["localizations"] as? [String: Any] {
+
+                    // 提取源语言值
+                    if let sourceLocalization = localizations[sourceLanguage] as? [String: Any],
+                       let stringUnit = sourceLocalization["stringUnit"] as? [String: Any],
+                       let value = stringUnit["value"] as? String {
+                        values.insert(value)
+
+                        // 收集现有翻译
+                        var keyTranslations: [String: String] = [:]
+                        for (langCode, localization) in localizations {
+                            if let locDict = localization as? [String: Any],
+                               let stringUnit = locDict["stringUnit"] as? [String: Any],
+                               let translatedValue = stringUnit["value"] as? String,
+                               !translatedValue.isEmpty {
+                                keyTranslations[langCode] = translatedValue
+                            }
+                        }
+                        existingTranslations[value] = keyTranslations
+                    }
                 }
             }
 
-            print("✅ 成功提取 \(values.count) 个待翻译值")
-            return (Array(values), sourceLanguage)
+            print("✅ 成功提取 \(values.count) 个待翻译值，发现 \(existingTranslations.count) 个已有翻译条目")
+            return (Array(values), sourceLanguage, existingTranslations)
         } catch {
             print("❌ 处理失败: \(error)")
             return nil
@@ -115,7 +131,7 @@ class JsonUtils {
     }
 
     /// 从JSON文件中提取值并生成本地化文件
-    static func convertToLocalizationFile(from inputPath: String, to outputPath: String, languages: [String]) async -> (success: Bool, message: String) {
+    static func convertToLocalizationFile(from inputPath: String, to outputPath: String, languages: [String], skipExistingTranslations: Bool = true) async -> (success: Bool, message: String) {
         guard let extractedData = extractValuesFromXCStrings(from: inputPath) else {
             return (false, "❌ 提取待翻译值失败")
         }
@@ -123,7 +139,9 @@ class JsonUtils {
         guard let jsonData = await LocalizationJSONGenerator.generateJSON(
             for: extractedData.values,
             languages: languages,
-            sourceLanguage: extractedData.sourceLanguage
+            sourceLanguage: extractedData.sourceLanguage,
+            existingTranslations: extractedData.existingTranslations,
+            skipExistingTranslations: skipExistingTranslations
         ) else {
             return (false, "❌ 生成 JSON 失败")
         }

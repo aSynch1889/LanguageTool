@@ -17,8 +17,9 @@ struct TransferView: View {
                     platformSelectionView
                     fileSelectionView
                     languageSelectionView
+                    translationOptionsView
                     actionButtonsView
-                    
+
                     if viewModel.showResult {
                         resultsView
                     }
@@ -144,7 +145,24 @@ struct TransferView: View {
             .cornerRadius(8)
         }
     }
-    
+
+    private var translationOptionsView: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Translation Options".localized)
+                .font(.headline)
+
+            Toggle("Skip Existing Translations".localized, isOn: $viewModel.skipExistingTranslations)
+                .toggleStyle(SwitchToggleStyle())
+
+            Text("When enabled, only missing translations will be generated. Existing translations will be preserved.".localized)
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+        .padding()
+        .background(Color.gray.opacity(0.05))
+        .cornerRadius(8)
+    }
+
     private var actionButtonsView: some View {
         HStack(spacing: 12) {
             Button("Start Conversion".localized) {

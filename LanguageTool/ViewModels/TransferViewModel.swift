@@ -18,6 +18,7 @@ class TransferViewModel: ObservableObject {
     @Published var selectedPlatform: PlatformType = .iOS
     @Published var languageChanged = false
     @Published var translationItems: [TranslationItem] = []
+    @Published var skipExistingTranslations: Bool = true
     
     // 添加一个属性来保持对窗口的强引用
     private var localizationWindow: NSWindow?
@@ -182,7 +183,8 @@ class TransferViewModel: ObservableObject {
                         from: inputPath,
                         to: outputPath,
                         format: outputFormat,
-                        languages: selectedLanguages
+                        languages: selectedLanguages,
+                        skipExistingTranslations: skipExistingTranslations
                     )
                     switch processResult {
                     case .success(let message):
@@ -194,7 +196,8 @@ class TransferViewModel: ObservableObject {
                     let conversionResult = await JsonUtils.convertToLocalizationFile(
                         from: inputPath,
                         to: outputPath,
-                        languages: Array(selectedLanguages).map { $0.code }
+                        languages: Array(selectedLanguages).map { $0.code },
+                        skipExistingTranslations: skipExistingTranslations
                     )
                     result = (message: conversionResult.message, success: conversionResult.success)
                 default:
@@ -205,7 +208,8 @@ class TransferViewModel: ObservableObject {
                 let processResult = await ARBFileHandler.processARBFile(
                     from: inputPath,
                     to: outputPath,
-                    languages: Array(selectedLanguages).map { $0.code }
+                    languages: Array(selectedLanguages).map { $0.code },
+                    skipExistingTranslations: skipExistingTranslations
                 )
                 switch processResult {
                 case .success(let message):
@@ -223,7 +227,8 @@ class TransferViewModel: ObservableObject {
                 let processResult = await ElectronLocalizationHandler.processLocalizationFile(
                     from: inputPath,
                     to: outputPath,
-                    languages: Array(selectedLanguages).map { $0.code }
+                    languages: Array(selectedLanguages).map { $0.code },
+                    skipExistingTranslations: skipExistingTranslations
                 )
                 switch processResult {
                 case .success(let message):
@@ -307,6 +312,9 @@ class TransferViewModel: ObservableObject {
         showResult = false
         conversionResult = ""
         showSuccessActions = false
+
+        // 重置翻译选项
+        skipExistingTranslations = true
     }
     
     func showAlert(message: String, isError: Bool = false) {
