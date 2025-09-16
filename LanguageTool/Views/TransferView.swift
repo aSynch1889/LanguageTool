@@ -327,15 +327,15 @@ struct TransferView: View {
                     }
                     .buttonStyle(.bordered)
                     .disabled(viewModel.isLoading)
-
-                    Button(action: viewModel.openInNewWindow) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "plus.rectangle.on.rectangle")
-                            Text("New Window".localized)
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .disabled(viewModel.isLoading)
+//TODO: 临时注释New Window
+//                    Button(action: viewModel.openInNewWindow) {
+//                        HStack(spacing: 6) {
+//                            Image(systemName: "plus.rectangle.on.rectangle")
+//                            Text("New Window".localized)
+//                        }
+//                    }
+//                    .buttonStyle(.bordered)
+//                    .disabled(viewModel.isLoading)
                 }
             }
         }

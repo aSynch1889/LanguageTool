@@ -16,28 +16,22 @@
             "value" : " (Optional)"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(Optional)"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(Optional)"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(Optional)"
+            "value" : "(Opcional)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "(Facultatif)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Facoltativo)"
           }
         },
         "ja" : {
@@ -50,6 +44,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "(선택 사항)"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Opcional)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(ไม่บังคับ)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(İsteğe Bağlı)"
           }
         },
         "zh-Hans" : {
@@ -69,10 +81,34 @@
     "Actions" : {
       "extractionState" : "stale",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktionen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Actions"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acciones"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actions"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azioni"
           }
         },
         "ja" : {
@@ -87,10 +123,111 @@
             "value" : "작업"
           }
         },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ações"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การกระทำ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İşlemler"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "操作"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動作"
+          }
+        }
+      }
+    },
+    "AI Service" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KI-Dienst"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI Service"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servicio de IA"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Service IA"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servizio AI"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AIサービス"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 서비스"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serviço de IA"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บริการ AI"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yapay Zeka Servisi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 服务"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 服務"
           }
         }
       }
@@ -110,28 +247,22 @@
             "value" : "API Settings"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API Settings"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "API Settings"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "API Settings"
+            "value" : "Ajustes de API"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Paramètres de l'API"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impostazioni API"
           }
         },
         "ja" : {
@@ -144,6 +275,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "API 설정"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurações da API"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การตั้งค่า API"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API Ayarları"
           }
         },
         "zh-Hans" : {
@@ -175,28 +324,22 @@
             "value" : "Appearance Settings"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appearance Settings"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appearance Settings"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appearance Settings"
+            "value" : "Ajustes de apariencia"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Paramètres d'apparence"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impostazioni aspetto"
           }
         },
         "ja" : {
@@ -209,6 +352,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "외관 설정"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurações de aparência"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การตั้งค่าลักษณะที่ปรากฏ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Görünüm Ayarları"
           }
         },
         "zh-Hans" : {
@@ -228,10 +389,34 @@
     "Choose Input File" : {
       "extractionState" : "stale",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eingabedatei wählen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choose Input File"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elegir archivo de entrada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir le fichier d'entrée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli il file di input"
           }
         },
         "ja" : {
@@ -246,10 +431,342 @@
             "value" : "입력 파일 선택"
           }
         },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher arquivo de entrada"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกไฟล์อินพุต"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giriş Dosyasını Seç"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择输入文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇輸入檔案"
+          }
+        }
+      }
+    },
+    "Choose Output Location" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgabeverzeichnis wählen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose Output Location"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elegir ubicación de salida"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir l'emplacement de sortie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli la posizione di output"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出力先を選択"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "출력 위치 선택"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher local de saída"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกตำแหน่งเอาต์พุต"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çıkış Konumunu Seç"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择输出位置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇輸出位置"
+          }
+        }
+      }
+    },
+    "Clear All" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle löschen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear All"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar todo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer tout"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancella tutto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてクリア"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모두 지우기"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar tudo"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ล้างทั้งหมด"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tümünü Temizle"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除所有"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除全部"
+          }
+        }
+      }
+    },
+    "Click to browse or drag & drop files here" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Durchsuchen klicken oder Dateien hierher ziehen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click to browse or drag & drop files here"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haga clic para explorar o arrastrar y soltar archivos aquí"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cliquez pour parcourir ou faites glisser-déposer des fichiers ici"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fai clic per sfogliare o trascina e rilascia i file qui"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "クリックして参照するか、ファイルをここにドラッグ＆ドロップしてください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "여기를 클릭하여 찾아보거나 파일을 끌어다 놓으세요"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clique para navegar ou arraste e solte arquivos aqui"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "คลิกเพื่อเรียกดูหรือลากแล้วปล่อยไฟล์ที่นี่"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Göz atmak veya dosyaları buraya sürükleyip bırakmak için tıklayın"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击浏览或拖放文件到这里"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點擊瀏覽或拖放檔案於此"
+          }
+        }
+      }
+    },
+    "Common" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allgemein"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Common"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Común"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commun"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comune"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共通"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일반"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comum"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ทั่วไป"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Genel"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "常用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "常用"
           }
         }
       }
@@ -269,28 +786,22 @@
             "value" : "Conversion successful!"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Conversion successful!"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conversion successful!"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conversion successful!"
+            "value" : "¡Conversión exitosa!"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Conversion réussie !"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversione completata!"
           }
         },
         "ja" : {
@@ -303,6 +814,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "변환 성공!"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversão bem-sucedida!"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การแปลงสำเร็จ!"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dönüşüm başarılı!"
           }
         },
         "zh-Hans" : {
@@ -334,28 +863,22 @@
             "value" : "Dark Mode"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dark Mode"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dark Mode"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dark Mode"
+            "value" : "Modo oscuro"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mode sombre"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modalità oscura"
           }
         },
         "ja" : {
@@ -368,6 +891,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "다크 모드"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo escuro"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "โหมดมืด"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Karanlık Mod"
           }
         },
         "zh-Hans" : {
@@ -399,28 +940,22 @@
             "value" : "Deselect All"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deselect All"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deselect All"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deselect All"
+            "value" : "Deseleccionar todo"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Désélectionner tout"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deseleziona tutto"
           }
         },
         "ja" : {
@@ -433,6 +968,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "모두 선택 취소"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desmarcar todos"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ยกเลิกการเลือกทั้งหมด"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tümünü Seçimi Kaldır"
           }
         },
         "zh-Hans" : {
@@ -464,28 +1017,22 @@
             "value" : "English"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "English"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "English"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "English"
+            "value" : "Inglés"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Anglais"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglese"
           }
         },
         "ja" : {
@@ -498,6 +1045,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "영어"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglês"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อังกฤษ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İngilizce"
           }
         },
         "zh-Hans" : {
@@ -529,19 +1094,7 @@
             "value" : "Error"
           }
         },
-        "en-CA" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error"
-          }
-        },
-        "en-IN" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error"
@@ -551,6 +1104,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erreur"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Errore"
           }
         },
         "ja" : {
@@ -563,6 +1122,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "오류"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erro"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ข้อผิดพลาด"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hata"
           }
         },
         "zh-Hans" : {
@@ -582,10 +1159,34 @@
     "File Selected" : {
       "extractionState" : "stale",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datei ausgewählt"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "File Selected"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo seleccionado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichier sélectionné"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File selezionato"
           }
         },
         "ja" : {
@@ -600,10 +1201,111 @@
             "value" : "파일 선택됨"
           }
         },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivo selecionado"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกไฟล์แล้ว"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosya Seçildi"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "文件已选择"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已選取檔案"
+          }
+        }
+      }
+    },
+    "File Selection" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dateiauswahl"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File Selection"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selección de archivos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélection de fichiers"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selezione file"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイル選択"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일 선택"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleção de arquivo"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การเลือกไฟล์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosya Seçimi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件选择"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檔案選擇"
           }
         }
       }
@@ -611,10 +1313,34 @@
     "Input File" : {
       "extractionState" : "stale",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eingabedatei"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Input File"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo de entrada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichier d'entrée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File di input"
           }
         },
         "ja" : {
@@ -629,10 +1355,34 @@
             "value" : "입력 파일"
           }
         },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivo de entrada"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ไฟล์อินพุต"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giriş Dosyası"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入檔案"
           }
         }
       }
@@ -652,28 +1402,22 @@
             "value" : "Input Message"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Input Message"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Input Message"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Input Message"
+            "value" : "Mensaje de entrada"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Message d'entrée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Messaggio di input"
           }
         },
         "ja" : {
@@ -686,6 +1430,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "입력 메시지"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensagem de entrada"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ข้อความอินพุต"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giriş Mesajı"
           }
         },
         "zh-Hans" : {
@@ -717,28 +1479,22 @@
             "value" : "Interface Language"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Interface Language"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Interface Language"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Interface Language"
+            "value" : "Idioma de la interfaz"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Langue de l'interface"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lingua dell'interfaccia"
           }
         },
         "ja" : {
@@ -751,6 +1507,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "인터페이스 언어"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idioma da interface"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ภาษาอินเทอร์เฟซ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arayüz Dili"
           }
         },
         "zh-Hans" : {
@@ -782,28 +1556,22 @@
             "value" : "Invalid file type for selected platform"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Invalid file type for selected platform"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Invalid file type for selected platform"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Invalid file type for selected platform"
+            "value" : "Tipo de archivo no válido para la plataforma seleccionada"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Type de fichier invalide pour la plateforme sélectionnée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tipo di file non valido per la piattaforma selezionata"
           }
         },
         "ja" : {
@@ -816,6 +1584,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "선택된 플랫폼에 대한 잘못된 파일 형식입니다"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tipo de arquivo inválido para a plataforma selecionada"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ประเภทไฟล์ไม่ถูกต้องสำหรับแพลตฟอร์มที่เลือก"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçilen platform için geçersiz dosya türü"
           }
         },
         "zh-Hans" : {
@@ -847,28 +1633,22 @@
             "value" : "Japanese"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Japanese"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Japanese"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Japanese"
+            "value" : "Japonés"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Japonais"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giapponese"
           }
         },
         "ja" : {
@@ -881,6 +1661,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "일본어"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Japonês"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ญี่ปุ่น"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Japonca"
           }
         },
         "zh-Hans" : {
@@ -912,28 +1710,22 @@
             "value" : "Korean"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Korean"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Korean"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Korean"
+            "value" : "Coreano"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Coréen"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coreano"
           }
         },
         "ja" : {
@@ -946,6 +1738,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "한국어"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coreano"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เกาหลี"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korece"
           }
         },
         "zh-Hans" : {
@@ -977,28 +1787,22 @@
             "value" : "Language Settings"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Language Settings"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Language Settings"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Language Settings"
+            "value" : "Ajustes de idioma"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Paramètres de langue"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impostazioni lingua"
           }
         },
         "ja" : {
@@ -1011,6 +1815,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "언어 설정"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurações de idioma"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การตั้งค่าภาษา"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dil Ayarları"
           }
         },
         "zh-Hans" : {
@@ -1045,28 +1867,22 @@
             "value" : "More Settings Under Development..."
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "More Settings Under Development..."
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "More Settings Under Development..."
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "More Settings Under Development..."
+            "value" : "Más ajustes en desarrollo..."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Plus de paramètres en cours de développement…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altre impostazioni in fase di sviluppo..."
           }
         },
         "ja" : {
@@ -1079,6 +1895,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "더 많은 설정 개발 중..."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais configurações em desenvolvimento..."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กำลังพัฒนาการตั้งค่าเพิ่มเติม..."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daha Fazla Ayar Geliştirme Aşamasında..."
           }
         },
         "zh-Hans" : {
@@ -1110,28 +1944,22 @@
             "value" : "No file selected"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No file selected"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No file selected"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No file selected"
+            "value" : "Ningún archivo seleccionado"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aucun fichier sélectionné"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun file selezionato"
           }
         },
         "ja" : {
@@ -1144,6 +1972,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "파일을 선택하지 않았습니다"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum arquivo selecionado"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ยังไม่ได้เลือกไฟล์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosya seçilmedi"
           }
         },
         "zh-Hans" : {
@@ -1175,28 +2021,22 @@
             "value" : "No save location selected"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No save location selected"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No save location selected"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No save location selected"
+            "value" : "No se ha seleccionado ninguna ubicación de guardado"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aucun emplacement d'enregistrement sélectionné"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessuna posizione di salvataggio selezionata"
           }
         },
         "ja" : {
@@ -1209,6 +2049,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "저장 위치를 선택하지 않았습니다"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum local de salvamento selecionado"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ยังไม่ได้เลือกตำแหน่งบันทึก"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kayıt konumu seçilmedi"
           }
         },
         "zh-Hans" : {
@@ -1240,28 +2098,22 @@
             "value" : "Other Settings"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Other Settings"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Other Settings"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Other Settings"
+            "value" : "Otros ajustes"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Autres paramètres"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altre impostazioni"
           }
         },
         "ja" : {
@@ -1274,6 +2126,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "기타 설정"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outras configurações"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การตั้งค่าอื่นๆ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diğer Ayarlar"
           }
         },
         "zh-Hans" : {
@@ -1290,13 +2160,37 @@
         }
       }
     },
-    "Output Location" : {
+    "Output Location (Optional)" : {
       "extractionState" : "stale",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgabeverzeichnis (optional)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Output Location (Optional)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubicación de salida (opcional)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emplacement de sortie (facultatif)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posizione di output (facoltativo)"
           }
         },
         "ja" : {
@@ -1311,10 +2205,34 @@
             "value" : "출력 위치 (선택사항)"
           }
         },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local de saída (opcional)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตำแหน่งเอาต์พุต (ไม่บังคับ)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çıkış Konumu (İsteğe Bağlı)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "输出位置（可选）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸出位置（可選）"
           }
         }
       }
@@ -1334,28 +2252,22 @@
             "value" : "Platform"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Platform"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Platform"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Platform"
+            "value" : "Plataforma"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Plateforme"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piattaforma"
           }
         },
         "ja" : {
@@ -1368,6 +2280,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "플랫폼"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plataforma"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แพลตฟอร์ม"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Platform"
           }
         },
         "zh-Hans" : {
@@ -1399,28 +2329,22 @@
             "value" : "Please select .arb file"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Please select an .arb file"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please select an .arb file"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please select an .arb file"
+            "value" : "Por favor, seleccione un archivo .arb"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Veuillez sélectionner un fichier .arb"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona un file .arb"
           }
         },
         "ja" : {
@@ -1433,6 +2357,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : ".arb 파일을 선택하십시오"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecione um arquivo .arb"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กรุณาเลือกไฟล์ .arb"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lütfen .arb dosyası seçin"
           }
         },
         "zh-Hans" : {
@@ -1464,28 +2406,22 @@
             "value" : "Please select .json file"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Please select a .json file"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please select a .json file"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please select a .json file"
+            "value" : "Por favor, seleccione un archivo .json"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Veuillez sélectionner un fichier .json"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona un file .json"
           }
         },
         "ja" : {
@@ -1498,6 +2434,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : ".json 파일을 선택하십시오"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecione um arquivo .json"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กรุณาเลือกไฟล์ .json"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lütfen .json dosyası seçin"
           }
         },
         "zh-Hans" : {
@@ -1529,28 +2483,22 @@
             "value" : "Please select .strings or .xcstrings file"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Please select a .strings or .xcstrings file"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please select a .strings or .xcstrings file"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please select a .strings or .xcstrings file"
+            "value" : "Por favor, seleccione un archivo .strings o .xcstrings"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Veuillez sélectionner un fichier .strings ou .xcstrings"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona un file .strings o .xcstrings"
           }
         },
         "ja" : {
@@ -1563,6 +2511,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : ".strings 또는 .xcstrings 파일을 선택하십시오"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecione um arquivo .strings ou .xcstrings"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กรุณาเลือกไฟล์ .strings หรือ .xcstrings"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lütfen .strings veya .xcstrings dosyası seçin"
           }
         },
         "zh-Hans" : {
@@ -1594,28 +2560,22 @@
             "value" : "Please wait, this may take a while"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Please wait, this may take a while"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please wait, this may take a while"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please wait, this may take a while"
+            "value" : "Por favor, espere, esto puede tardar un rato"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Veuillez patienter, cela peut prendre un certain temps"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attendere, potrebbe volerci un po'"
           }
         },
         "ja" : {
@@ -1628,6 +2588,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "잠시 기다려주세요. 시간이 걸릴 수 있습니다"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aguarde, isso pode levar algum tempo"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "โปรดรอ อาจใช้เวลาสักครู่"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lütfen bekleyin, bu biraz zaman alabilir"
           }
         },
         "zh-Hans" : {
@@ -1659,28 +2637,22 @@
             "value" : "Reset"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reset"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reset"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reset"
+            "value" : "Restablecer"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réinitialiser"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ripristina"
           }
         },
         "ja" : {
@@ -1693,6 +2665,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "재설정"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redefinir"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "รีเซ็ต"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sıfırla"
           }
         },
         "zh-Hans" : {
@@ -1724,28 +2714,22 @@
             "value" : "Save Localization File"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Save Localization File"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save Localization File"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save Localization File"
+            "value" : "Guardar archivo de localización"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enregistrer le fichier de localisation"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva file di localizzazione"
           }
         },
         "ja" : {
@@ -1758,6 +2742,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지역화 파일 저장"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salvar arquivo de localização"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บันทึกไฟล์ Localization"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yerelleştirme Dosyasını Kaydet"
           }
         },
         "zh-Hans" : {
@@ -1789,28 +2791,22 @@
             "value" : "Save Path:"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Save Path:"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save Path:"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save Path:"
+            "value" : "Ruta de guardado:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chemin d'enregistrement :"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Percorso di salvataggio:"
           }
         },
         "ja" : {
@@ -1825,6 +2821,24 @@
             "value" : "저장 경로:"
           }
         },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Caminho de salvamento:"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เส้นทางการบันทึก:"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kayıt Yolu:"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1835,6 +2849,83 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "儲存路徑："
+          }
+        }
+      }
+    },
+    "Search languages..." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suchsprachen..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search languages..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar idiomas..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechercher des langues..."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca lingue..."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "言語を検索..."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "언어 검색..."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pesquisar idiomas..."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ค้นหาภาษา..."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dil ara..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索语言..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜尋語言…"
           }
         }
       }
@@ -1854,28 +2945,22 @@
             "value" : "Select"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select"
+            "value" : "Seleccionar"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona"
           }
         },
         "ja" : {
@@ -1888,6 +2973,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "선택"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือก"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seç"
           }
         },
         "zh-Hans" : {
@@ -1919,28 +3022,22 @@
             "value" : "Select All"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select All"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select All"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select All"
+            "value" : "Seleccionar todo"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner tout"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona tutto"
           }
         },
         "ja" : {
@@ -1953,6 +3050,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "모두 선택"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar todos"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกทั้งหมด"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tümünü Seç"
           }
         },
         "zh-Hans" : {
@@ -1984,28 +3099,22 @@
             "value" : "Select directory for ARB files"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select directory for ARB files"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select directory for ARB files"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select directory for ARB files"
+            "value" : "Seleccionar directorio para archivos ARB"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner le répertoire pour les fichiers ARB"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona la directory per i file ARB"
           }
         },
         "ja" : {
@@ -2018,6 +3127,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ARB 파일을 저장할 디렉토리를 선택하십시오"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar diretório para arquivos ARB"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกไดเรกทอรีสำหรับไฟล์ ARB"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ARB dosyaları için dizin seçin"
           }
         },
         "zh-Hans" : {
@@ -2049,28 +3176,22 @@
             "value" : "Select directory for JSON files"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select directory for JSON files"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select directory for JSON files"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select directory for JSON files"
+            "value" : "Seleccionar directorio para archivos JSON"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner le répertoire pour les fichiers JSON"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona la directory per i file JSON"
           }
         },
         "ja" : {
@@ -2083,6 +3204,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "JSON 파일을 저장할 디렉토리를 선택하십시오"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar diretório para arquivos JSON"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกไดเรกทอรีสำหรับไฟล์ JSON"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JSON dosyaları için dizin seçin"
           }
         },
         "zh-Hans" : {
@@ -2114,28 +3253,22 @@
             "value" : "Select directory for language files"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select directory for language files"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select directory for language files"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select directory for language files"
+            "value" : "Seleccionar directorio para archivos de idioma"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner le répertoire pour les fichiers de langue"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona la directory per i file delle lingue"
           }
         },
         "ja" : {
@@ -2148,6 +3281,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "언어 파일을 저장할 디렉토리를 선택하십시오"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar diretório para arquivos de idioma"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกไดเรกทอรีสำหรับไฟล์ภาษา"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dil dosyaları için dizin seçin"
           }
         },
         "zh-Hans" : {
@@ -2179,28 +3330,22 @@
             "value" : "Select directory for output files"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select directory for output files"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select directory for output files"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select directory for output files"
+            "value" : "Seleccionar directorio para archivos de salida"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner le répertoire pour les fichiers de sortie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona la directory per i file di output"
           }
         },
         "ja" : {
@@ -2213,6 +3358,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "출력 파일을 저장할 디렉토리를 선택하십시오"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar diretório para arquivos de saída"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกไดเรกทอรีสำหรับไฟล์เอาต์พุต"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çıkış dosyaları için dizin seçin"
           }
         },
         "zh-Hans" : {
@@ -2244,28 +3407,22 @@
             "value" : "Select Input File"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select Input File"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Input File"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Input File"
+            "value" : "Seleccionar archivo de entrada"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner le fichier d'entrée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona file di input"
           }
         },
         "ja" : {
@@ -2278,6 +3435,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "입력 파일 선택"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar arquivo de entrada"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกไฟล์อินพุต"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giriş Dosyasını Seç"
           }
         },
         "zh-Hans" : {
@@ -2309,28 +3484,22 @@
             "value" : "Select Localization File"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select Localization File"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Localization File"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Localization File"
+            "value" : "Seleccionar archivo de localización"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner le fichier de localisation"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona file di localizzazione"
           }
         },
         "ja" : {
@@ -2343,6 +3512,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지역화 파일 선택"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar arquivo de localização"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกไฟล์ Localization"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yerelleştirme Dosyasını Seç"
           }
         },
         "zh-Hans" : {
@@ -2374,28 +3561,22 @@
             "value" : "Select location to save .xcstrings file"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select location to save .xcstrings file"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select location to save .xcstrings file"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select location to save .xcstrings file"
+            "value" : "Seleccionar ubicación para guardar el archivo .xcstrings"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner l'emplacement pour enregistrer le fichier .xcstrings"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona la posizione per salvare il file .xcstrings"
           }
         },
         "ja" : {
@@ -2408,6 +3589,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : ".xcstrings 파일을 저장할 위치를 선택하십시오"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecione o local para salvar o arquivo .xcstrings"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกตำแหน่งที่จะบันทึกไฟล์ .xcstrings"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".xcstrings dosyasını kaydedilecek konumu seçin"
           }
         },
         "zh-Hans" : {
@@ -2439,28 +3638,22 @@
             "value" : "Select Output Location"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select Output Location"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Output Location"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Output Location"
+            "value" : "Seleccionar ubicación de salida"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner l'emplacement de sortie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona la posizione di output"
           }
         },
         "ja" : {
@@ -2473,6 +3666,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "출력 위치 선택"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar local de saída"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกตำแหน่งเอาต์พุต"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çıkış Konumunu Seç"
           }
         },
         "zh-Hans" : {
@@ -2504,28 +3715,22 @@
             "value" : "Select Platform"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select Platform"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Platform"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Platform"
+            "value" : "Seleccionar plataforma"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner la plateforme"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona piattaforma"
           }
         },
         "ja" : {
@@ -2538,6 +3743,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "플랫폼 선택"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar plataforma"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกแพลตฟอร์ม"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Platform Seç"
           }
         },
         "zh-Hans" : {
@@ -2569,28 +3792,22 @@
             "value" : "Select Save Directory"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select Save Directory"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Save Directory"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Save Directory"
+            "value" : "Seleccionar directorio de guardado"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner le répertoire d'enregistrement"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona la directory di salvataggio"
           }
         },
         "ja" : {
@@ -2603,6 +3820,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "저장 디렉토리 선택"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar diretório de salvamento"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกไดเรกทอรีบันทึก"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kayıt Dizinini Seç"
           }
         },
         "zh-Hans" : {
@@ -2634,28 +3869,22 @@
             "value" : "Select Target Languages"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select Target Languages"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Target Languages"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select Target Languages"
+            "value" : "Seleccionar idiomas de destino"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sélectionner les langues cibles"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona le lingue di destinazione"
           }
         },
         "ja" : {
@@ -2670,6 +3899,24 @@
             "value" : "대상 언어 선택"
           }
         },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecionar idiomas de destino"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกภาษาเป้าหมาย"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hedef Dilleri Seç"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2680,6 +3927,83 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇目標語言"
+          }
+        }
+      }
+    },
+    "Selected Files" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgewählte Dateien"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected Files"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivos seleccionados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichiers sélectionnés"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File selezionati"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択したファイル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택된 파일"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivos selecionados"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ไฟล์ที่เลือก"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçilen Dosyalar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已选择文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已選取檔案"
           }
         }
       }
@@ -2699,28 +4023,22 @@
             "value" : "Send"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Send"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Send"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Send"
+            "value" : "Enviar"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Envoyer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invia"
           }
         },
         "ja" : {
@@ -2733,6 +4051,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "보내기"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ส่ง"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gönder"
           }
         },
         "zh-Hans" : {
@@ -2764,28 +4100,22 @@
             "value" : "Show in Finder"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show in Finder"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show in Finder"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show in Finder"
+            "value" : "Mostrar en el Finder"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Afficher dans le Finder"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra nel Finder"
           }
         },
         "ja" : {
@@ -2798,6 +4128,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Finder에서 보기"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar no Finder"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แสดงใน Finder"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finder'da Göster"
           }
         },
         "zh-Hans" : {
@@ -2829,28 +4177,22 @@
             "value" : "Simplified Chinese"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Simplified Chinese"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Simplified Chinese"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Simplified Chinese"
+            "value" : "Chino simplificado"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chinois simplifié"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cinese semplificato"
           }
         },
         "ja" : {
@@ -2865,6 +4207,24 @@
             "value" : "간체중국어"
           }
         },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chinês simplificado"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "จีนตัวย่อ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basitleştirilmiş Çince"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2875,6 +4235,83 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "簡體中文"
+          }
+        }
+      }
+    },
+    "Skip Existing Translations" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bestehende Übersetzungen überspringen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip Existing Translations"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omitir traducciones existentes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ignorer les traductions existantes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salta traduzioni esistenti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "既存の翻訳をスキップ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기존 번역 건너뛰기"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ignorar traduções existentes"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ข้ามการแปลที่มีอยู่"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mevcut Çevirileri Atla"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跳过现有翻译"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跳過現有翻譯"
           }
         }
       }
@@ -2894,28 +4331,22 @@
             "value" : "Start Conversion"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Start Conversion"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start Conversion"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start Conversion"
+            "value" : "Iniciar conversión"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lancer la conversion"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avvia conversione"
           }
         },
         "ja" : {
@@ -2928,6 +4359,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "변환 시작"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar conversão"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เริ่มการแปลง"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dönüştürmeyi Başlat"
           }
         },
         "zh-Hans" : {
@@ -2959,28 +4408,22 @@
             "value" : "Success"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Success"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Success"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Success"
+            "value" : "Éxito"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Succès"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Successo"
           }
         },
         "ja" : {
@@ -2993,6 +4436,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "성공"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sucesso"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "สำเร็จ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Başarı"
           }
         },
         "zh-Hans" : {
@@ -3024,28 +4485,22 @@
             "value" : "Successfully generated ARB files for all languages"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Successfully generated ARB files for all languages"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Successfully generated ARB files for all languages"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Successfully generated ARB files for all languages"
+            "value" : "Archivos ARB generados correctamente para todos los idiomas"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fichiers ARB générés avec succès pour toutes les langues"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File ARB generati correttamente per tutte le lingue"
           }
         },
         "ja" : {
@@ -3058,6 +4513,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "모든 언어에 대한 ARB 파일이 성공적으로 생성되었습니다"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivos ARB gerados com sucesso para todos os idiomas"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "สร้างไฟล์ ARB สำหรับทุกภาษาสำเร็จ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm diller için ARB dosyaları başarıyla oluşturuldu"
           }
         },
         "zh-Hans" : {
@@ -3089,28 +4562,22 @@
             "value" : "Successfully generated localized files for all languages"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Successfully generated localized files for all languages"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Successfully generated localised files for all languages"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Successfully generated localized files for all languages"
+            "value" : "Archivos localizados generados correctamente para todos los idiomas"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fichiers localisés générés avec succès pour toutes les langues"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File localizzati generati correttamente per tutte le lingue"
           }
         },
         "ja" : {
@@ -3123,6 +4590,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "모든 언어에 대한 지역화된 파일이 성공적으로 생성되었습니다"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivos localizados gerados com sucesso para todos os idiomas"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "สร้างไฟล์ที่แปลแล้วสำหรับทุกภาษาสำเร็จ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm diller için yerelleştirilmiş dosyalar başarıyla oluşturuldu"
           }
         },
         "zh-Hans" : {
@@ -3154,28 +4639,22 @@
             "value" : "Successfully generated localized JSON file containing %@ translation items"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Successfully generated localized JSON file containing %@ translation items"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Successfully generated localised JSON file containing %@ translation items"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Successfully generated localized JSON file containing %@ translation items"
+            "value" : "Archivo JSON localizado generado correctamente con %@ elementos de traducción"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fichier JSON localisé contenant %@ éléments de traduction généré avec succès"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File JSON localizzato generato correttamente contenente %@ elementi di traduzione"
           }
         },
         "ja" : {
@@ -3188,6 +4667,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 개의 번역 항목을 포함하는 지역화된 JSON 파일이 성공적으로 생성되었습니다"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivo JSON localizado gerado com sucesso contendo %@ itens de tradução"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "สร้างไฟล์ JSON ที่แปลแล้วสำเร็จ โดยมีรายการแปล %@ รายการ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ çeviri öğesi içeren yerelleştirilmiş JSON dosyası başarıyla oluşturuldu"
           }
         },
         "zh-Hans" : {
@@ -3219,28 +4716,22 @@
             "value" : "Sync completed successfully"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sync completed successfully"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync completed successfully"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync completed successfully"
+            "value" : "Sincronización completada correctamente"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Synchronisation terminée avec succès"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizzazione completata correttamente"
           }
         },
         "ja" : {
@@ -3253,6 +4744,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "동기화가 성공적으로 완료되었습니다"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronização concluída com sucesso"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ซิงค์เสร็จสมบูรณ์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senkronizasyon başarıyla tamamlandı"
           }
         },
         "zh-Hans" : {
@@ -3284,28 +4793,22 @@
             "value" : "Sync failed:"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sync failed:"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync failed:"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync failed:"
+            "value" : "Error de sincronización:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Synchronisation échouée :"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizzazione fallita:"
           }
         },
         "ja" : {
@@ -3318,6 +4821,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "동기화 실패:"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha na sincronização:"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ซิงค์ล้มเหลว:"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senkronizasyon başarısız:"
           }
         },
         "zh-Hans" : {
@@ -3349,28 +4870,22 @@
             "value" : "Sync to Source"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sync to Source"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync to Source"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync to Source"
+            "value" : "Sincronizar con la fuente"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Synchroniser avec la source"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizza con la sorgente"
           }
         },
         "ja" : {
@@ -3383,6 +4898,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "소스에 동기화"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizar com a fonte"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ซิงค์ไปยังต้นฉบับ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaynakla Senkronize Et"
           }
         },
         "zh-Hans" : {
@@ -3414,28 +4947,22 @@
             "value" : "Traditional Chinese"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traditional Chinese"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Traditional Chinese"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Traditional Chinese"
+            "value" : "Chino tradicional"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chinois traditionnel"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cinese tradizionale"
           }
         },
         "ja" : {
@@ -3448,6 +4975,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "번체중국어"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chinês tradicional"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "จีนตัวเต็ม"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geleneksel Çince"
           }
         },
         "zh-Hans" : {
@@ -3479,28 +5024,22 @@
             "value" : "Translating..."
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Translating..."
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Translating..."
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Translating..."
+            "value" : "Traduciendo..."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Traduction en cours…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traduzione in corso..."
           }
         },
         "ja" : {
@@ -3515,6 +5054,24 @@
             "value" : "번역 중..."
           }
         },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traduzindo..."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กำลังแปล..."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çeviriliyor..."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3525,6 +5082,83 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "翻譯中…"
+          }
+        }
+      }
+    },
+    "Translation Options" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Übersetzungsoptionen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Translation Options"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opciones de traducción"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Options de traduction"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opzioni di traduzione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻訳オプション"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "번역 옵션"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opções de tradução"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตัวเลือกการแปล"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çeviri Seçenekleri"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻译选项"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻譯選項"
           }
         }
       }
@@ -3544,28 +5178,22 @@
             "value" : "Translation Service"
           }
         },
-        "en-CA" : {
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Translation Service"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Translation Service"
-          }
-        },
-        "en-IN" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Translation Service"
+            "value" : "Servicio de Traducción"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Service de traduction"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servizio di traduzione"
           }
         },
         "ja" : {
@@ -3580,6 +5208,24 @@
             "value" : "번역 서비스"
           }
         },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serviço de Tradução"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การแปล"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çeviri Servisi"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3590,6 +5236,83 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "翻譯服務"
+          }
+        }
+      }
+    },
+    "When enabled, only missing translations will be generated. Existing translations will be preserved." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, werden nur fehlende Übersetzungen generiert. Bestehende Übersetzungen bleiben erhalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When enabled, only missing translations will be generated. Existing translations will be preserved."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando está habilitado, solo se generarán las traducciones que faltan. Las traducciones existentes se conservarán."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lorsqu'activé, seules les traductions manquantes seront générées. Les traductions existantes seront conservées."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se abilitato, verranno generate solo le traduzioni mancanti. Le traduzioni esistenti verranno mantenute."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、翻訳されていないものだけを生成します。既存の翻訳は保持されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "활성화하면 누락된 번역만 생성됩니다. 기존 번역은 유지됩니다."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando ativado, apenas traduções ausentes serão geradas. As traduções existentes serão preservadas."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เมื่อเปิดใช้งาน จะสร้างเฉพาะการแปลที่หายไปเท่านั้น การแปลที่มีอยู่จะได้รับการเก็บรักษาไว้"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etkinleştirildiğinde, yalnızca eksik çeviriler oluşturulacaktır. Mevcut çeviriler korunacaktır."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用后，仅生成缺失的翻译。现有翻译将被保留。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用後，僅會產生遺漏的翻譯。現有的翻譯將會保留。"
           }
         }
       }
