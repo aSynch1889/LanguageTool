@@ -91,7 +91,7 @@ struct TransferView: View {
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(.primary)
 
-            VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .center, spacing: 16) {
                 ModernFileSelector(
                     title: "Choose Input File".localized,
                     subtitle: "Input File".localized,

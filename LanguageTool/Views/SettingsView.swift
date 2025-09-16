@@ -6,18 +6,20 @@ struct SettingsView: View {
     @AppStorage("appLanguage") private var appLanguage: String = "en"  // 默认为英语
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false // 添加暗黑模式存储
     
-    // 修改为使用原生语言名称
+    // 修改为使用原生语言名称，与Localizable.xcstrings中的语言保持一致
     private let supportedLanguages = [
         ("en", "English"),
-        ("en-CA", "English (Canada)"),
-        ("en-GB", "English (UK)"),
-        ("en-IN", "English (India)"),
         ("de", "Deutsch"),
+        ("es", "Español"),
         ("fr", "Français"),
-        ("zh-Hans", "简体中文"),
-        ("zh-Hant", "繁體中文"),
+        ("it", "Italiano"),
         ("ja", "日本語"),
-        ("ko", "한국어")
+        ("ko", "한국어"),
+        ("pt", "Português"),
+        ("th", "ไทย"),
+        ("tr", "Türkçe"),
+        ("zh-Hans", "简体中文"),
+        ("zh-Hant", "繁體中文")
     ]
     
     // 添加语言切换通知
