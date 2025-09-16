@@ -19,9 +19,12 @@ class TransferViewModel: ObservableObject {
     @Published var languageChanged = false
     @Published var translationItems: [TranslationItem] = []
     @Published var skipExistingTranslations: Bool = true
-    
+
     // 添加一个属性来保持对窗口的强引用
     private var localizationWindow: NSWindow?
+
+    // 通知管理器
+    private let notificationManager = NotificationManager.shared
     
     enum ExportFormat {
         case csv
@@ -243,6 +246,17 @@ class TransferViewModel: ObservableObject {
                 showSuccessActions = result.success
                 isLoading = false
                 showResult = true
+            }
+
+            // 发送通知
+            if notificationManager.areNotificationsEnabled {
+                if result.success {
+                    notificationManager.sendTranslationCompleteNotification(languageCount: selectedLanguages.count)
+                } else {
+                    // 提取错误信息，移除emoji前缀
+                    let errorMessage = result.message.replacingOccurrences(of: "❌ ", with: "")
+                    notificationManager.sendTranslationFailedNotification(errorMessage: errorMessage)
+                }
             }
         }
     }

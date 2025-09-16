@@ -3,8 +3,10 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject private var providerManager = AIProviderManager.shared
     @StateObject private var providerRegistry = AIProviderRegistry.shared
+    @StateObject private var notificationManager = NotificationManager.shared
     @AppStorage("appLanguage") private var appLanguage: String = "en"  // 默认为英语
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false // 添加暗黑模式存储
+    @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true // 通知开关
     
     // 修改为使用原生语言名称，与Localizable.xcstrings中的语言保持一致
     private let supportedLanguages = [
@@ -72,6 +74,23 @@ struct SettingsView: View {
             Section(header: Text("Appearance Settings".localized)) { // 添加外观设置部分
                 Toggle("Dark Mode".localized, isOn: $isDarkMode) // 暗黑模式切换
             }
+
+            Section(header: Text("Notification Settings".localized)) {
+                Toggle("Enable Notifications".localized, isOn: $notificationsEnabled)
+                    .onChange(of: notificationsEnabled) { oldValue, newValue in
+                        if newValue {
+                            // 当用户开启通知时，请求权限
+                            Task {
+                                await requestNotificationPermission()
+                            }
+                        }
+                        notificationManager.areNotificationsEnabled = newValue
+                    }
+
+                Text("Receive notifications when translation tasks complete or fail".localized)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
             
             Section("Other Settings".localized) {
                 Text("More Settings Under Development...".localized)
@@ -84,6 +103,23 @@ struct SettingsView: View {
         .frame(minHeight: 200)
         .id(languageChanged) // 强制视图刷新
         .preferredColorScheme(isDarkMode ? .dark : .light) // 根据 isDarkMode 设置颜色方案
+        .onAppear {
+            notificationManager.initializeDefaultSettings()
+            notificationsEnabled = notificationManager.areNotificationsEnabled
+        }
+    }
+
+    // MARK: - Private Methods
+
+    private func requestNotificationPermission() async {
+        let granted = await notificationManager.requestPermission()
+        if !granted {
+            // 如果用户拒绝权限，关闭开关
+            await MainActor.run {
+                notificationsEnabled = false
+                notificationManager.areNotificationsEnabled = false
+            }
+        }
     }
 }
 
