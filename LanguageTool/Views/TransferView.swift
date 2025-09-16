@@ -30,12 +30,12 @@ struct TransferView: View {
                     languageSelectionCard
 
                     // 水平排列的选项和操作卡片
-                    HStack(spacing: 16) {
+                    HStack(alignment: .top, spacing: 16) {
                         translationOptionsCard
-                            .frame(maxWidth: .infinity, alignment: .top)
+                            .frame(maxWidth: .infinity, minHeight: 140, maxHeight: 140, alignment: .top)
 
                         actionButtonsCard
-                            .frame(maxWidth: .infinity, alignment: .top)
+                            .frame(maxWidth: .infinity, minHeight: 140, maxHeight: 140, alignment: .top)
                     }
 
                     if viewModel.showResult {
@@ -296,9 +296,13 @@ struct TransferView: View {
                 Text("When enabled, only missing translations will be generated. Existing translations will be preserved.".localized)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
             }
+
+            Spacer()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .cardStyle()
     }
 
@@ -346,7 +350,10 @@ struct TransferView: View {
 //                    .disabled(viewModel.isLoading)
                 }
             }
+
+            Spacer()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .cardStyle()
     }
     
