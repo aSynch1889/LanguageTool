@@ -28,8 +28,15 @@ struct TransferView: View {
                     platformSelectionCard
                     fileSelectionCard
                     languageSelectionCard
-                    translationOptionsCard
-                    actionButtonsCard
+
+                    // 水平排列的选项和操作卡片
+                    HStack(spacing: 16) {
+                        translationOptionsCard
+                            .frame(maxWidth: .infinity, alignment: .top)
+
+                        actionButtonsCard
+                            .frame(maxWidth: .infinity, alignment: .top)
+                    }
 
                     if viewModel.showResult {
                         resultsCard
@@ -327,6 +334,7 @@ struct TransferView: View {
                     }
                     .buttonStyle(.bordered)
                     .disabled(viewModel.isLoading)
+                    Spacer()
 //TODO: 临时注释New Window
 //                    Button(action: viewModel.openInNewWindow) {
 //                        HStack(spacing: 6) {
