@@ -28,20 +28,13 @@ class TransferViewModel: ObservableObject {
     
     enum ExportFormat {
         case csv
-        case excel
         
         var fileExtension: String {
-            switch self {
-            case .csv: return "csv"
-            case .excel: return "xlsx"
-            }
+            "csv"
         }
         
         var contentType: UTType {
-            switch self {
-            case .csv: return UTType.commaSeparatedText
-            case .excel: return UTType.spreadsheet
-            }
+            UTType.commaSeparatedText
         }
     }
     
@@ -349,8 +342,21 @@ class TransferViewModel: ObservableObject {
         let outputURL = URL(fileURLWithPath: outputPath)
         
         do {
-            try FileManager.default.removeItem(at: sourceURL)
-            try FileManager.default.copyItem(at: outputURL, to: sourceURL)
+            var isDirectory: ObjCBool = false
+            guard FileManager.default.fileExists(atPath: outputURL.path, isDirectory: &isDirectory), !isDirectory.boolValue else {
+                showAlert(message: "Sync failed: output file is invalid".localized, isError: true)
+                return
+            }
+
+            let tempURL = sourceURL.deletingLastPathComponent().appendingPathComponent("\(sourceURL.lastPathComponent).tmp.\(UUID().uuidString)")
+            try FileManager.default.copyItem(at: outputURL, to: tempURL)
+
+            if FileManager.default.fileExists(atPath: sourceURL.path) {
+                _ = try FileManager.default.replaceItemAt(sourceURL, withItemAt: tempURL)
+            } else {
+                try FileManager.default.moveItem(at: tempURL, to: sourceURL)
+            }
+
             showAlert(message: "Sync completed successfully".localized)
         } catch {
             showAlert(message: "Sync failed: \(error.localizedDescription)".localized, isError: true)
@@ -411,19 +417,8 @@ class TransferViewModel: ObservableObject {
         }
     }
     
-    func exportToExcel() {
-        let alert = NSAlert()
-        alert.messageText = "Choose Export Format".localized
-        alert.informativeText = "Please select the format you want to export to".localized
-        alert.addButton(withTitle: "CSV")
-        alert.addButton(withTitle: "Excel")
-        alert.addButton(withTitle: "Cancel".localized)
-        
-        let response = alert.runModal()
-        guard response != .alertThirdButtonReturn else { return }
-        
-        let format: ExportFormat = response == .alertFirstButtonReturn ? .csv : .excel
-        
+    func exportToCSV() {
+        let format: ExportFormat = .csv
         let panel = NSSavePanel()
         panel.allowedContentTypes = [format.contentType]
         panel.nameFieldStringValue = "translations.\(format.fileExtension)"
@@ -483,29 +478,24 @@ class TransferViewModel: ObservableObject {
                     // 将语言代码转换为Language对象，并按照supportedLanguages的顺序排序
                     let usedLanguages = Language.supportedLanguages.filter { usedLanguageCodes.contains($0.code) }
                     
-                    let writeContent = { (format: ExportFormat) in
-                        var csvContent = "Key,"
-                        csvContent += usedLanguages.map { $0.code }.joined(separator: ",")
+                    var csvContent = "Key,"
+                    csvContent += usedLanguages.map { $0.code }.joined(separator: ",")
+                    csvContent += "\n"
+                    
+                    // 添加每一行翻译内容
+                    for (key, values) in translations {
+                        csvContent += "\(key),"
+                        csvContent += usedLanguages.map { language in
+                            let value = values[language.code] ?? ""
+                            return "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
+                        }.joined(separator: ",")
                         csvContent += "\n"
-                        
-                        // 添加每一行翻译内容
-                        for (key, values) in translations {
-                            csvContent += "\(key),"
-                            csvContent += usedLanguages.map { language in
-                                let value = values[language.code] ?? ""
-                                return "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
-                            }.joined(separator: ",")
-                            csvContent += "\n"
-                        }
-                        
-                        // 写入文件，使用 UTF-8 BOM 以确保 Excel 正确识别编码
-                        let bom = Data([0xEF, 0xBB, 0xBF])
-                        try bom.write(to: url)
-                        try csvContent.data(using: .utf8)?.write(to: url, options: .atomic)
                     }
                     
-                    // 根据选择的格式写入文件
-                    try writeContent(format)
+                    // 写入文件，使用 UTF-8 BOM 以确保 Excel 正确识别编码
+                    let bom = Data([0xEF, 0xBB, 0xBF])
+                    try bom.write(to: url)
+                    try csvContent.data(using: .utf8)?.write(to: url, options: .atomic)
                     
                     DispatchQueue.main.async {
                         NSWorkspace.shared.open(url)
@@ -527,6 +517,58 @@ class TransferViewModel: ObservableObject {
                 translations: values
             )
         }
+    }
+
+    func translateCurrentItems(onlySelected: Bool) async {
+        let candidateIndices = translationItems.indices.filter { index in
+            !onlySelected || translationItems[index].isSelected
+        }
+
+        guard !candidateIndices.isEmpty else { return }
+
+        let targetLanguages = Set(translationItems.flatMap { $0.translations.keys }).union(selectedLanguages.map { $0.code })
+
+        for language in targetLanguages.sorted() {
+            var sourceTexts: [String] = []
+            var existing: [String?] = []
+            var mappedIndices: [Int] = []
+
+            for idx in candidateIndices {
+                let item = translationItems[idx]
+                if let source = preferredSourceText(from: item), !source.isEmpty {
+                    sourceTexts.append(source)
+                    existing.append(item.translations[language])
+                    mappedIndices.append(idx)
+                }
+            }
+
+            if sourceTexts.isEmpty { continue }
+
+            do {
+                let result = try await AIServiceV2.shared.batchTranslateWithExisting(
+                    texts: sourceTexts,
+                    to: language,
+                    existingTranslations: existing,
+                    skipExisting: skipExistingTranslations
+                )
+
+                for (translationIndex, itemIndex) in mappedIndices.enumerated() where translationIndex < result.translations.count {
+                    translationItems[itemIndex].translations[language] = result.translations[translationIndex]
+                }
+            } catch {
+                print("Immediate translation failed [\(language)]: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private func preferredSourceText(from item: TranslationItem) -> String? {
+        let candidates = ["en", "zh-Hans", "zh-Hant"]
+        for code in candidates {
+            if let value = item.translations[code], !value.isEmpty {
+                return value
+            }
+        }
+        return item.translations.values.first { !$0.isEmpty }
     }
     
     func reloadSourceFile() async {

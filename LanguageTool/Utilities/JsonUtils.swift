@@ -1,6 +1,12 @@
 import Foundation
 
 class JsonUtils {
+    struct XCStringsTranslationEntry {
+        let key: String
+        let sourceValue: String
+        let existingTranslations: [String: String]
+    }
+
     /// 从 JSON 文件中提取键为中文字符串的键，删除重复项并写入 TXT 文件。
     ///
     /// - Parameters:
@@ -48,86 +54,89 @@ class JsonUtils {
 
     /// 新增方法：提取中文并返回字符串数组
     static func extractChineseKeysAsArray(from inputFilePath: String) -> [String]? {
-        do {
-            guard let jsonData = try? Data(contentsOf: URL(fileURLWithPath: inputFilePath)),
-                  let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: []) else {
-                print("❌ JSON 文件读取或解析失败")
-                return nil
-            }
-
-            var chineseKeys = Set<String>()
-
-            func extractKeys(from object: Any) {
-                if let dictionary = object as? [String: Any] {
-                    for (key, value) in dictionary {
-                        if key.range(of: "\\p{Han}", options: .regularExpression) != nil {
-                            chineseKeys.insert(key)
-                        }
-                        extractKeys(from: value)
-                    }
-                } else if let array = object as? [Any] {
-                    for item in array {
-                        extractKeys(from: item)
-                    }
-                }
-            }
-
-            extractKeys(from: jsonObject)
-            print("✅ 成功提取 \(chineseKeys.count) 个中文键")
-            return Array(chineseKeys)
-            
-        } catch {
-            print("❌ 处理失败: \(error)")
+        guard let jsonData = try? Data(contentsOf: URL(fileURLWithPath: inputFilePath)),
+              let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: []) else {
+            print("❌ JSON 文件读取或解析失败")
             return nil
         }
+
+        var chineseKeys = Set<String>()
+
+        func extractKeys(from object: Any) {
+            if let dictionary = object as? [String: Any] {
+                for (key, value) in dictionary {
+                    if key.range(of: "\\p{Han}", options: .regularExpression) != nil {
+                        chineseKeys.insert(key)
+                    }
+                    extractKeys(from: value)
+                }
+            } else if let array = object as? [Any] {
+                for item in array {
+                    extractKeys(from: item)
+                }
+            }
+        }
+
+        extractKeys(from: jsonObject)
+        print("✅ 成功提取 \(chineseKeys.count) 个中文键")
+        return Array(chineseKeys)
     }
 
-    /// 从 JSON 文件中提取所有需要翻译的值和源语言
-    static func extractValuesFromXCStrings(from inputFilePath: String) -> (values: [String], sourceLanguage: String, existingTranslations: [String: [String: String]])? {
-        do {
-            guard let jsonData = try? Data(contentsOf: URL(fileURLWithPath: inputFilePath)),
-                  let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
-                  let strings = jsonObject["strings"] as? [String: Any],
-                  let sourceLanguage = jsonObject["sourceLanguage"] as? String else {
-                print("❌ JSON 文件读取或解析失败")
-                return nil
+    /// 从 JSON 文件中提取所有需要翻译的 key/value 和源语言
+    static func extractValuesFromXCStrings(from inputFilePath: String) -> (entries: [XCStringsTranslationEntry], sourceLanguage: String)? {
+        guard let jsonData = try? Data(contentsOf: URL(fileURLWithPath: inputFilePath)),
+              let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
+              let strings = jsonObject["strings"] as? [String: Any],
+              let sourceLanguage = jsonObject["sourceLanguage"] as? String else {
+            print("❌ JSON 文件读取或解析失败")
+            return nil
+        }
+
+        var entries: [XCStringsTranslationEntry] = []
+
+        // 按 key 排序，确保映射顺序稳定
+        for key in strings.keys.sorted() {
+            guard let entry = strings[key] as? [String: Any] else { continue }
+            let localizations = entry["localizations"] as? [String: Any] ?? [:]
+
+            // 提取源语言值（优先 localizations[sourceLanguage]，兼容 source 字段）
+            var sourceValue = ""
+            if let sourceLocalization = localizations[sourceLanguage] as? [String: Any],
+               let stringUnit = sourceLocalization["stringUnit"] as? [String: Any],
+               let value = stringUnit["value"] as? String {
+                sourceValue = value
+            } else if let source = entry["source"] as? [String: Any],
+                      let stringUnit = source["stringUnit"] as? [String: Any],
+                      let value = stringUnit["value"] as? String {
+                sourceValue = value
             }
 
-            var values = Set<String>()
-            var existingTranslations: [String: [String: String]] = [:]
+            if sourceValue.isEmpty {
+                continue
+            }
 
-            // 遍历 strings 下的所有条目
-            for (key, entry) in strings {
-                if let entryDict = entry as? [String: Any],
-                   let localizations = entryDict["localizations"] as? [String: Any] {
-
-                    // 提取源语言值
-                    if let sourceLocalization = localizations[sourceLanguage] as? [String: Any],
-                       let stringUnit = sourceLocalization["stringUnit"] as? [String: Any],
-                       let value = stringUnit["value"] as? String {
-                        values.insert(value)
-
-                        // 收集现有翻译
-                        var keyTranslations: [String: String] = [:]
-                        for (langCode, localization) in localizations {
-                            if let locDict = localization as? [String: Any],
-                               let stringUnit = locDict["stringUnit"] as? [String: Any],
-                               let translatedValue = stringUnit["value"] as? String,
-                               !translatedValue.isEmpty {
-                                keyTranslations[langCode] = translatedValue
-                            }
-                        }
-                        existingTranslations[value] = keyTranslations
-                    }
+            // 收集现有翻译（按 key 维度保留，避免同文案 key 互相覆盖）
+            var keyTranslations: [String: String] = [:]
+            for (langCode, localization) in localizations {
+                if let locDict = localization as? [String: Any],
+                   let stringUnit = locDict["stringUnit"] as? [String: Any],
+                   let translatedValue = stringUnit["value"] as? String,
+                   !translatedValue.isEmpty {
+                    keyTranslations[langCode] = translatedValue
                 }
             }
 
-            print("✅ 成功提取 \(values.count) 个待翻译值，发现 \(existingTranslations.count) 个已有翻译条目")
-            return (Array(values), sourceLanguage, existingTranslations)
-        } catch {
-            print("❌ 处理失败: \(error)")
-            return nil
+            entries.append(
+                XCStringsTranslationEntry(
+                    key: key,
+                    sourceValue: sourceValue,
+                    existingTranslations: keyTranslations
+                )
+            )
         }
+
+        print("✅ 成功提取 \(entries.count) 个待翻译条目")
+        return (entries, sourceLanguage)
     }
 
     /// 从JSON文件中提取值并生成本地化文件
@@ -137,10 +146,9 @@ class JsonUtils {
         }
         
         guard let jsonData = await LocalizationJSONGenerator.generateJSON(
-            for: extractedData.values,
+            for: extractedData.entries,
             languages: languages,
             sourceLanguage: extractedData.sourceLanguage,
-            existingTranslations: extractedData.existingTranslations,
             skipExistingTranslations: skipExistingTranslations
         ) else {
             return (false, "❌ 生成 JSON 失败")
@@ -148,7 +156,7 @@ class JsonUtils {
         
         do {
             try jsonData.write(to: URL(fileURLWithPath: outputPath))
-            return (true, "Successfully generated localized JSON file containing \(extractedData.values.count) translation items".localized)
+            return (true, "Successfully generated localized JSON file containing \(extractedData.entries.count) translation items".localized)
         } catch {
             return (false, "❌ 写入文件失败: \(error.localizedDescription)")
         }

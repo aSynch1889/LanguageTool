@@ -66,6 +66,7 @@ class AIProviderManager: ObservableObject {
 
     @Published private var apiKeys: [String: String] = [:]
     @Published var selectedProviderId: String = "deepseek"
+    @Published var fallbackProviderId: String = ""
 
     private let userDefaults = UserDefaults.standard
     private let apiKeyPrefix = "apiKey_"
@@ -94,8 +95,18 @@ class AIProviderManager: ObservableObject {
         userDefaults.set(providerId, forKey: "selectedAIProvider")
     }
 
+    func setFallbackProvider(_ providerId: String) {
+        fallbackProviderId = providerId
+        userDefaults.set(providerId, forKey: "fallbackAIProvider")
+    }
+
     func getSelectedProvider() -> AIProviderConfig? {
         return AIProviderRegistry.shared.get(selectedProviderId)
+    }
+
+    func getFallbackProvider() -> AIProviderConfig? {
+        guard !fallbackProviderId.isEmpty else { return nil }
+        return AIProviderRegistry.shared.get(fallbackProviderId)
     }
 
     private func loadApiKeys() {
@@ -130,6 +141,7 @@ class AIProviderManager: ObservableObject {
         } else {
             selectedProviderId = userDefaults.string(forKey: "selectedAIProvider") ?? "deepseek"
         }
+        fallbackProviderId = userDefaults.string(forKey: "fallbackAIProvider") ?? ""
     }
 
     private func migrateOldApiKeys() {

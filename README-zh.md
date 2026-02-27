@@ -1,5 +1,5 @@
 # Language Tool
-[English](README-en.md) | [中文](README.md)
+[English](README.md) | [中文](README-zh.md)
 Language Tool 是一个 macOS 应用程序，用于自动化生成多平台的多语言本地化文件。支持 iOS、Flutter 和 Electron 项目的本地化文件生成。
 
 ## 功能特点
@@ -14,7 +14,7 @@ Language Tool 是一个 macOS 应用程序，用于自动化生成多平台的�
 - ⚡️ 简单直观的用户界面
 - 🎯 完全适配各平台的本地化工作流
 - 🔁 支持同步更新源文件内容
-- 📊 支持导出为 Excel 格式便于管理
+- 📊 支持导出为 CSV 格式便于管理
 
 ## 支持的语言
 
@@ -89,12 +89,14 @@ Language Tool 是一个 macOS 应用程序，用于自动化生成多平台的�
 
 ## 注意事项
 
-- 使用前需要配置有效的 DeepSeek AI 或者 Gemini（免费但限制地区） 服务 API Key
+- 使用前需要配置有效的 AI 服务 API Key（支持 DeepSeek、Gemini、Aliyun、Kimi、GLM）
 - 建议在使用前备份原有的本地化文件
 - 翻译结果可能需要人工审核以确保准确性
 - 不同平台的本地化文件格式有所不同，请确保选择正确的平台
-- deepseek API [申请地址](https://platform.deepseek.com/api_keys)
+- DeepSeek API [申请地址](https://platform.deepseek.com/api_keys)
 - Gemini API [申请地址](https://aistudio.google.com/app/apikey?hl=zh-cn)
+- Kimi API [申请地址](https://platform.moonshot.cn/console/api-keys)
+- GLM API [申请地址](https://open.bigmodel.cn/usercenter/apikeys)
 
 ## 贡献
 
@@ -106,7 +108,7 @@ Language Tool 是一个 macOS 应用程序，用于自动化生成多平台的�
 
 ## 致谢
 
-- DeepSeek AI、Gemini 提供翻译服务
+- DeepSeek、Gemini、Aliyun、Kimi、GLM 提供翻译服务
 - SwiftUI 框架
 - 所有贡献者和用户
 
