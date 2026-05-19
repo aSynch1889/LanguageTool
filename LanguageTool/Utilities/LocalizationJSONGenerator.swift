@@ -26,8 +26,35 @@ class LocalizationJSONGenerator {
             "de": "German"
         ]
         
-        // 为每种语言批量翻译所有键
+        // 先按 key 初始化，保留 source 与已有翻译
+        for entry in entries {
+            var localizations: [String: Any] = [
+                sourceLanguage: [
+                    "stringUnit": [
+                        "state": "translated",
+                        "value": entry.sourceValue
+                    ]
+                ]
+            ]
+
+            for (langCode, value) in entry.existingTranslations where !value.isEmpty {
+                localizations[langCode] = [
+                    "stringUnit": [
+                        "state": "translated",
+                        "value": value
+                    ]
+                ]
+            }
+
+            stringsDict[entry.key] = ["localizations": localizations]
+        }
+
+        // 为每种语言批量翻译所有条目
         for language in languages {
+            if language == sourceLanguage {
+                continue
+            }
+
             do {
                 // 使用优化后的批量翻译方法，支持跳过已有翻译
                 print("Starting batch translation [\(language)]...")
@@ -38,7 +65,7 @@ class LocalizationJSONGenerator {
                 }
 
                 let result = try await AIServiceV2.shared.batchTranslateWithExisting(
-                    texts: entries.map(\.sourceValue),
+                    texts: entries.map { $0.sourceValue },
                     to: languageNames[language] ?? language,
                     existingTranslations: existingTranslationsForLanguage,
                     skipExisting: skipExistingTranslations
@@ -47,21 +74,18 @@ class LocalizationJSONGenerator {
                 
                 // 将翻译结果添加到字典中
                 for (index, entry) in entries.enumerated() {
-                    let key = entry.key
-                    if stringsDict[key] == nil {
-                        stringsDict[key] = ["localizations": [:]]
-                    }
-                    if var localizations = stringsDict[key] as? [String: Any],
+                    if var localizations = stringsDict[entry.key] as? [String: Any],
                        var localizationsDict = localizations["localizations"] as? [String: Any],
                        index < translations.count {
+                        let translationValue = translations[index]
                         localizationsDict[language] = [
                             "stringUnit": [
-                                "state": "translated",
-                                "value": translations[index]
+                                "state": translationValue.isEmpty ? "needs_review" : "translated",
+                                "value": translationValue
                             ]
                         ]
                         localizations["localizations"] = localizationsDict
-                        stringsDict[key] = localizations
+                        stringsDict[entry.key] = localizations
                     }
                 }
                 
@@ -70,11 +94,7 @@ class LocalizationJSONGenerator {
                 print("❌ Batch translation failed [\(language)]: \(error.localizedDescription)")
                 // 翻译失败时为所有键设置空值
                 for entry in entries {
-                    let key = entry.key
-                    if stringsDict[key] == nil {
-                        stringsDict[key] = ["localizations": [:]]
-                    }
-                    if var localizations = stringsDict[key] as? [String: Any],
+                    if var localizations = stringsDict[entry.key] as? [String: Any],
                        var localizationsDict = localizations["localizations"] as? [String: Any] {
                         localizationsDict[language] = [
                             "stringUnit": [
@@ -83,7 +103,7 @@ class LocalizationJSONGenerator {
                             ]
                         ]
                         localizations["localizations"] = localizationsDict
-                        stringsDict[key] = localizations
+                        stringsDict[entry.key] = localizations
                     }
                 }
             }

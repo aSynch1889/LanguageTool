@@ -45,6 +45,10 @@ struct LocalizationMasterView: View {
             return false
         }
     }
+
+    private var addableLanguages: [Language] {
+        Language.supportedLanguages.filter { !availableLanguages.contains($0.code) }
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -77,8 +81,16 @@ struct LocalizationMasterView: View {
             Divider()
             
             HStack {
-                Button("新增语言") {
-                    // TODO: Implement add language functionality
+                Menu("新增语言") {
+                    if addableLanguages.isEmpty {
+                        Text("无可新增语言")
+                    } else {
+                        ForEach(addableLanguages) { language in
+                            Button("\(language.localizedName) (\(language.code))") {
+                                addLanguage(language.code)
+                            }
+                        }
+                    }
                 }
                 Spacer()
                 Button("重新加载源文件") {
@@ -90,10 +102,12 @@ struct LocalizationMasterView: View {
                     viewModel.syncToSource()
                 }
                 Button("导出") {
-                    viewModel.exportToExcel()
+                    viewModel.exportToCSV()
                 }
                 Button("立即翻译") {
-                    // TODO: Implement immediate translation functionality
+                    Task {
+                        await viewModel.translateCurrentItems(onlySelected: translateSelectedOnly)
+                    }
                 }
             }
             .padding()
@@ -141,6 +155,15 @@ struct LocalizationMasterView: View {
     private func getLanguageDisplay(for code: String) -> String {
         let languageName = Locale.current.localizedString(forLanguageCode: code) ?? code
         return "\(code) (\(languageName))"
+    }
+
+    private func addLanguage(_ languageCode: String) {
+        guard !viewModel.translationItems.isEmpty else { return }
+        for index in viewModel.translationItems.indices {
+            if viewModel.translationItems[index].translations[languageCode] == nil {
+                viewModel.translationItems[index].translations[languageCode] = ""
+            }
+        }
     }
 }
 

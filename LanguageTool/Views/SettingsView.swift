@@ -4,6 +4,7 @@ struct SettingsView: View {
     @StateObject private var providerManager = AIProviderManager.shared
     @StateObject private var providerRegistry = AIProviderRegistry.shared
     @StateObject private var notificationManager = NotificationManager.shared
+    @AppStorage("translationGlossary") private var translationGlossary: String = ""
     @AppStorage("appLanguage") private var appLanguage: String = "en"  // 默认为英语
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false // 添加暗黑模式存储
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true // 通知开关
@@ -40,6 +41,16 @@ struct SettingsView: View {
                 }
                 .onChange(of: providerManager.selectedProviderId) { _, newValue in
                     providerManager.setSelectedProvider(newValue)
+                }
+
+                Picker("Fallback AI Service".localized, selection: $providerManager.fallbackProviderId) {
+                    Text("None".localized).tag("")
+                    ForEach(providerRegistry.allProviders()) { provider in
+                        Text(provider.displayName).tag(provider.id)
+                    }
+                }
+                .onChange(of: providerManager.fallbackProviderId) { _, newValue in
+                    providerManager.setFallbackProvider(newValue)
                 }
 
                 // 动态生成API Key输入框
@@ -88,6 +99,15 @@ struct SettingsView: View {
                     }
 
                 Text("Receive notifications when translation tasks complete or fail".localized)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Section(header: Text("Glossary".localized)) {
+                TextEditor(text: $translationGlossary)
+                    .frame(minHeight: 80, maxHeight: 120)
+                    .font(.system(.body, design: .monospaced))
+                Text("One rule per line, e.g. iPhone => iPhone".localized)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }

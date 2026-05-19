@@ -22,7 +22,7 @@ playground.xcworkspace
 # Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
 # Packages/
 # Package.pins
-# Package.resolved
+Package.resolved
 # *.xcodeproj
 #
 # Xcode automatically generates this directory with a .xcworkspacedata file and xcuserdata
@@ -30,6 +30,58 @@ playground.xcworkspace
 # .swiftpm
 
 .build/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode Patch
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+*.xcworkspace/*
+!*.xcworkspace/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+/*.gcno
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# Bundler
+Pods/
+
+# Carthage
+#
+# Add this line if you want to avoid checking in source code from Carthage dependencies.
+# Carthage/Checkouts
+
+Carthage/Build/
+
+# fastlane
+#
+# It is recommended to not store the screenshots in the git repo.
+# Instead, use fastlane to re-generate the screenshots whenever they are needed.
+# For more information about the recommended setup visit:
+# https://docs.fastlane.tools/best-practices/source-control/#source-control
+
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Localization backups
+Localizable1.xcstrings
+Localizable2.xcstrings
+Localizable_副本.xcstrings
+
+# Temporary files
+*~
+.tmp/
+*.tmp
+*.swp
+*.swo
+
+# Vendor dependencies
+Vendor/
 
 # CocoaPods
 #

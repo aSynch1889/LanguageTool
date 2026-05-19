@@ -14,7 +14,7 @@ Language Tool is a macOS application designed for the automated generation of mu
 - ⚡️ Simple and intuitive user interface
 - 🎯 Fully compatible with localization workflows across platforms
 - 🔁 Supports synchronization with source file content
-- 📊 Export to Excel format for easier management
+- 📊 Export to CSV format for easier management
 
 ## Supported Languages
 
@@ -88,12 +88,14 @@ If you prefer to build the application yourself:
 
 ## Notes
 
-- You need to configure a valid DeepSeek AI or Gemini service API Key before use
+- You need to configure a valid AI service API Key before use (DeepSeek, Gemini, Aliyun, Kimi, GLM)
 - It is recommended to back up existing localization files before use
 - Translation results may require manual review to ensure accuracy
 - Different platforms have different localization file formats, please ensure to select the correct platform
-- deepseek [application portal](https://platform.deepseek.com/api_keys)
-- Gemini api [application portal](https://aistudio.google.com/app/apikey?hl=zh-cn)
+- DeepSeek [application portal](https://platform.deepseek.com/api_keys)
+- Gemini API [application portal](https://aistudio.google.com/app/apikey?hl=zh-cn)
+- Kimi API [application portal](https://platform.moonshot.cn/console/api-keys)
+- GLM API [application portal](https://open.bigmodel.cn/usercenter/apikeys)
 
 ## Contribution
 
@@ -105,7 +107,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgments
 
-- DeepSeek AI and Gemini for providing translation services
+- DeepSeek, Gemini, Aliyun, Kimi, and GLM for providing translation services
 - SwiftUI framework
 - All contributors and users
 

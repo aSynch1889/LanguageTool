@@ -81,7 +81,7 @@ class JsonUtils {
         return Array(chineseKeys)
     }
 
-    /// 从 JSON 文件中提取所有需要翻译的值和源语言
+    /// 从 JSON 文件中提取所有需要翻译的 key/value 和源语言
     static func extractValuesFromXCStrings(from inputFilePath: String) -> (entries: [XCStringsTranslationEntry], sourceLanguage: String)? {
         guard let jsonData = try? Data(contentsOf: URL(fileURLWithPath: inputFilePath)),
               let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
@@ -93,35 +93,46 @@ class JsonUtils {
 
         var entries: [XCStringsTranslationEntry] = []
 
-        // 遍历 strings 下的所有条目
-        for (key, entry) in strings {
-            if let entryDict = entry as? [String: Any],
-               let localizations = entryDict["localizations"] as? [String: Any] {
+        // 按 key 排序，确保映射顺序稳定
+        for key in strings.keys.sorted() {
+            guard let entry = strings[key] as? [String: Any] else { continue }
+            let localizations = entry["localizations"] as? [String: Any] ?? [:]
 
-                // 提取源语言值
-                if let sourceLocalization = localizations[sourceLanguage] as? [String: Any],
-                   let stringUnit = sourceLocalization["stringUnit"] as? [String: Any],
-                   let value = stringUnit["value"] as? String {
-                    var keyTranslations: [String: String] = [:]
-                    for (langCode, localization) in localizations {
-                        if let locDict = localization as? [String: Any],
-                           let stringUnit = locDict["stringUnit"] as? [String: Any],
-                           let translatedValue = stringUnit["value"] as? String,
-                           !translatedValue.isEmpty {
-                            keyTranslations[langCode] = translatedValue
-                        }
-                    }
-                    entries.append(
-                        XCStringsTranslationEntry(
-                            key: key,
-                            sourceValue: value,
-                            existingTranslations: keyTranslations
-                        )
-                    )
+            // 提取源语言值（优先 localizations[sourceLanguage]，兼容 source 字段）
+            var sourceValue = ""
+            if let sourceLocalization = localizations[sourceLanguage] as? [String: Any],
+               let stringUnit = sourceLocalization["stringUnit"] as? [String: Any],
+               let value = stringUnit["value"] as? String {
+                sourceValue = value
+            } else if let source = entry["source"] as? [String: Any],
+                      let stringUnit = source["stringUnit"] as? [String: Any],
+                      let value = stringUnit["value"] as? String {
+                sourceValue = value
+            }
+
+            if sourceValue.isEmpty {
+                continue
+            }
+
+            // 收集现有翻译（按 key 维度保留，避免同文案 key 互相覆盖）
+            var keyTranslations: [String: String] = [:]
+            for (langCode, localization) in localizations {
+                if let locDict = localization as? [String: Any],
+                   let stringUnit = locDict["stringUnit"] as? [String: Any],
+                   let translatedValue = stringUnit["value"] as? String,
+                   !translatedValue.isEmpty {
+                    keyTranslations[langCode] = translatedValue
                 }
             }
-        }
 
+            entries.append(
+                XCStringsTranslationEntry(
+                    key: key,
+                    sourceValue: sourceValue,
+                    existingTranslations: keyTranslations
+                )
+            )
+        }
         print("✅ 成功提取 \(entries.count) 个待翻译条目")
         return (entries, sourceLanguage)
     }

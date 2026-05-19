@@ -103,7 +103,7 @@ struct TransferView: View {
 
                 ModernFileSelector(
                     title: "Choose Output Location".localized,
-                    subtitle: "Output Location (Optional)".localized,
+                    subtitle: "Output Location".localized,
                     selectedPath: viewModel.isOutputSelected ? viewModel.outputPath : nil,
                     isSelected: viewModel.isOutputSelected,
                     onSelect: viewModel.selectOutputPath,
@@ -403,8 +403,8 @@ struct TransferView: View {
                         }
                         .buttonStyle(.bordered)
 
-                        Button(action: viewModel.exportToExcel) {
-                            Label("Export to Excel".localized, systemImage: "arrow.down.doc")
+                        Button(action: viewModel.exportToCSV) {
+                            Label("Export CSV".localized, systemImage: "arrow.down.doc")
                                 .font(.subheadline)
                         }
                         .buttonStyle(.bordered)
@@ -611,4 +611,3 @@ struct DragDropButtonStyle: ButtonStyle {
             )
     }
 }
-

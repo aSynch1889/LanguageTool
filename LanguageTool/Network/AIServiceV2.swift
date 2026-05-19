@@ -61,7 +61,11 @@ class AIServiceV2 {
             throw AIError.invalidConfiguration("API key not configured for \(provider.name)")
         }
 
-        return try await executeRequest(provider: provider, apiKey: apiKey, messages: messages)
+        return try await executeRequestWithFallback(
+            provider: provider,
+            apiKey: apiKey,
+            messages: messages
+        )
     }
 
     func translate(text: String, to targetLanguage: String) async throws -> String {
@@ -74,10 +78,12 @@ class AIServiceV2 {
     func batchTranslate(texts: [String], to targetLanguage: String) async throws -> [String] {
         let separator = "|||"
         let combinedText = texts.joined(separator: separator)
+        let glossaryHint = glossaryPromptHint()
 
         let prompt = """
         请将以下文本翻译成\(targetLanguage)。
         每个文本之间使用 ||| 分隔，请保持这个分隔符，只返回翻译结果：
+        \(glossaryHint)
 
         \(combinedText)
         """
@@ -99,7 +105,7 @@ class AIServiceV2 {
             "target_lang": targetLanguage
         ] : nil
 
-        let response = try await executeRequest(
+        let response = try await executeRequestWithFallback(
             provider: provider,
             apiKey: apiKey,
             messages: messages,
@@ -183,6 +189,38 @@ class AIServiceV2 {
         return try provider.responseParser.parseResponse(data: responseData)
     }
 
+    private func executeRequestWithFallback(provider: AIProviderConfig,
+                                          apiKey: String,
+                                          messages: [Message],
+                                          translationOptions: [String: String]? = nil) async throws -> String {
+        do {
+            return try await executeRequest(
+                provider: provider,
+                apiKey: apiKey,
+                messages: messages,
+                translationOptions: translationOptions
+            )
+        } catch {
+            guard let fallbackProvider = providerManager.getFallbackProvider(),
+                  fallbackProvider.id != provider.id else {
+                throw error
+            }
+
+            let fallbackApiKey = providerManager.getApiKey(for: fallbackProvider.id)
+            guard !fallbackApiKey.isEmpty else {
+                throw error
+            }
+
+            print("Primary provider failed, trying fallback provider: \(fallbackProvider.displayName)")
+            return try await executeRequest(
+                provider: fallbackProvider,
+                apiKey: fallbackApiKey,
+                messages: messages,
+                translationOptions: translationOptions
+            )
+        }
+    }
+
     private func buildHTTPConfig(provider: AIProviderConfig,
                                apiKey: String,
                                requestBody: [String: Any]) throws -> HTTPRequestConfig {
@@ -238,6 +276,12 @@ class AIServiceV2 {
         }
 
         return translations
+    }
+
+    private func glossaryPromptHint() -> String {
+        let glossary = UserDefaults.standard.string(forKey: "translationGlossary")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        guard !glossary.isEmpty else { return "" }
+        return "\n请严格遵守以下术语映射规则（术语左侧不要翻译，右侧为目标结果）：\n\(glossary)\n"
     }
 
     private func setupDefaultProviders() {
