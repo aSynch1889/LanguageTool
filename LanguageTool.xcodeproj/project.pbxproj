@@ -164,7 +164,7 @@
 			mainGroup = 89D94CB82D5CC564006DE9FB;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				8992F1472DE1F3B500877509 /* XCLocalSwiftPackageReference "swift-syntax" */,
+				8992F1472DE1F3B500877509 /* XCRemoteSwiftPackageReference "swift-syntax" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 89D94CC22D5CC564006DE9FB /* Products */;
@@ -413,27 +413,31 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		8992F1472DE1F3B500877509 /* XCLocalSwiftPackageReference "swift-syntax" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Vendor/swift-syntax;
+/* Begin XCRemoteSwiftPackageReference section */
+		8992F1472DE1F3B500877509 /* XCRemoteSwiftPackageReference "swift-syntax" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swiftlang/swift-syntax.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		8992F1482DE1F3B500877509 /* SwiftSyntax */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8992F1472DE1F3B500877509 /* XCLocalSwiftPackageReference "swift-syntax" */;
+			package = 8992F1472DE1F3B500877509 /* XCRemoteSwiftPackageReference "swift-syntax" */;
 			productName = SwiftSyntax;
 		};
 		8992F14A2DE1F42A00877509 /* SwiftParser */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8992F1472DE1F3B500877509 /* XCLocalSwiftPackageReference "swift-syntax" */;
+			package = 8992F1472DE1F3B500877509 /* XCRemoteSwiftPackageReference "swift-syntax" */;
 			productName = SwiftParser;
 		};
 		8992F14C2DE1F44400877509 /* SwiftOperators */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8992F1472DE1F3B500877509 /* XCLocalSwiftPackageReference "swift-syntax" */;
+			package = 8992F1472DE1F3B500877509 /* XCRemoteSwiftPackageReference "swift-syntax" */;
 			productName = SwiftOperators;
 		};
 /* End XCSwiftPackageProductDependency section */
