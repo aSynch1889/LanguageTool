@@ -2,15 +2,15 @@ import Foundation
 
 class AppSettings: ObservableObject {
     static let shared = AppSettings()
+    private let providerManager = AIProviderManager.shared
     
     @Published var apiKey: String {
         didSet {
-            UserDefaults.standard.set(apiKey, forKey: "apiKey")
+            providerManager.setApiKey(apiKey, for: "deepseek")
         }
     }
     
     private init() {
-        // 从 UserDefaults 读取存储的设置
-        self.apiKey = UserDefaults.standard.string(forKey: "apiKey") ?? ""
+        self.apiKey = providerManager.getApiKey(for: "deepseek")
     }
-} 
+}

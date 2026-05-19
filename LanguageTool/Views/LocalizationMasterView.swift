@@ -338,7 +338,7 @@ struct NSTableViewRepresentable: NSViewRepresentable {
     }
 }
 
-struct TranslationItem: Identifiable {
+struct TranslationItem: Identifiable, Sendable {
     let id = UUID()
     var isSelected: Bool = true
     var key: String

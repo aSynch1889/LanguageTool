@@ -165,96 +165,41 @@ class TransferViewModel: ObservableObject {
     
     func convertToLocalization() {
         Task {
-            await MainActor.run {
-                isLoading = true
-                showResult = false
-                showSuccessActions = false
-                translationItems = []
-            }
-            
-            // 先解析输入文件获取翻译项
-            translationItems = await TranslationManager.shared.parseInputFile(at: inputPath, platform: selectedPlatform)
-            
-            let fileExtension = (inputPath as NSString).pathExtension.lowercased()
-            let result: (message: String, success: Bool)
-            
-            switch selectedPlatform {
-            case .iOS:
-                switch fileExtension {
-                case "strings":
-                    let processResult = await StringsFileParser.processStringsFile(
-                        from: inputPath,
-                        to: outputPath,
-                        format: outputFormat,
-                        languages: selectedLanguages,
-                        skipExistingTranslations: skipExistingTranslations
-                    )
-                    switch processResult {
-                    case .success(let message):
-                        result = (message: message, success: true)
-                    case .failure(let error):
-                        result = (message: "❌ 转换失败：\(error.localizedDescription)", success: false)
-                    }
-                case "xcstrings":
-                    let conversionResult = await JsonUtils.convertToLocalizationFile(
-                        from: inputPath,
-                        to: outputPath,
-                        languages: Array(selectedLanguages).map { $0.code },
-                        skipExistingTranslations: skipExistingTranslations
-                    )
-                    result = (message: conversionResult.message, success: conversionResult.success)
-                default:
-                    result = (message: "❌ 不支持的文件格式", success: false)
-                }
-                
-            case .flutter:
-                let processResult = await ARBFileHandler.processARBFile(
-                    from: inputPath,
-                    to: outputPath,
-                    languages: Array(selectedLanguages).map { $0.code },
+            isLoading = true
+            showResult = false
+            showSuccessActions = false
+            translationItems = []
+
+            let inputPath = self.inputPath
+            let outputPath = self.outputPath
+            let selectedPlatform = self.selectedPlatform
+            let outputFormat = self.outputFormat
+            let languageCodes = self.selectedLanguages.map(\.code)
+            let skipExistingTranslations = self.skipExistingTranslations
+
+            let executionResult = await Task.detached(priority: .userInitiated) {
+                await LocalizationConversionService.execute(
+                    inputPath: inputPath,
+                    outputPath: outputPath,
+                    selectedPlatform: selectedPlatform,
+                    outputFormat: outputFormat,
+                    languageCodes: languageCodes,
                     skipExistingTranslations: skipExistingTranslations
                 )
-                switch processResult {
-                case .success(let message):
-                    result = (message: message, success: true)
-                case .failure(let error):
-                    result = (message: "❌ 转换失败：\(error.localizedDescription)", success: false)
-                }
-                
-            case .electron:
-                // 严格校验输入文件类型
-                guard fileExtension == "json" else {
-                    result = (message: "❌ Electron 平台仅支持 .json 文件", success: false)
-                    break
-                }
-                let processResult = await ElectronLocalizationHandler.processLocalizationFile(
-                    from: inputPath,
-                    to: outputPath,
-                    languages: Array(selectedLanguages).map { $0.code },
-                    skipExistingTranslations: skipExistingTranslations
-                )
-                switch processResult {
-                case .success(let message):
-                    result = (message: message, success: true)
-                case .failure(let error):
-                    result = (message: "❌ 转换失败：\(error.localizedDescription)", success: false)
-                }
-            }
-            
-            await MainActor.run {
-                conversionResult = result.message
-                showSuccessActions = result.success
-                isLoading = false
-                showResult = true
-            }
+            }.value
+
+            conversionResult = executionResult.message
+            showSuccessActions = executionResult.success
+            translationItems = executionResult.translationItems
+            isLoading = false
+            showResult = true
 
             // 发送通知
             if notificationManager.areNotificationsEnabled {
-                if result.success {
+                if executionResult.success {
                     notificationManager.sendTranslationCompleteNotification(languageCount: selectedLanguages.count)
                 } else {
-                    // 提取错误信息，移除emoji前缀
-                    let errorMessage = result.message.replacingOccurrences(of: "❌ ", with: "")
+                    let errorMessage = executionResult.message.replacingOccurrences(of: "❌ ", with: "")
                     notificationManager.sendTranslationFailedNotification(errorMessage: errorMessage)
                 }
             }
@@ -263,6 +208,7 @@ class TransferViewModel: ObservableObject {
     
     func handleDroppedFile(_ providers: [NSItemProvider]) -> Bool {
         guard let provider = providers.first else { return false }
+        let selectedPlatform = self.selectedPlatform
         
         if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
             provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, error in
@@ -276,7 +222,7 @@ class TransferViewModel: ObservableObject {
                 let fileExtension = url.pathExtension.lowercased()
                 var isValidFile = false
                 
-                switch self.selectedPlatform {
+                switch selectedPlatform {
                 case .iOS:
                     isValidFile = ["strings", "xcstrings"].contains(fileExtension)
                 case .flutter:
@@ -297,7 +243,7 @@ class TransferViewModel: ObservableObject {
                     self.isInputSelected = true
                     
                     // 根据选择的平台设置输出格式
-                    switch self.selectedPlatform {
+                    switch selectedPlatform {
                     case .iOS:
                         self.outputFormat = fileExtension == "strings" ? .strings : .xcstrings
                     case .flutter:
@@ -349,8 +295,20 @@ class TransferViewModel: ObservableObject {
         let outputURL = URL(fileURLWithPath: outputPath)
         
         do {
-            try FileManager.default.removeItem(at: sourceURL)
-            try FileManager.default.copyItem(at: outputURL, to: sourceURL)
+            let sourceDirectory = sourceURL.deletingLastPathComponent()
+            let temporaryURL = sourceDirectory.appendingPathComponent(".\(sourceURL.lastPathComponent).tmp")
+
+            if FileManager.default.fileExists(atPath: temporaryURL.path) {
+                try FileManager.default.removeItem(at: temporaryURL)
+            }
+
+            try FileManager.default.copyItem(at: outputURL, to: temporaryURL)
+            _ = try FileManager.default.replaceItemAt(
+                sourceURL,
+                withItemAt: temporaryURL,
+                backupItemName: nil,
+                options: [.usingNewMetadataOnly]
+            )
             showAlert(message: "Sync completed successfully".localized)
         } catch {
             showAlert(message: "Sync failed: \(error.localizedDescription)".localized, isError: true)

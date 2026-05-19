@@ -2,10 +2,9 @@ import Foundation
 import AppKit
 
 class LocalizationJSONGenerator {
-    static func generateJSON(for keys: [String],
+    static func generateJSON(for entries: [JsonUtils.XCStringsTranslationEntry],
                            languages: [String],
                            sourceLanguage: String,
-                           existingTranslations: [String: [String: String]] = [:],
                            skipExistingTranslations: Bool = true) async -> Data? {
         var localizationData: [String: Any] = [
             "version": "1.0",
@@ -34,12 +33,12 @@ class LocalizationJSONGenerator {
                 print("Starting batch translation [\(language)]...")
 
                 // 准备现有翻译数组
-                let existingTranslationsForLanguage = keys.map { key -> String? in
-                    return existingTranslations[key]?[language]
+                let existingTranslationsForLanguage = entries.map { entry -> String? in
+                    entry.existingTranslations[language]
                 }
 
                 let result = try await AIServiceV2.shared.batchTranslateWithExisting(
-                    texts: keys,
+                    texts: entries.map(\.sourceValue),
                     to: languageNames[language] ?? language,
                     existingTranslations: existingTranslationsForLanguage,
                     skipExisting: skipExistingTranslations
@@ -47,7 +46,8 @@ class LocalizationJSONGenerator {
                 let translations = result.translations
                 
                 // 将翻译结果添加到字典中
-                for (index, key) in keys.enumerated() {
+                for (index, entry) in entries.enumerated() {
+                    let key = entry.key
                     if stringsDict[key] == nil {
                         stringsDict[key] = ["localizations": [:]]
                     }
@@ -69,7 +69,8 @@ class LocalizationJSONGenerator {
             } catch {
                 print("❌ Batch translation failed [\(language)]: \(error.localizedDescription)")
                 // 翻译失败时为所有键设置空值
-                for key in keys {
+                for entry in entries {
+                    let key = entry.key
                     if stringsDict[key] == nil {
                         stringsDict[key] = ["localizations": [:]]
                     }

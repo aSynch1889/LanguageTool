@@ -6,7 +6,7 @@ class NetworkClient: NetworkClientProtocol {
     private let session: URLSession
     private let enableLogging: Bool
 
-    init(session: URLSession = .shared, enableLogging: Bool = true) {
+    init(session: URLSession = .shared, enableLogging: Bool = false) {
         self.session = session
         self.enableLogging = enableLogging
     }
@@ -54,17 +54,28 @@ class NetworkClient: NetworkClientProtocol {
         print("🔗 Network Request:")
         print("   URL: \(config.url.absoluteString)")
         print("   Method: \(config.method.rawValue)")
-        print("   Headers: \(config.headers)")
-        if let body = config.body, let bodyString = String(data: body, encoding: .utf8) {
-            print("   Body: \(bodyString)")
+        print("   Headers: \(redactedHeaders(config.headers))")
+        if config.body != nil {
+            print("   Body: <redacted>")
         }
     }
 
     private func logResponse(httpResponse: HTTPURLResponse, data: Data) {
         print("📡 Network Response:")
         print("   Status Code: \(httpResponse.statusCode)")
-        if let responseString = String(data: data, encoding: .utf8) {
-            print("   Data: \(responseString)")
+        print("   Data Length: \(data.count) bytes")
+    }
+
+    private func redactedHeaders(_ headers: [String: String]) -> [String: String] {
+        var result: [String: String] = [:]
+        for (key, value) in headers {
+            let lowercasedKey = key.lowercased()
+            if lowercasedKey.contains("authorization") || lowercasedKey.contains("api-key") || lowercasedKey.contains("key") {
+                result[key] = "<redacted>"
+            } else {
+                result[key] = value
+            }
         }
+        return result
     }
 }

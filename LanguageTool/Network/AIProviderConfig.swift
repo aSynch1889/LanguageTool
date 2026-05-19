@@ -69,6 +69,7 @@ class AIProviderManager: ObservableObject {
 
     private let userDefaults = UserDefaults.standard
     private let apiKeyPrefix = "apiKey_"
+    private let keychain = KeychainService.shared
 
     private init() {
         loadApiKeys()
@@ -77,7 +78,12 @@ class AIProviderManager: ObservableObject {
 
     func setApiKey(_ key: String, for providerId: String) {
         apiKeys[providerId] = key
-        userDefaults.set(key, forKey: apiKeyPrefix + providerId)
+        let account = apiKeyPrefix + providerId
+        if key.isEmpty {
+            keychain.delete(for: account)
+        } else {
+            _ = keychain.set(key, for: account)
+        }
     }
 
     func getApiKey(for providerId: String) -> String {
@@ -102,10 +108,10 @@ class AIProviderManager: ObservableObject {
         // 迁移旧的API密钥格式到新格式
         migrateOldApiKeys()
 
-        // 加载新格式的API密钥
+        // 从 Keychain 加载 API 密钥
         let knownProviders = ["deepseek", "gemini", "aliyun", "kimi", "glm"]
         for providerId in knownProviders {
-            let key = userDefaults.string(forKey: apiKeyPrefix + providerId) ?? ""
+            let key = keychain.get(for: apiKeyPrefix + providerId) ?? ""
             apiKeys[providerId] = key
         }
     }
@@ -133,20 +139,29 @@ class AIProviderManager: ObservableObject {
     }
 
     private func migrateOldApiKeys() {
-        // 迁移旧的API密钥
-        if let oldDeepSeekKey = userDefaults.string(forKey: "apiKey"), !oldDeepSeekKey.isEmpty {
-            apiKeys["deepseek"] = oldDeepSeekKey
-            userDefaults.set(oldDeepSeekKey, forKey: apiKeyPrefix + "deepseek")
-        }
+        let legacyKeyMappings: [(legacy: String, provider: String)] = [
+            ("apiKey", "deepseek"),
+            ("geminiApiKey", "gemini"),
+            ("aliyunApiKey", "aliyun"),
+            (apiKeyPrefix + "deepseek", "deepseek"),
+            (apiKeyPrefix + "gemini", "gemini"),
+            (apiKeyPrefix + "aliyun", "aliyun"),
+            (apiKeyPrefix + "kimi", "kimi"),
+            (apiKeyPrefix + "glm", "glm")
+        ]
 
-        if let oldGeminiKey = userDefaults.string(forKey: "geminiApiKey"), !oldGeminiKey.isEmpty {
-            apiKeys["gemini"] = oldGeminiKey
-            userDefaults.set(oldGeminiKey, forKey: apiKeyPrefix + "gemini")
-        }
+        for mapping in legacyKeyMappings {
+            let account = apiKeyPrefix + mapping.provider
+            if keychain.get(for: account)?.isEmpty == false {
+                userDefaults.removeObject(forKey: mapping.legacy)
+                continue
+            }
 
-        if let oldAliyunKey = userDefaults.string(forKey: "aliyunApiKey"), !oldAliyunKey.isEmpty {
-            apiKeys["aliyun"] = oldAliyunKey
-            userDefaults.set(oldAliyunKey, forKey: apiKeyPrefix + "aliyun")
+            guard let legacyValue = userDefaults.string(forKey: mapping.legacy), !legacyValue.isEmpty else {
+                continue
+            }
+            _ = keychain.set(legacyValue, for: account)
+            userDefaults.removeObject(forKey: mapping.legacy)
         }
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-enum PlatformType: String, CaseIterable {
+enum PlatformType: String, CaseIterable, Sendable {
     case iOS = "iOS"
     case flutter = "Flutter"
     case electron = "Electron"
