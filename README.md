@@ -1,3 +1,5 @@
+
+
 # Language Tool
 [English](README.md) | [中文](README-zh.md)
 Language Tool is a macOS application designed for the automated generation of multi-platform localization files in multiple languages. It supports the generation of localization files for iOS, Flutter, and Electron projects.
@@ -88,12 +90,13 @@ If you prefer to build the application yourself:
 
 ## Notes
 
-- You need to configure a valid DeepSeek AI or Gemini service API Key before use
+- You need to configure a valid DeepSeek AI, Gemini, or Aliyun DashScope API Key before use
 - It is recommended to back up existing localization files before use
 - Translation results may require manual review to ensure accuracy
 - Different platforms have different localization file formats, please ensure to select the correct platform
-- deepseek [application portal](https://platform.deepseek.com/api_keys)
-- Gemini api [application portal](https://aistudio.google.com/app/apikey?hl=zh-cn)
+- DeepSeek [application portal](https://platform.deepseek.com/api_keys)
+- Gemini API [application portal](https://aistudio.google.com/app/apikey?hl=zh-cn)
+- Aliyun DashScope [application portal](https://dashscope.console.aliyun.com/apiKey)
 
 ## Contribution
 
