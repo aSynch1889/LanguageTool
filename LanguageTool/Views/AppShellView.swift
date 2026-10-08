@@ -9,6 +9,7 @@ struct AppShellView: View {
     @AppStorage("appLanguage") private var appLanguage: String = "en"
     /// Bumped after each appearance apply so the whole shell remounts with a fresh colorScheme.
     @State private var appearanceEpoch = 0
+    @State private var languageEpoch = 0
     @State private var resolvedScheme: ColorScheme = .light
 
     private var appearanceMode: AppearanceMode {
@@ -36,12 +37,6 @@ struct AppShellView: View {
                 ForEach(AppShellViewModel.SidebarItem.allCases) { item in
                     Label(item.title, systemImage: item.systemImage)
                         .tag(item)
-                }
-
-                Section {
-                    SettingsLink {
-                        Label("Settings…".localized, systemImage: "gearshape")
-                    }
                 }
             }
             .navigationSplitViewColumnWidth(min: 160, ideal: 180, max: 240)
@@ -98,7 +93,7 @@ struct AppShellView: View {
         // Always pass an *explicit* ColorScheme. `nil` (system) leaves children stuck after dark.
         .preferredColorScheme(resolvedScheme)
         .environment(\.colorScheme, resolvedScheme)
-        .id(appearanceEpoch)
+        .id("\(appearanceEpoch)-\(languageEpoch)")
         .environmentObject(shell)
         .onAppear {
             AppearanceMode.migrateIfNeeded()
@@ -110,6 +105,12 @@ struct AppShellView: View {
         .onReceive(NotificationCenter.default.publisher(for: AppearanceMode.systemThemeChangedNotification)) { _ in
             guard appearanceMode == .system else { return }
             refreshAppearance(storeRaw: false)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .languageChanged)) { _ in
+            if let language = UserDefaults.standard.string(forKey: "appLanguage") {
+                LocalizationManager.shared.setLanguage(language)
+            }
+            languageEpoch &+= 1
         }
         .onChange(of: shell.pendingReview) { _, request in
             guard let request else { return }

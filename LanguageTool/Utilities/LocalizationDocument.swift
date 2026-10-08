@@ -25,9 +25,9 @@ enum LocalizationRowFilter: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .all: return "All"
-        case .missing: return "Missing"
-        case .changed: return "Changed"
+        case .all: return "All".localized
+        case .missing: return "Missing".localized
+        case .changed: return "Changed".localized
         }
     }
 }

@@ -149,7 +149,7 @@ struct TransferView: View {
                                     .foregroundStyle(.blue)
                                     .font(.caption2)
 
-                                Text("Input: \(URL(fileURLWithPath: viewModel.inputPath).lastPathComponent)".localized)
+                                Text("Input: %@".localizedFormat(URL(fileURLWithPath: viewModel.inputPath).lastPathComponent))
                                     .font(.caption)
                                     .foregroundStyle(.primary)
 
@@ -164,7 +164,7 @@ struct TransferView: View {
                                     .foregroundStyle(.green)
                                     .font(.caption2)
 
-                                Text("Output: \(URL(fileURLWithPath: viewModel.outputPath).lastPathComponent)".localized)
+                                Text("Output: %@".localizedFormat(URL(fileURLWithPath: viewModel.outputPath).lastPathComponent))
                                     .font(.caption)
                                     .foregroundStyle(.primary)
 
@@ -192,7 +192,7 @@ struct TransferView: View {
 
                 Spacer()
 
-                Text("\(viewModel.selectedLanguages.count) selected".localized)
+                Text("%lld selected".localizedFormat(viewModel.selectedLanguages.count))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -263,7 +263,7 @@ struct TransferView: View {
                     Spacer()
 
                     if !searchText.isEmpty || selectedCategory != .all {
-                        Text("\(filteredLanguages.count) shown".localized)
+                        Text("%lld shown".localizedFormat(filteredLanguages.count))
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
                             .transition(.opacity.combined(with: .move(edge: .trailing)))

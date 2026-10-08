@@ -10,8 +10,8 @@ enum MasterLayoutMode: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .split: return "Split"
-        case .table: return "Table"
+        case .split: return "Split".localized
+        case .table: return "Table".localized
         }
     }
 }
@@ -68,10 +68,10 @@ final class LocalizationMasterViewModel: ObservableObject {
         do {
             try await document.load(from: path, platform: platform)
             selectedKey = document.items.first?.key
-            statusMessage = "Loaded \(document.items.count) keys"
+            statusMessage = "Loaded %lld keys".localizedFormat(document.items.count)
             lastOperationSucceeded = true
         } catch {
-            statusMessage = "Load failed: \(error.localizedDescription)"
+            statusMessage = "Load failed: %@".localizedFormat(error.localizedDescription)
             lastOperationSucceeded = false
             showAlert(message: statusMessage, isError: true)
         }
@@ -116,23 +116,23 @@ final class LocalizationMasterViewModel: ObservableObject {
         guard document.isDirty else { return true }
 
         let alert = NSAlert()
-        alert.messageText = "Save changes before closing?"
-        alert.informativeText = "You have unsaved edits in Localization Master."
+        alert.messageText = "Save changes before closing?".localized
+        alert.informativeText = "You have unsaved edits in Localization Master.".localized
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "Save")
-        alert.addButton(withTitle: "Don't Save")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: "Save".localized)
+        alert.addButton(withTitle: "Don't Save".localized)
+        alert.addButton(withTitle: "Cancel".localized)
 
         switch alert.runModal() {
         case .alertFirstButtonReturn:
             do {
                 try document.save()
-                statusMessage = "Saved"
+                statusMessage = "Saved".localized
                 lastOperationSucceeded = true
                 objectWillChange.send()
                 return true
             } catch {
-                statusMessage = "Save failed: \(error.localizedDescription)"
+                statusMessage = "Save failed: %@".localizedFormat(error.localizedDescription)
                 lastOperationSucceeded = false
                 showAlert(message: statusMessage, isError: true)
                 return false
@@ -146,7 +146,7 @@ final class LocalizationMasterViewModel: ObservableObject {
 
     func addLanguage(_ code: String) {
         document.addLanguage(code)
-        statusMessage = "Added language \(code)"
+        statusMessage = "Added language %@".localizedFormat(code)
         lastOperationSucceeded = true
         objectWillChange.send()
     }
@@ -164,12 +164,12 @@ final class LocalizationMasterViewModel: ObservableObject {
     func save() {
         do {
             try document.save()
-            statusMessage = "Saved to \(URL(fileURLWithPath: document.filePath).lastPathComponent)"
+            statusMessage = "Saved to %@".localizedFormat(URL(fileURLWithPath: document.filePath).lastPathComponent)
             lastOperationSucceeded = true
             objectWillChange.send()
             showAlert(message: statusMessage)
         } catch {
-            statusMessage = "Save failed: \(error.localizedDescription)"
+            statusMessage = "Save failed: %@".localizedFormat(error.localizedDescription)
             lastOperationSucceeded = false
             showAlert(message: statusMessage, isError: true)
         }
@@ -190,11 +190,11 @@ final class LocalizationMasterViewModel: ObservableObject {
             Task { @MainActor in
                 do {
                     try self.document.exportCSV(to: url)
-                    self.statusMessage = "CSV exported"
+                    self.statusMessage = "CSV exported".localized
                     self.lastOperationSucceeded = true
                     NSWorkspace.shared.open(url)
                 } catch {
-                    self.statusMessage = "Export failed: \(error.localizedDescription)"
+                    self.statusMessage = "Export failed: %@".localizedFormat(error.localizedDescription)
                     self.lastOperationSucceeded = false
                     self.showAlert(message: self.statusMessage, isError: true)
                 }
@@ -206,11 +206,11 @@ final class LocalizationMasterViewModel: ObservableObject {
         guard !document.filePath.isEmpty else { return }
         if document.isDirty {
             let alert = NSAlert()
-            alert.messageText = "Discard unsaved changes?"
-            alert.informativeText = "Reloading will discard edits that have not been saved."
+            alert.messageText = "Discard unsaved changes?".localized
+            alert.informativeText = "Reloading will discard edits that have not been saved.".localized
             alert.alertStyle = .warning
-            alert.addButton(withTitle: "Reload")
-            alert.addButton(withTitle: "Cancel")
+            alert.addButton(withTitle: "Reload".localized)
+            alert.addButton(withTitle: "Cancel".localized)
             if alert.runModal() != .alertFirstButtonReturn {
                 return
             }
@@ -229,13 +229,13 @@ final class LocalizationMasterViewModel: ObservableObject {
         translateTask?.cancel()
         translateTask = nil
         isLoading = false
-        statusMessage = "Translation cancelled"
+        statusMessage = "Translation cancelled".localized
         lastOperationSucceeded = false
     }
 
     private func performTranslation() async {
         isLoading = true
-        statusMessage = "Translating…"
+        statusMessage = "Translating…".localized
         lastOperationSucceeded = false
 
         let sourceLanguage = document.sourceLanguage
@@ -246,14 +246,14 @@ final class LocalizationMasterViewModel: ObservableObject {
 
         guard !candidateIndices.isEmpty else {
             isLoading = false
-            statusMessage = "No rows selected for translation"
+            statusMessage = "No rows selected for translation".localized
             return
         }
 
         let targetLanguages = document.availableLanguages.filter { $0 != sourceLanguage }
         guard !targetLanguages.isEmpty else {
             isLoading = false
-            statusMessage = "No target languages to translate"
+            statusMessage = "No target languages to translate".localized
             return
         }
 
@@ -262,7 +262,7 @@ final class LocalizationMasterViewModel: ObservableObject {
 
         for language in targetLanguages {
             if Task.isCancelled {
-                statusMessage = "Translation cancelled"
+                statusMessage = "Translation cancelled".localized
                 isLoading = false
                 return
             }
@@ -284,7 +284,7 @@ final class LocalizationMasterViewModel: ObservableObject {
 
             if sourceTexts.isEmpty { continue }
 
-            statusMessage = "Translating \(language)…"
+            statusMessage = "Translating %@…".localizedFormat(language)
 
             do {
                 let result = try await AIServiceV2.shared.batchTranslateWithExisting(
@@ -300,7 +300,7 @@ final class LocalizationMasterViewModel: ObservableObject {
                 succeeded += 1
             } catch is CancellationError {
                 document.replaceItems(working, markDirty: true)
-                statusMessage = "Translation cancelled"
+                statusMessage = "Translation cancelled".localized
                 isLoading = false
                 return
             } catch {
@@ -313,10 +313,13 @@ final class LocalizationMasterViewModel: ObservableObject {
         objectWillChange.send()
 
         if failed.isEmpty {
-            statusMessage = "Translated \(succeeded) language(s). Save to persist."
+            statusMessage = "Translated %lld language(s). Save to persist.".localizedFormat(succeeded)
             lastOperationSucceeded = true
         } else {
-            statusMessage = "OK: \(succeeded) · Failed: \(failed.joined(separator: ", ")). Save to persist."
+            statusMessage = "OK: %lld · Failed: %@. Save to persist.".localizedFormat(
+                succeeded,
+                failed.joined(separator: ", ")
+            )
             lastOperationSucceeded = succeeded > 0
         }
     }

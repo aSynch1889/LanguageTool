@@ -136,13 +136,10 @@ struct SettingsView: View {
                 .onChange(of: appLanguage) { _, newValue in
                     UserDefaults.standard.set([newValue], forKey: "AppleLanguages")
                     UserDefaults.standard.synchronize()
+                    LocalizationManager.shared.setLanguage(newValue)
                     NotificationCenter.default.post(name: .languageChanged, object: nil)
                     languageChanged.toggle()
                 }
-
-                Text("Language changes may require restarting the app.".localized)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
 
             Section(header: Text("Appearance Settings".localized)) {
@@ -183,12 +180,15 @@ struct SettingsView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
 
-                Text("Parsed entries: \(glossaryValidation.entries.count)/\(GlossaryStore.maxEntries)")
+                Text("Parsed entries: %lld/%lld".localizedFormat(
+                    glossaryValidation.entries.count,
+                    GlossaryStore.maxEntries
+                ))
                     .font(.caption)
                     .foregroundColor(.secondary)
 
                 if glossaryValidation.droppedLines > 0 {
-                    Text("Ignored invalid/oversized lines: \(glossaryValidation.droppedLines)")
+                    Text("Ignored invalid/oversized lines: %lld".localizedFormat(glossaryValidation.droppedLines))
                         .font(.caption)
                         .foregroundColor(.orange)
                 }

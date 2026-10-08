@@ -30,7 +30,7 @@ struct LocalizationMasterView: View {
                 ZStack {
                     contentBody
                     if viewModel.isLoading {
-                        ProgressView("Working…")
+                        ProgressView("Working…".localized)
                             .padding(16)
                             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
                     }
@@ -72,7 +72,7 @@ struct LocalizationMasterView: View {
     private var keyListPane: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Keys")
+                Text("Keys".localized)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -99,11 +99,11 @@ struct LocalizationMasterView: View {
                                 .font(.system(.body, design: .monospaced))
                                 .lineLimit(1)
                             if viewModel.document.hasMissingTranslation(item) {
-                                Text("Missing translation")
+                                Text("Missing translation".localized)
                                     .font(.caption2)
                                     .foregroundStyle(.orange)
                             } else if viewModel.document.isChanged(item) {
-                                Text("Edited")
+                                Text("Edited".localized)
                                     .font(.caption2)
                                     .foregroundStyle(.blue)
                             }
@@ -125,7 +125,7 @@ struct LocalizationMasterView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Key")
+                            Text("Key".localized)
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.secondary)
                             Text(item.key)
@@ -134,15 +134,15 @@ struct LocalizationMasterView: View {
                         }
 
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Comment")
+                            Text("Comment".localized)
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.secondary)
-                            TextField("Comment", text: commentBinding(for: item), axis: .vertical)
+                            TextField("Comment".localized, text: commentBinding(for: item), axis: .vertical)
                                 .lineLimit(2...6)
                                 .textFieldStyle(.roundedBorder)
                         }
 
-                        Toggle("Include in batch translate", isOn: selectionBinding(for: item))
+                        Toggle("Include in batch translate".localized, isOn: selectionBinding(for: item))
 
                         Divider()
 
@@ -153,7 +153,7 @@ struct LocalizationMasterView: View {
                                         .font(.caption.weight(.semibold))
                                         .foregroundStyle(.secondary)
                                     if code == viewModel.document.sourceLanguage {
-                                        Text("Source")
+                                        Text("Source".localized)
                                             .font(.caption2)
                                             .padding(.horizontal, 6)
                                             .padding(.vertical, 2)
@@ -169,7 +169,7 @@ struct LocalizationMasterView: View {
                                         .textSelection(.enabled)
                                 } else {
                                     TextField(
-                                        "Translation",
+                                        "Translation".localized,
                                         text: translationBinding(for: item, language: code),
                                         axis: .vertical
                                     )
@@ -186,7 +186,7 @@ struct LocalizationMasterView: View {
                     Image(systemName: "text.alignleft")
                         .font(.system(size: 28, weight: .light))
                         .foregroundStyle(.secondary)
-                    Text("Select a key to edit")
+                    Text("Select a key to edit".localized)
                         .foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -264,17 +264,20 @@ struct LocalizationMasterView: View {
                 Text("·")
                     .foregroundStyle(.quaternary)
 
-                Text("\(viewModel.document.items.count) keys · \(viewModel.document.availableLanguages.count) languages")
+                Text("%lld keys · %lld languages".localizedFormat(
+                    viewModel.document.items.count,
+                    viewModel.document.availableLanguages.count
+                ))
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
                 if viewModel.document.missingCount > 0 {
-                    Text("· \(viewModel.document.missingCount) missing")
+                    Text("· %lld missing".localizedFormat(viewModel.document.missingCount))
                         .font(.caption)
                         .foregroundStyle(.orange)
                 }
                 if viewModel.document.changedCount > 0 {
-                    Text("· \(viewModel.document.changedCount) changed")
+                    Text("· %lld changed".localizedFormat(viewModel.document.changedCount))
                         .font(.caption)
                         .foregroundStyle(.blue)
                 }

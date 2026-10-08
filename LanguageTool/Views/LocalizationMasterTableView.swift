@@ -146,14 +146,14 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             tableView.tableColumns.forEach { tableView.removeTableColumn($0) }
 
             let checkbox = NSTableColumn(identifier: .init("checkbox"))
-            checkbox.title = "Batch"
+            checkbox.title = "Batch".localized
             checkbox.width = 52
             checkbox.minWidth = 52
             checkbox.maxWidth = 52
             tableView.addTableColumn(checkbox)
 
             let key = NSTableColumn(identifier: .init("key"))
-            key.title = "Key"
+            key.title = "Key".localized
             key.width = 220
             key.minWidth = 140
             tableView.addTableColumn(key)
@@ -167,7 +167,7 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             for code in ordered {
                 let column = NSTableColumn(identifier: .init(code))
                 if code == sourceLanguage {
-                    column.title = "\(code) · Source"
+                    column.title = "%@ · Source".localizedFormat(code)
                 } else if let language = Language.supportedLanguages.first(where: { $0.code == code }) {
                     column.title = "\(code) · \(language.localizedName)"
                 } else {
@@ -179,7 +179,7 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             }
 
             let comment = NSTableColumn(identifier: .init("comment"))
-            comment.title = "Comment"
+            comment.title = "Comment".localized
             comment.width = 160
             comment.minWidth = 100
             tableView.addTableColumn(comment)
@@ -320,7 +320,7 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             field.isSelectable = true
             field.tag = row
             field.identifier = NSUserInterfaceItemIdentifier(fieldId)
-            field.toolTip = isComment ? "Comment" : fieldId.replacingOccurrences(of: "LangCell-", with: "")
+            field.toolTip = isComment ? "Comment".localized : fieldId.replacingOccurrences(of: "LangCell-", with: "")
 
             // Transparent fill so row background stays continuous (no white slabs / gaps).
             field.drawsBackground = false
@@ -332,7 +332,7 @@ struct LocalizationMasterTableView: NSViewRepresentable {
                 field.placeholderString = nil
             } else if trimmed.isEmpty {
                 field.textColor = .labelColor
-                field.placeholderString = isComment ? "Comment" : "Missing"
+                field.placeholderString = isComment ? "Comment".localized : "Missing".localized
             } else {
                 field.textColor = .labelColor
                 field.placeholderString = nil
