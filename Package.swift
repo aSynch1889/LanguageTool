@@ -37,7 +37,9 @@ let package = Package(
                 "PlaceholderValidator.swift",
                 "GlossaryEnforcer.swift",
                 "TranslationRouter.swift",
-                "TranslationTaskMetrics.swift"
+                "TranslationTaskMetrics.swift",
+                "ProviderCatalog.swift",
+                "OpenAICompatibleEndpointNormalizer.swift"
             ]
         ),
         .testTarget(

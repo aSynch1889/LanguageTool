@@ -29,6 +29,12 @@ struct SettingsView: View {
     @State private var isTestingConnection = false
     @State private var connectionTestMessage: String?
     @State private var connectionTestSucceeded = false
+    @FocusState private var focusedEndpointField: EndpointField?
+
+    private enum EndpointField: Hashable {
+        case model
+        case baseURL
+    }
 
     @Environment(\.colorScheme) var colorScheme
 
@@ -59,16 +65,6 @@ struct SettingsView: View {
                     providerManager.setFallbackProvider(newValue)
                 }
 
-                Picker("Fallback AI Service 2".localized, selection: $providerManager.secondaryFallbackProviderId) {
-                    Text("None".localized).tag("")
-                    ForEach(providerRegistry.allProviders()) { provider in
-                        Text(provider.displayName).tag(provider.id)
-                    }
-                }
-                .onChange(of: providerManager.secondaryFallbackProviderId) { _, newValue in
-                    providerManager.setSecondaryFallbackProvider(newValue)
-                }
-
                 ForEach(providerManager.providersNeedingVisibleKeys()) { provider in
                     let apiKeyBinding = Binding<String>(
                         get: { providerManager.getApiKey(for: provider.id) },
@@ -81,18 +77,20 @@ struct SettingsView: View {
                 if let selectedProvider = providerManager.getSelectedProvider() {
                     TextField("Model".localized, text: $providerManager.modelDraft)
                         .textFieldStyle(.roundedBorder)
-                        .onChange(of: providerManager.modelDraft) { _, _ in
-                            providerManager.commitModelDraft()
-                        }
+                        .focused($focusedEndpointField, equals: .model)
+                        .onSubmit { providerManager.commitModelDraft() }
 
                     TextField("Base URL".localized, text: $providerManager.baseURLDraft)
                         .textFieldStyle(.roundedBorder)
-                        .onChange(of: providerManager.baseURLDraft) { _, _ in
-                            providerManager.commitBaseURLDraft()
-                        }
+                        .focused($focusedEndpointField, equals: .baseURL)
+                        .onSubmit { providerManager.commitBaseURLDraft() }
+                        .autocorrectionDisabled()
+#if os(macOS)
+                        .textSelection(.enabled)
+#endif
 
-                    if selectedProvider.requiresCustomEndpoint {
-                        Text("Enter any OpenAI-compatible chat completions endpoint.".localized)
+                    if selectedProvider.requiresCustomEndpoint || selectedProvider.id == "openai_compatible" {
+                        Text("Replace the whole Base URL (e.g. https://api.deepseek.com). It normalizes when you leave the field or press Return.".localized)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -187,10 +185,25 @@ struct SettingsView: View {
             notificationsEnabled = notificationManager.areNotificationsEnabled
             providerManager.refreshEndpointDrafts()
         }
+        .onChange(of: focusedEndpointField) { oldValue, newValue in
+            // Commit only when leaving the field — never rewrite while typing.
+            if oldValue == .model && newValue != .model {
+                providerManager.commitModelDraft()
+            }
+            if oldValue == .baseURL && newValue != .baseURL {
+                providerManager.commitBaseURLDraft()
+            }
+        }
+        .onDisappear {
+            providerManager.commitModelDraft()
+            providerManager.commitBaseURLDraft()
+        }
     }
 
     private func runConnectionTest() async {
         await MainActor.run {
+            providerManager.commitModelDraft()
+            providerManager.commitBaseURLDraft()
             isTestingConnection = true
             connectionTestMessage = nil
         }

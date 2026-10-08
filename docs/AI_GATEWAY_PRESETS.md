@@ -2,12 +2,28 @@
 
 LanguageTool 通过 OpenAI-Compatible 契约接入多家服务。除直连厂商外，可使用统一网关一次 Key 访问多模型。
 
-## 内置预设
+## 内置预设（精简后）
+
+设置里默认只保留 4 项：
 
 | 显示名 | Provider ID | 默认 Base URL | 默认 Model | 说明 |
 |--------|-------------|---------------|------------|------|
+| Aliyun | `aliyun` | DashScope compatible-mode | `qwen-mt-turbo` | 专用翻译 MT，大批量路由会优先使用 |
+| Google Gemini | `gemini` | Gemini `generateContent` | `gemini-1.5-flash` | 非 OpenAI 协议，需单独保留 |
+| OpenAI Compatible | `openai_compatible` | `https://api.openai.com/v1/chat/completions` | `gpt-4o-mini` | 任意兼容端点（DeepSeek / Kimi / GLM / OneAPI / LiteLLM / Ollama） |
 | OpenRouter | `openrouter` | `https://openrouter.ai/api/v1/chat/completions` | `openai/gpt-4o-mini` | 统一网关，模型名形如 `vendor/model` |
-| OpenAI Compatible | `openai_compatible` | `https://api.openai.com/v1/chat/completions` | `gpt-4o-mini` | 任意兼容端点（OneAPI / LiteLLM / 自建代理 / Ollama） |
+
+原 DeepSeek / Kimi / GLM 固定入口已移除；若本地仍选中它们，会自动迁移到 **OpenAI Compatible**，并尽量带上原 Base URL、Model 与 API Key。
+
+### 用 OpenAI Compatible 复刻旧厂商
+
+| 原厂商 | Base URL（可填文档中的根地址，应用会自动补全 `/chat/completions`） | 建议 Model |
+|--------|----------|------------|
+| DeepSeek | `https://api.deepseek.com` 或 `https://api.deepseek.com/chat/completions` | `deepseek-flash`（或 `deepseek-v4-pro`） |
+| Kimi (Moonshot) | `https://api.moonshot.cn/v1` 或完整 `…/chat/completions` | `moonshot-v1-8k` / `moonshot-v1-32k` |
+| GLM | `https://open.bigmodel.cn/api/paas/v4` 或完整路径 | `glm-4.5` |
+
+> 注意：文档里的 `base_url`（如 DeepSeek 的 `https://api.deepseek.com`）是给 OpenAI SDK 用的根地址；本应用若收到根地址会自动补全为 `…/chat/completions`。Model **不会**固定为 `gpt-4o-mini`——那只是 OpenAI Compatible 条目的占位默认值；填写已知厂商 Base URL 后会按厂商建议模型更新。
 
 ## OpenRouter 用法
 

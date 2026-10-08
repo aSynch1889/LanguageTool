@@ -79,28 +79,6 @@ class AIProviderRegistry: ObservableObject {
 
     private func setupDefaultProviders() {
         register(AIProviderConfig(
-            id: "deepseek",
-            name: "deepseek",
-            displayName: "DeepSeek Chat",
-            baseURL: "https://api.deepseek.com/v1/chat/completions",
-            model: "deepseek-chat",
-            authType: .bearer(token: ""),
-            requestBuilder: OpenAICompatibleRequestBuilder(options: OpenAICompatiblePresets.deepSeek),
-            responseParser: OpenAICompatibleResponseParser()
-        ))
-
-        register(AIProviderConfig(
-            id: "gemini",
-            name: "gemini",
-            displayName: "Google Gemini",
-            baseURL: "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
-            model: "gemini-1.5-flash",
-            authType: .apiKey(key: "", location: .header(name: "x-goog-api-key")),
-            requestBuilder: GeminiRequestBuilder(),
-            responseParser: GeminiResponseParser()
-        ))
-
-        register(AIProviderConfig(
             id: "aliyun",
             name: "aliyun",
             displayName: "Aliyun",
@@ -112,25 +90,14 @@ class AIProviderRegistry: ObservableObject {
         ))
 
         register(AIProviderConfig(
-            id: "kimi",
-            name: "kimi",
-            displayName: "Kimi",
-            baseURL: "https://api.moonshot.cn/v1/chat/completions",
-            model: "moonshot-v1-8k",
-            authType: .bearer(token: ""),
-            requestBuilder: OpenAICompatibleRequestBuilder(options: OpenAICompatiblePresets.kimi),
-            responseParser: OpenAICompatibleResponseParser()
-        ))
-
-        register(AIProviderConfig(
-            id: "glm",
-            name: "glm",
-            displayName: "GLM-4.5",
-            baseURL: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-            model: "glm-4.5",
-            authType: .bearer(token: ""),
-            requestBuilder: OpenAICompatibleRequestBuilder(options: OpenAICompatiblePresets.glm),
-            responseParser: OpenAICompatibleResponseParser()
+            id: "gemini",
+            name: "gemini",
+            displayName: "Google Gemini",
+            baseURL: "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+            model: "gemini-1.5-flash",
+            authType: .apiKey(key: "", location: .header(name: "x-goog-api-key")),
+            requestBuilder: GeminiRequestBuilder(),
+            responseParser: GeminiResponseParser()
         ))
 
         register(AIProviderConfig(
@@ -164,9 +131,8 @@ class AIProviderManager: ObservableObject {
     static let shared = AIProviderManager()
 
     @Published private var apiKeys: [String: String] = [:]
-    @Published var selectedProviderId: String = "deepseek"
+    @Published var selectedProviderId: String = ProviderCatalog.fallbackDefaultProviderId
     @Published var fallbackProviderId: String = ""
-    @Published var secondaryFallbackProviderId: String = ""
     @Published var modelDraft: String = ""
     @Published var baseURLDraft: String = ""
 
@@ -211,11 +177,6 @@ class AIProviderManager: ObservableObject {
         userDefaults.set(providerId, forKey: "fallbackAIProvider")
     }
 
-    func setSecondaryFallbackProvider(_ providerId: String) {
-        secondaryFallbackProviderId = providerId
-        userDefaults.set(providerId, forKey: "secondaryFallbackAIProvider")
-    }
-
     func getSelectedProvider() -> AIProviderConfig? {
         return AIProviderRegistry.shared.get(selectedProviderId)
     }
@@ -229,7 +190,7 @@ class AIProviderManager: ObservableObject {
     func fallbackChainIds(for primaryId: String) -> [String] {
         AIErrorClassifier.orderedFallbackChain(
             primaryId: primaryId,
-            candidates: [fallbackProviderId, secondaryFallbackProviderId]
+            candidates: [fallbackProviderId]
         )
     }
 
@@ -247,12 +208,22 @@ class AIProviderManager: ObservableObject {
         return result
     }
 
-    func effectiveModel(for provider: AIProviderConfig) -> String {
-        endpointOverrides.effectiveModel(for: provider.id, defaultModel: provider.model)
+    func effectiveBaseURL(for provider: AIProviderConfig) -> String {
+        let raw = endpointOverrides.effectiveBaseURL(for: provider.id, defaultURL: provider.baseURL)
+        if provider.id == "gemini" || raw.contains("{model}") {
+            return raw
+        }
+        return OpenAICompatibleEndpointNormalizer.normalize(raw)
     }
 
-    func effectiveBaseURL(for provider: AIProviderConfig) -> String {
-        endpointOverrides.effectiveBaseURL(for: provider.id, defaultURL: provider.baseURL)
+    func effectiveModel(for provider: AIProviderConfig) -> String {
+        let stored = endpointOverrides.effectiveModel(for: provider.id, defaultModel: provider.model)
+        let url = effectiveBaseURL(for: provider)
+        if let suggested = OpenAICompatibleEndpointNormalizer.suggestedModel(forBaseURL: url),
+           stored == provider.model || stored == "gpt-4o-mini" || stored.isEmpty {
+            return suggested
+        }
+        return stored
     }
 
     func commitModelDraft() {
@@ -260,14 +231,44 @@ class AIProviderManager: ObservableObject {
         endpointOverrides.setModel(modelDraft, for: provider.id)
         modelDraft = endpointOverrides.storedModel(for: provider.id)
         if modelDraft.isEmpty {
-            modelDraft = provider.model
+            modelDraft = effectiveModel(for: provider)
         }
     }
 
     func commitBaseURLDraft() {
         guard let provider = getSelectedProvider() else { return }
-        endpointOverrides.setBaseURL(baseURLDraft, for: provider.id)
-        baseURLDraft = endpointOverrides.effectiveBaseURL(for: provider.id, defaultURL: provider.baseURL)
+        let previousURL = effectiveBaseURL(for: provider)
+        let trimmed = baseURLDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Empty draft clears the override; show the provider default only after commit.
+        guard !trimmed.isEmpty else {
+            endpointOverrides.setBaseURL(nil, for: provider.id)
+            baseURLDraft = effectiveBaseURL(for: provider)
+            return
+        }
+
+        let normalized: String
+        if provider.id == "gemini" || trimmed.contains("{model}") {
+            normalized = trimmed
+        } else {
+            normalized = OpenAICompatibleEndpointNormalizer.normalize(trimmed)
+        }
+
+        endpointOverrides.setBaseURL(normalized, for: provider.id)
+        baseURLDraft = normalized
+
+        if let suggested = OpenAICompatibleEndpointNormalizer.suggestedModel(forBaseURL: normalized) {
+            let currentModel = endpointOverrides.effectiveModel(for: provider.id, defaultModel: provider.model)
+            let shouldReplace =
+                currentModel.isEmpty
+                || currentModel == provider.model
+                || currentModel == "gpt-4o-mini"
+                || OpenAICompatibleEndpointNormalizer.suggestedModel(forBaseURL: previousURL) != nil
+            if shouldReplace {
+                endpointOverrides.setModel(suggested, for: provider.id)
+                modelDraft = suggested
+            }
+        }
     }
 
     func refreshEndpointDrafts() {
@@ -276,9 +277,8 @@ class AIProviderManager: ObservableObject {
             baseURLDraft = ""
             return
         }
-        let storedModel = endpointOverrides.storedModel(for: provider.id)
-        modelDraft = storedModel.isEmpty ? provider.model : storedModel
-        baseURLDraft = endpointOverrides.effectiveBaseURL(for: provider.id, defaultURL: provider.baseURL)
+        baseURLDraft = effectiveBaseURL(for: provider)
+        modelDraft = effectiveModel(for: provider)
     }
 
     private func loadApiKeys() {
@@ -293,25 +293,68 @@ class AIProviderManager: ObservableObject {
 
     private func loadSelectedProvider() {
         if let oldService = userDefaults.string(forKey: "selectedAIService") {
-            let newProviderId: String
+            let legacyMapped: String
             switch oldService {
             case "DeepSeek":
-                newProviderId = "deepseek"
+                legacyMapped = "deepseek"
             case "Gemini":
-                newProviderId = "gemini"
+                legacyMapped = "gemini"
             case "aliyun":
-                newProviderId = "aliyun"
+                legacyMapped = "aliyun"
             default:
-                newProviderId = "deepseek"
+                legacyMapped = ProviderCatalog.fallbackDefaultProviderId
             }
-            selectedProviderId = newProviderId
-            userDefaults.set(newProviderId, forKey: "selectedAIProvider")
+            applyMigratedSelection(from: legacyMapped)
             userDefaults.removeObject(forKey: "selectedAIService")
         } else {
-            selectedProviderId = userDefaults.string(forKey: "selectedAIProvider") ?? "deepseek"
+            let stored = userDefaults.string(forKey: "selectedAIProvider")
+                ?? ProviderCatalog.fallbackDefaultProviderId
+            applyMigratedSelection(from: stored)
         }
-        fallbackProviderId = userDefaults.string(forKey: "fallbackAIProvider") ?? ""
-        secondaryFallbackProviderId = userDefaults.string(forKey: "secondaryFallbackAIProvider") ?? ""
+
+        let storedFallback = userDefaults.string(forKey: "fallbackAIProvider") ?? ""
+        fallbackProviderId = migrateOptionalProviderId(storedFallback)
+        userDefaults.set(fallbackProviderId, forKey: "fallbackAIProvider")
+        // Drop the unused second-fallback setting from earlier builds.
+        userDefaults.removeObject(forKey: "secondaryFallbackAIProvider")
+    }
+
+    private func applyMigratedSelection(from rawProviderId: String) {
+        let migrated = ProviderCatalog.migrateProviderId(rawProviderId)
+        if migrated != rawProviderId {
+            seedOpenAICompatibleFromLegacyIfNeeded(legacyProviderId: rawProviderId)
+        }
+        selectedProviderId = migrated
+        userDefaults.set(migrated, forKey: "selectedAIProvider")
+    }
+
+    private func migrateOptionalProviderId(_ providerId: String) -> String {
+        guard !providerId.isEmpty else { return "" }
+        let migrated = ProviderCatalog.migrateProviderId(providerId)
+        if migrated != providerId {
+            seedOpenAICompatibleFromLegacyIfNeeded(legacyProviderId: providerId)
+        }
+        // Avoid selecting the same id twice in the chain silently — caller stores value.
+        return migrated
+    }
+
+    /// When DeepSeek/Kimi/GLM are removed, copy their endpoint + key into OpenAI Compatible once.
+    private func seedOpenAICompatibleFromLegacyIfNeeded(legacyProviderId: String) {
+        guard let hint = ProviderCatalog.legacyEndpointHint(for: legacyProviderId) else { return }
+        let targetId = ProviderCatalog.fallbackDefaultProviderId
+
+        if endpointOverrides.storedModel(for: targetId).isEmpty {
+            endpointOverrides.setModel(hint.model, for: targetId)
+        }
+        if endpointOverrides.storedBaseURL(for: targetId).isEmpty {
+            endpointOverrides.setBaseURL(hint.baseURL, for: targetId)
+        }
+
+        let legacyKey = keychain.get(for: apiKeyPrefix + legacyProviderId) ?? ""
+        let targetKey = keychain.get(for: apiKeyPrefix + targetId) ?? ""
+        if !legacyKey.isEmpty && targetKey.isEmpty {
+            setApiKey(legacyKey, for: targetId)
+        }
     }
 
     private func migrateOldApiKeys() {

@@ -43,22 +43,6 @@ struct OpenAICompatibleResponseParser: ResponseParser {
 }
 
 enum OpenAICompatiblePresets {
-    static let deepSeek = OpenAICompatibleRequestOptions.standard
-
-    static let kimi = OpenAICompatibleRequestOptions(
-        temperature: 0.7,
-        maxTokens: 2048,
-        enableThinking: false,
-        supportsTranslationOptions: false
-    )
-
-    static let glm = OpenAICompatibleRequestOptions(
-        temperature: 0.7,
-        maxTokens: 4096,
-        enableThinking: true,
-        supportsTranslationOptions: false
-    )
-
     static let aliyun = OpenAICompatibleRequestOptions(
         temperature: nil,
         maxTokens: nil,
