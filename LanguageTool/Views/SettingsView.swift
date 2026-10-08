@@ -59,15 +59,26 @@ struct SettingsView: View {
                     providerManager.setFallbackProvider(newValue)
                 }
 
-                if let selectedProvider = providerManager.getSelectedProvider() {
+                Picker("Fallback AI Service 2".localized, selection: $providerManager.secondaryFallbackProviderId) {
+                    Text("None".localized).tag("")
+                    ForEach(providerRegistry.allProviders()) { provider in
+                        Text(provider.displayName).tag(provider.id)
+                    }
+                }
+                .onChange(of: providerManager.secondaryFallbackProviderId) { _, newValue in
+                    providerManager.setSecondaryFallbackProvider(newValue)
+                }
+
+                ForEach(providerManager.providersNeedingVisibleKeys()) { provider in
                     let apiKeyBinding = Binding<String>(
-                        get: { providerManager.getApiKey(for: selectedProvider.id) },
-                        set: { providerManager.setApiKey($0, for: selectedProvider.id) }
+                        get: { providerManager.getApiKey(for: provider.id) },
+                        set: { providerManager.setApiKey($0, for: provider.id) }
                     )
-
-                    SecureField("\(selectedProvider.displayName) API Key".localized, text: apiKeyBinding)
+                    SecureField("\(provider.displayName) API Key".localized, text: apiKeyBinding)
                         .textFieldStyle(.roundedBorder)
+                }
 
+                if let selectedProvider = providerManager.getSelectedProvider() {
                     TextField("Model".localized, text: $providerManager.modelDraft)
                         .textFieldStyle(.roundedBorder)
                         .onChange(of: providerManager.modelDraft) { _, _ in

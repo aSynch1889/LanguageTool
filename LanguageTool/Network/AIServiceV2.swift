@@ -97,26 +97,16 @@ class AIServiceV2 {
         var allTranslations: [String] = []
         for chunk in BatchTranslationParser.chunk(texts, size: chunkSize) {
             try Task.checkCancellation()
-
-            let prompt = BatchTranslationParser.buildPrompt(
-                texts: chunk,
+            let translatedChunk = try await translateChunkWithResilience(
+                chunk: chunk,
                 targetLanguage: targetLanguage,
-                glossaryHint: glossaryHint
-            )
-            let messages = [Message(role: "user", content: prompt)]
-            let response = try await executeRequestWithFallback(
+                glossaryHint: glossaryHint,
                 provider: provider,
                 apiKey: apiKey,
-                messages: messages,
-                translationOptions: translationOptions
+                translationOptions: translationOptions,
+                workingChunkSize: chunkSize
             )
-
-            do {
-                let parsed = try BatchTranslationParser.parse(response: response, expectedCount: chunk.count)
-                allTranslations.append(contentsOf: parsed)
-            } catch {
-                throw AIError.invalidResponse
-            }
+            allTranslations.append(contentsOf: translatedChunk)
         }
 
         guard allTranslations.count == texts.count else {
@@ -238,36 +228,186 @@ class AIServiceV2 {
         return try provider.responseParser.parseResponse(data: responseData)
     }
 
-    private func executeRequestWithFallback(provider: AIProviderConfig,
-                                          apiKey: String,
-                                          messages: [Message],
-                                          translationOptions: [String: String]? = nil) async throws -> String {
+    private func translateChunkWithResilience(
+        chunk: [String],
+        targetLanguage: String,
+        glossaryHint: String,
+        provider: AIProviderConfig,
+        apiKey: String,
+        translationOptions: [String: String]?,
+        workingChunkSize: Int
+    ) async throws -> [String] {
+        var candidates: [(AIProviderConfig, String)] = [(provider, apiKey)]
+        for fallbackId in providerManager.fallbackChainIds(for: provider.id) {
+            guard let fallbackProvider = providerRegistry.get(fallbackId) else { continue }
+            let fallbackKey = providerManager.getApiKey(for: fallbackId)
+            guard !fallbackKey.isEmpty else { continue }
+            candidates.append((fallbackProvider, fallbackKey))
+        }
+
+        var lastError: Error = AIError.invalidResponse
+        for (index, candidate) in candidates.enumerated() {
+            do {
+                return try await translateChunkOnSingleProvider(
+                    chunk: chunk,
+                    targetLanguage: targetLanguage,
+                    glossaryHint: glossaryHint,
+                    provider: candidate.0,
+                    apiKey: candidate.1,
+                    translationOptions: translationOptions,
+                    workingChunkSize: workingChunkSize
+                )
+            } catch {
+                lastError = (error is BatchTranslationParseError) ? AIError.invalidResponse : error
+                let kind = failureKind(from: lastError)
+                let canFallback = AIErrorClassifier.isTransient(kind)
+                    || AIErrorClassifier.shouldFallbackAfterParseRetries(kind)
+                if canFallback && index + 1 < candidates.count {
+                    print("Chunk translation failed on \(candidate.0.displayName) (\(kind)), trying next provider")
+                    continue
+                }
+                throw lastError
+            }
+        }
+        throw lastError
+    }
+
+    private func translateChunkOnSingleProvider(
+        chunk: [String],
+        targetLanguage: String,
+        glossaryHint: String,
+        provider: AIProviderConfig,
+        apiKey: String,
+        translationOptions: [String: String]?,
+        workingChunkSize: Int
+    ) async throws -> [String] {
+        if chunk.count > workingChunkSize {
+            var results: [String] = []
+            for sub in BatchTranslationParser.chunk(chunk, size: workingChunkSize) {
+                let part = try await translateChunkOnSingleProvider(
+                    chunk: sub,
+                    targetLanguage: targetLanguage,
+                    glossaryHint: glossaryHint,
+                    provider: provider,
+                    apiKey: apiKey,
+                    translationOptions: translationOptions,
+                    workingChunkSize: workingChunkSize
+                )
+                results.append(contentsOf: part)
+            }
+            return results
+        }
+
+        let optionsForProvider: [String: String]? = {
+            if provider.id == "aliyun" {
+                return translationOptions ?? ["source_lang": "auto", "target_lang": targetLanguage]
+            }
+            return translationOptions
+        }()
+
+        let prompt = BatchTranslationParser.buildPrompt(
+            texts: chunk,
+            targetLanguage: targetLanguage,
+            glossaryHint: glossaryHint
+        )
+        let messages = [Message(role: "user", content: prompt)]
+
         do {
-            return try await executeRequest(
+            let response = try await executeRequest(
                 provider: provider,
                 apiKey: apiKey,
                 messages: messages,
-                translationOptions: translationOptions
+                translationOptions: optionsForProvider
             )
+            return try BatchTranslationParser.parse(response: response, expectedCount: chunk.count)
         } catch {
-            guard let fallbackProvider = providerManager.getFallbackProvider(),
-                  fallbackProvider.id != provider.id else {
-                throw error
+            let kind = failureKind(from: error)
+            if AIErrorClassifier.isParseFailure(kind), chunk.count > 1 {
+                let nextSize = AIErrorClassifier.nextChunkSize(afterFailureWith: max(workingChunkSize, chunk.count))
+                if nextSize < chunk.count {
+                    print("Parse failed for chunk size \(chunk.count), retrying with size \(nextSize)")
+                    return try await translateChunkOnSingleProvider(
+                        chunk: chunk,
+                        targetLanguage: targetLanguage,
+                        glossaryHint: glossaryHint,
+                        provider: provider,
+                        apiKey: apiKey,
+                        translationOptions: translationOptions,
+                        workingChunkSize: nextSize
+                    )
+                }
             }
-
-            let fallbackApiKey = providerManager.getApiKey(for: fallbackProvider.id)
-            guard !fallbackApiKey.isEmpty else {
-                throw error
-            }
-
-            print("Primary provider failed, trying fallback provider: \(fallbackProvider.displayName)")
-            return try await executeRequest(
-                provider: fallbackProvider,
-                apiKey: fallbackApiKey,
-                messages: messages,
-                translationOptions: translationOptions
-            )
+            throw error
         }
+    }
+
+    private func executeRequestWithFallback(provider: AIProviderConfig,
+                                          apiKey: String,
+                                          messages: [Message],
+                                          translationOptions: [String: String]? = nil,
+                                          allowParseFallback: Bool = false) async throws -> String {
+        var providersToTry: [(AIProviderConfig, String)] = [(provider, apiKey)]
+        for fallbackId in providerManager.fallbackChainIds(for: provider.id) {
+            guard let fallbackProvider = providerRegistry.get(fallbackId) else { continue }
+            let fallbackKey = providerManager.getApiKey(for: fallbackId)
+            guard !fallbackKey.isEmpty else { continue }
+            providersToTry.append((fallbackProvider, fallbackKey))
+        }
+
+        var lastError: Error = AIError.invalidConfiguration("No provider available")
+        for (index, candidate) in providersToTry.enumerated() {
+            do {
+                let optionsForCandidate: [String: String]? = {
+                    if candidate.0.id == "aliyun" {
+                        return translationOptions ?? ["source_lang": "auto", "target_lang": "English"]
+                    }
+                    return translationOptions
+                }()
+                return try await executeRequest(
+                    provider: candidate.0,
+                    apiKey: candidate.1,
+                    messages: messages,
+                    translationOptions: optionsForCandidate
+                )
+            } catch {
+                lastError = error
+                let kind = failureKind(from: error)
+                let canFallback = AIErrorClassifier.isTransient(kind)
+                    || (allowParseFallback && AIErrorClassifier.shouldFallbackAfterParseRetries(kind))
+                let hasNext = index + 1 < providersToTry.count
+                if canFallback && hasNext {
+                    print("Provider \(candidate.0.displayName) failed (\(kind)), trying next fallback")
+                    continue
+                }
+                throw error
+            }
+        }
+        throw lastError
+    }
+
+    private func failureKind(from error: Error) -> AIFailureKind {
+        if let aiError = error as? AIError {
+            switch aiError {
+            case .rateLimitExceeded:
+                return .rateLimited
+            case .unauthorized:
+                return .unauthorized
+            case .invalidConfiguration:
+                return .invalidConfiguration
+            case .invalidURL:
+                return .badRequest
+            case .invalidResponse, .jsonError:
+                return .invalidStructuredResponse
+            case .networkError:
+                return .networkFailure
+            case .apiError(let message):
+                return AIErrorClassifier.kind(fromLocalizedDescription: message)
+            }
+        }
+        if error is BatchTranslationParseError {
+            return .invalidStructuredResponse
+        }
+        return AIErrorClassifier.kind(fromLocalizedDescription: error.localizedDescription)
     }
 
     private func buildHTTPConfig(provider: AIProviderConfig,

@@ -155,6 +155,7 @@ class AIProviderManager: ObservableObject {
     @Published private var apiKeys: [String: String] = [:]
     @Published var selectedProviderId: String = "deepseek"
     @Published var fallbackProviderId: String = ""
+    @Published var secondaryFallbackProviderId: String = ""
     @Published var modelDraft: String = ""
     @Published var baseURLDraft: String = ""
 
@@ -199,6 +200,11 @@ class AIProviderManager: ObservableObject {
         userDefaults.set(providerId, forKey: "fallbackAIProvider")
     }
 
+    func setSecondaryFallbackProvider(_ providerId: String) {
+        secondaryFallbackProviderId = providerId
+        userDefaults.set(providerId, forKey: "secondaryFallbackAIProvider")
+    }
+
     func getSelectedProvider() -> AIProviderConfig? {
         return AIProviderRegistry.shared.get(selectedProviderId)
     }
@@ -206,6 +212,28 @@ class AIProviderManager: ObservableObject {
     func getFallbackProvider() -> AIProviderConfig? {
         guard !fallbackProviderId.isEmpty else { return nil }
         return AIProviderRegistry.shared.get(fallbackProviderId)
+    }
+
+    /// Ordered fallback candidates (excludes primary / duplicates / empty).
+    func fallbackChainIds(for primaryId: String) -> [String] {
+        AIErrorClassifier.orderedFallbackChain(
+            primaryId: primaryId,
+            candidates: [fallbackProviderId, secondaryFallbackProviderId]
+        )
+    }
+
+    /// Providers whose API keys should be editable on the settings screen together.
+    func providersNeedingVisibleKeys() -> [AIProviderConfig] {
+        var ids = [selectedProviderId]
+        ids.append(contentsOf: fallbackChainIds(for: selectedProviderId))
+        var result: [AIProviderConfig] = []
+        var seen = Set<String>()
+        for id in ids {
+            guard !seen.contains(id), let config = AIProviderRegistry.shared.get(id) else { continue }
+            seen.insert(id)
+            result.append(config)
+        }
+        return result
     }
 
     func effectiveModel(for provider: AIProviderConfig) -> String {
@@ -272,6 +300,7 @@ class AIProviderManager: ObservableObject {
             selectedProviderId = userDefaults.string(forKey: "selectedAIProvider") ?? "deepseek"
         }
         fallbackProviderId = userDefaults.string(forKey: "fallbackAIProvider") ?? ""
+        secondaryFallbackProviderId = userDefaults.string(forKey: "secondaryFallbackAIProvider") ?? ""
     }
 
     private func migrateOldApiKeys() {

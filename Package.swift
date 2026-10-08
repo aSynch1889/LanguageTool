@@ -31,7 +31,8 @@ let package = Package(
                 "XCStringsParser.swift",
                 "GlossaryStore.swift",
                 "ProviderEndpointOverrides.swift",
-                "OpenAICompatibleCodec.swift"
+                "OpenAICompatibleCodec.swift",
+                "AIErrorClassifier.swift"
             ]
         ),
         .testTarget(
