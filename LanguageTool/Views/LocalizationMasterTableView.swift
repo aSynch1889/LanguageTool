@@ -16,17 +16,19 @@ struct LocalizationMasterTableView: NSViewRepresentable {
         let scrollView = NSScrollView()
         let tableView = MasterTableView()
 
-        tableView.style = .inset
-        tableView.usesAlternatingRowBackgroundColors = true
+        // Plain + no alternating rows avoids "white box on gray" patchwork.
+        tableView.style = .plain
+        tableView.usesAlternatingRowBackgroundColors = false
+        tableView.backgroundColor = NSColor.textBackgroundColor
         tableView.allowsColumnResizing = true
         tableView.allowsColumnReordering = false
         tableView.columnAutoresizingStyle = .lastColumnOnlyAutoresizingStyle
-        tableView.rowHeight = 44
-        tableView.intercellSpacing = NSSize(width: 10, height: 6)
-        tableView.gridStyleMask = []
+        tableView.rowHeight = 36
+        tableView.intercellSpacing = NSSize(width: 0, height: 0)
+        tableView.gridStyleMask = [.solidHorizontalGridLineMask]
+        tableView.gridColor = NSColor.separatorColor.withAlphaComponent(0.35)
         tableView.headerView = NSTableHeaderView()
-        tableView.selectionHighlightStyle = .none
-        tableView.backgroundColor = .clear
+        tableView.selectionHighlightStyle = .regular
 
         let coordinator = context.coordinator
         tableView.dataSource = coordinator
@@ -63,7 +65,6 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             return
         }
 
-        // Preserve first responder while user is editing a cell.
         if coordinator.isEditing {
             coordinator.items = items
             return
@@ -86,11 +87,35 @@ struct LocalizationMasterTableView: NSViewRepresentable {
 
     final class MasterTableView: NSTableView {
         override func validateProposedFirstResponder(_ responder: NSResponder, for event: NSEvent?) -> Bool {
-            // Allow clicking into text fields without requiring row selection first.
             if responder is NSTextField || responder is NSButton {
                 return true
             }
             return super.validateProposedFirstResponder(responder, for: event)
+        }
+    }
+
+    /// Vertically centers a single child inside the table cell bounds.
+    final class CenteredCellView: NSTableCellView {
+        private let hostedView: NSView
+
+        init(identifier: NSUserInterfaceItemIdentifier, hostedView: NSView) {
+            self.hostedView = hostedView
+            super.init(frame: .zero)
+            self.identifier = identifier
+            hostedView.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(hostedView)
+            NSLayoutConstraint.activate([
+                hostedView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+                hostedView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+                hostedView.centerYAnchor.constraint(equalTo: centerYAnchor),
+                hostedView.topAnchor.constraint(greaterThanOrEqualTo: topAnchor, constant: 4),
+                hostedView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -4)
+            ])
+        }
+
+        @available(*, unavailable)
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
         }
     }
 
@@ -122,15 +147,15 @@ struct LocalizationMasterTableView: NSViewRepresentable {
 
             let checkbox = NSTableColumn(identifier: .init("checkbox"))
             checkbox.title = "Batch"
-            checkbox.width = 58
-            checkbox.minWidth = 58
-            checkbox.maxWidth = 58
+            checkbox.width = 52
+            checkbox.minWidth = 52
+            checkbox.maxWidth = 52
             tableView.addTableColumn(checkbox)
 
             let key = NSTableColumn(identifier: .init("key"))
             key.title = "Key"
-            key.width = 240
-            key.minWidth = 160
+            key.width = 220
+            key.minWidth = 140
             tableView.addTableColumn(key)
 
             let ordered = availableLanguages.sorted { lhs, rhs in
@@ -148,15 +173,15 @@ struct LocalizationMasterTableView: NSViewRepresentable {
                 } else {
                     column.title = code
                 }
-                column.width = 200
-                column.minWidth = 140
+                column.width = 180
+                column.minWidth = 120
                 tableView.addTableColumn(column)
             }
 
             let comment = NSTableColumn(identifier: .init("comment"))
             comment.title = "Comment"
-            comment.width = 180
-            comment.minWidth = 120
+            comment.width = 160
+            comment.minWidth = 100
             tableView.addTableColumn(comment)
 
             configuredLanguages = availableLanguages
@@ -168,12 +193,7 @@ struct LocalizationMasterTableView: NSViewRepresentable {
         }
 
         func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-            guard row < items.count else { return 44 }
-            let item = items[row]
-            let longest = item.translations.values.map(\.count).max() ?? 0
-            if longest > 80 { return 64 }
-            if longest > 40 { return 52 }
-            return 44
+            36
         }
 
         func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
@@ -209,36 +229,40 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             }
         }
 
-        private func checkboxCell(tableView: NSTableView, item: TranslationItem, row: Int) -> NSButton {
-            let cellId = NSUserInterfaceItemIdentifier("CheckboxCell")
-            let button: NSButton
-            if let reused = tableView.makeView(withIdentifier: cellId, owner: self) as? NSButton {
-                button = reused
-            } else {
-                button = NSButton(checkboxWithTitle: "", target: self, action: #selector(checkboxChanged(_:)))
-                button.identifier = cellId
+        private func checkboxCell(tableView: NSTableView, item: TranslationItem, row: Int) -> NSView {
+            let wrapId = NSUserInterfaceItemIdentifier("CheckboxWrap")
+            if let wrap = tableView.makeView(withIdentifier: wrapId, owner: self) as? CenteredCellView,
+               let button = wrap.subviews.first as? NSButton {
+                button.state = item.isSelected ? .on : .off
+                button.tag = row
+                return wrap
             }
+
+            let button = NSButton(checkboxWithTitle: "", target: self, action: #selector(checkboxChanged(_:)))
             button.state = item.isSelected ? .on : .off
             button.tag = row
             button.toolTip = "Include in batch translate"
-            return button
+            button.setButtonType(.switch)
+            return CenteredCellView(identifier: wrapId, hostedView: button)
         }
 
-        private func keyCell(tableView: NSTableView, item: TranslationItem) -> NSTextField {
-            let cellId = NSUserInterfaceItemIdentifier("KeyCell")
-            let field: NSTextField
-            if let reused = tableView.makeView(withIdentifier: cellId, owner: self) as? NSTextField {
-                field = reused
-            } else {
-                field = NSTextField(labelWithString: "")
-                field.identifier = cellId
-                field.font = .monospacedSystemFont(ofSize: 12, weight: .medium)
-                field.lineBreakMode = .byTruncatingMiddle
-                field.textColor = .labelColor
+        private func keyCell(tableView: NSTableView, item: TranslationItem) -> NSView {
+            let wrapId = NSUserInterfaceItemIdentifier("KeyWrap")
+            if let wrap = tableView.makeView(withIdentifier: wrapId, owner: self) as? CenteredCellView,
+               let field = wrap.subviews.first as? NSTextField {
+                field.stringValue = item.key
+                field.toolTip = item.key
+                return wrap
             }
-            field.stringValue = item.key
+
+            let field = NSTextField(labelWithString: item.key)
+            field.font = .monospacedSystemFont(ofSize: 12, weight: .medium)
+            field.lineBreakMode = .byTruncatingMiddle
+            field.textColor = .labelColor
+            field.drawsBackground = false
+            field.isBordered = false
             field.toolTip = item.key
-            return field
+            return CenteredCellView(identifier: wrapId, hostedView: field)
         }
 
         private func textCell(
@@ -249,63 +273,85 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             isSource: Bool,
             languageCode: String?,
             isComment: Bool
-        ) -> NSTextField {
-            let cellId = NSUserInterfaceItemIdentifier(reuseId)
-            let field: NSTextField
-            if let reused = tableView.makeView(withIdentifier: cellId, owner: self) as? NSTextField {
-                field = reused
-            } else {
-                field = NSTextField(string: "")
-                field.identifier = cellId
-                field.isBordered = false
-                field.isBezeled = false
-                field.drawsBackground = true
-                field.font = .systemFont(ofSize: 12)
-                field.maximumNumberOfLines = 0
-                field.lineBreakMode = .byWordWrapping
-                field.cell?.wraps = true
-                field.cell?.isScrollable = false
-                field.focusRingType = .exterior
-                field.delegate = self
-                field.target = self
-                field.action = #selector(textFieldCommitted(_:))
+        ) -> NSView {
+            let wrapId = NSUserInterfaceItemIdentifier(reuseId + ".wrap")
+            let fieldId = languageCode.map { "LangCell-\($0)" } ?? "CommentCell"
+
+            if let wrap = tableView.makeView(withIdentifier: wrapId, owner: self) as? CenteredCellView,
+               let field = wrap.subviews.first as? NSTextField {
+                configure(field, value: value, row: row, isSource: isSource, isComment: isComment, fieldId: fieldId)
+                return wrap
             }
 
+            let field = NSTextField(string: "")
+            field.isBordered = false
+            field.isBezeled = false
+            field.drawsBackground = false
+            field.backgroundColor = .clear
+            field.font = .systemFont(ofSize: 12)
+            field.maximumNumberOfLines = 1
+            field.lineBreakMode = .byTruncatingTail
+            field.cell?.wraps = false
+            field.cell?.isScrollable = true
+            field.focusRingType = .default
+            field.delegate = self
+            field.target = self
+            field.action = #selector(textFieldCommitted(_:))
+            // Vertically center single-line text inside the field itself.
+            if let cell = field.cell as? NSTextFieldCell {
+                cell.alignment = .left
+                // NSTextFieldCell doesn't expose vertical alignment; centering is via CenteredCellView.
+            }
+
+            configure(field, value: value, row: row, isSource: isSource, isComment: isComment, fieldId: fieldId)
+            return CenteredCellView(identifier: wrapId, hostedView: field)
+        }
+
+        private func configure(
+            _ field: NSTextField,
+            value: String,
+            row: Int,
+            isSource: Bool,
+            isComment: Bool,
+            fieldId: String
+        ) {
             field.stringValue = value
             field.isEditable = !isSource
             field.isSelectable = true
             field.tag = row
+            field.identifier = NSUserInterfaceItemIdentifier(fieldId)
+            field.toolTip = isComment ? "Comment" : fieldId.replacingOccurrences(of: "LangCell-", with: "")
 
+            // Transparent fill so row background stays continuous (no white slabs / gaps).
+            field.drawsBackground = false
+            field.backgroundColor = .clear
+
+            let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
             if isSource {
-                field.backgroundColor = NSColor.quaternaryLabelColor.withAlphaComponent(0.12)
                 field.textColor = .secondaryLabelColor
-            } else if value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                field.backgroundColor = NSColor.systemOrange.withAlphaComponent(0.10)
+                field.placeholderString = nil
+            } else if trimmed.isEmpty {
                 field.textColor = .labelColor
-                field.placeholderString = isComment ? "Comment" : "Missing translation"
+                field.placeholderString = isComment ? "Comment" : "Missing"
             } else {
-                field.backgroundColor = NSColor.textBackgroundColor
                 field.textColor = .labelColor
                 field.placeholderString = nil
             }
-
-            if let languageCode {
-                field.identifier = NSUserInterfaceItemIdentifier("LangCell-\(languageCode)")
-                field.toolTip = languageCode
-            } else {
-                field.identifier = NSUserInterfaceItemIdentifier("CommentCell")
-                field.toolTip = "Comment"
-            }
-            return field
         }
 
         func controlTextDidBeginEditing(_ obj: Notification) {
             isEditing = true
+            if let field = obj.object as? NSTextField {
+                field.drawsBackground = true
+                field.backgroundColor = NSColor.selectedControlColor.withAlphaComponent(0.12)
+            }
         }
 
         func controlTextDidEndEditing(_ obj: Notification) {
             isEditing = false
             if let field = obj.object as? NSTextField {
+                field.drawsBackground = false
+                field.backgroundColor = .clear
                 applyTextField(field)
             }
         }
