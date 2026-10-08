@@ -1,7 +1,7 @@
 # Localization Master 问题分析与改造方案
 
 > 分析日期：2026-10-08  
-> 状态：阶段 1→2 实施中  
+> 状态：阶段 1→3 已完成  
 > 相关文件：`LocalizationMasterView.swift`、`TransferViewModel.swift`
 
 ---
@@ -82,9 +82,12 @@ Localization Master **功能不完整**（约 30%），目前是「能打开浏�
 - [x] 空译文标记；状态条 / 空状态 / Select All·None  
 - [x] 清理死代码与冗长 Experimental 文案  
 
-### 阶段 3（可选，本期不做）
+### 阶段 3：产品化
 
-- 主从布局、筛选（缺译/已改）、关窗脏检查、与主转换流程深度打通  
+- [x] 主从布局（Split）+ Table 模式切换  
+- [x] 筛选：All / Missing / Changed（基于 load/save 基线）  
+- [x] 关窗脏检查（Save / Don't Save / Cancel）  
+- [x] 与主转换流程打通：`Review in Master` 打开产出文件，并带入目标语言与 skipExisting  
 
 ---
 
@@ -95,3 +98,6 @@ Localization Master **功能不完整**（约 30%），目前是「能打开浏�
 3. 立即翻译只更新目标语言，且可取消  
 4. 表格编辑时不闪烁、不丢焦点；源/目标列可辨  
 5. 相关改动以中文 commit 分段 push  
+6. Split 下列表可筛选缺译/已改，详情可编辑  
+7. 未保存关闭窗口会弹出确认  
+8. 转换成功后可通过 Review in Master 审阅产出文件  

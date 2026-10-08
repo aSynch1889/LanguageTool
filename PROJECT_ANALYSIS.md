@@ -420,7 +420,7 @@ Parse → Chunk → Translate → Validate → Write
 - [x] 取消长任务 + 语言并发限流  
 - [x] 移除空 SwiftData  
 
-> Localization Master 后续深度改造见 [`docs/LOCALIZATION_MASTER_ANALYSIS.md`](docs/LOCALIZATION_MASTER_ANALYSIS.md)（阶段 1→2 已实施：文档模型写回 + 表格 UI）。
+> Localization Master 改造见 [`docs/LOCALIZATION_MASTER_ANALYSIS.md`](docs/LOCALIZATION_MASTER_ANALYSIS.md)（阶段 1→3 已完成：写回闭环、表格 UI、主从布局/筛选/关窗脏检查/转换后审阅）。
 
 ---
 
