@@ -5,7 +5,8 @@ import UniformTypeIdentifiers
 struct TransferView: View {
     @EnvironmentObject private var shell: AppShellViewModel
     @Environment(\.colorScheme) private var colorScheme
-    @StateObject private var viewModel = TransferViewModel()
+    /// Owned by `AppShellView` so Convert ↔ Review does not wipe input/output paths.
+    @ObservedObject var viewModel: TransferViewModel
 
     // Language selection state
     @State private var searchText = ""

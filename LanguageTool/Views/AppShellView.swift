@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 
 struct AppShellView: View {
     @StateObject private var shell = AppShellViewModel()
+    @StateObject private var transferViewModel = TransferViewModel()
     @StateObject private var masterViewModel = LocalizationMasterViewModel()
     @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw: String = AppearanceMode.system.rawValue
     @AppStorage("appLanguage") private var appLanguage: String = "en"
@@ -159,7 +160,7 @@ struct AppShellView: View {
     private var detailBody: some View {
         switch shell.sidebar {
         case .transfer:
-            TransferView()
+            TransferView(viewModel: transferViewModel)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .review:
             LocalizationMasterView(
