@@ -146,7 +146,9 @@ struct TransferView: View {
                 }
             }
             .pickerStyle(.segmented)
-            .onChange(of: viewModel.selectedPlatform) { oldValue, newValue in
+            .labelsHidden()
+            .frame(maxWidth: .infinity)
+            .onChange(of: viewModel.selectedPlatform) { _, _ in
                 viewModel.resetAll()
             }
         }
@@ -584,6 +586,7 @@ struct CardStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(ThemeSurface.card(for: colorScheme), in: RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
