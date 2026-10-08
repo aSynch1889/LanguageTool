@@ -151,19 +151,23 @@ struct SettingsView: View {
             }
 
             Section(header: Text("Notification Settings".localized)) {
-                Toggle("Enable Notifications".localized, isOn: $notificationsEnabled)
-                    .onChange(of: notificationsEnabled) { _, newValue in
-                        if newValue {
-                            Task {
-                                await requestNotificationPermission()
-                            }
-                        }
-                        notificationManager.areNotificationsEnabled = newValue
+                Toggle(isOn: $notificationsEnabled) {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Text("Enable Notifications".localized)
+                        Text("Receive notifications when translation tasks complete or fail".localized)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
                     }
-
-                Text("Receive notifications when translation tasks complete or fail".localized)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                }
+                .onChange(of: notificationsEnabled) { _, newValue in
+                    if newValue {
+                        Task {
+                            await requestNotificationPermission()
+                        }
+                    }
+                    notificationManager.areNotificationsEnabled = newValue
+                }
             }
 
             Section(header: Text("Glossary".localized)) {
