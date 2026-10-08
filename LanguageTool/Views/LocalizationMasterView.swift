@@ -40,7 +40,7 @@ struct LocalizationMasterView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .frame(minWidth: 640, minHeight: 480)
+        .frame(minWidth: 520, minHeight: 480)
         .background(Color(nsColor: .windowBackgroundColor))
     }
 
@@ -62,10 +62,10 @@ struct LocalizationMasterView: View {
     private var masterDetailBody: some View {
         HSplitView {
             keyListPane
-                .frame(minWidth: 240, idealWidth: 280, maxWidth: 360)
+                .frame(minWidth: 160, idealWidth: 240, maxWidth: 360)
 
             detailPane
-                .frame(minWidth: 420)
+                .frame(minWidth: 280)
         }
     }
 
@@ -250,40 +250,30 @@ struct LocalizationMasterView: View {
 
     private var headerBar: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 10) {
-                if viewModel.document.isDirty {
-                    Label("Unsaved changes".localized, systemImage: "pencil.circle.fill")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.orange)
-                } else {
-                    Label("Review".localized, systemImage: "tablecells")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
+            // Status + layout + filename on separate flexible rows so Chinese labels don't crush.
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Group {
+                    if viewModel.document.isDirty {
+                        Label("Unsaved changes".localized, systemImage: "pencil.circle.fill")
+                            .foregroundStyle(.orange)
+                    } else {
+                        Label("Review".localized, systemImage: "tablecells")
+                            .foregroundStyle(.secondary)
+                    }
                 }
+                .font(.caption.weight(.semibold))
+                .layoutPriority(1)
 
-                Text("·")
-                    .foregroundStyle(.quaternary)
-
-                Text("%lld keys · %lld languages".localizedFormat(
-                    viewModel.document.items.count,
-                    viewModel.document.availableLanguages.count
-                ))
+                Text(documentStatsText)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
 
-                if viewModel.document.missingCount > 0 {
-                    Text("· %lld missing".localizedFormat(viewModel.document.missingCount))
-                        .font(.caption)
-                        .foregroundStyle(.orange)
-                }
-                if viewModel.document.changedCount > 0 {
-                    Text("· %lld changed".localizedFormat(viewModel.document.changedCount))
-                        .font(.caption)
-                        .foregroundStyle(.blue)
-                }
+                Spacer(minLength: 0)
+            }
 
-                Spacer()
-
+            HStack(spacing: 10) {
                 Picker("Layout".localized, selection: $viewModel.layoutMode) {
                     ForEach(MasterLayoutMode.allCases) { mode in
                         Text(mode.title).tag(mode)
@@ -291,73 +281,137 @@ struct LocalizationMasterView: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                .frame(width: 160)
+                .frame(minWidth: 120, idealWidth: 148, maxWidth: 168)
+                .layoutPriority(1)
 
                 Text(URL(fileURLWithPath: viewModel.document.filePath).lastPathComponent)
                     .font(.caption.monospaced())
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                     .help(viewModel.document.filePath)
             }
 
-            // Two rows so toggles never collapse into a floating checkbox.
-            HStack(spacing: 12) {
-                Picker("Filter".localized, selection: $viewModel.rowFilter) {
-                    ForEach(LocalizationRowFilter.allCases) { filter in
-                        Text(filter.title).tag(filter)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .frame(maxWidth: 260)
-
-                Spacer(minLength: 8)
-
-                HStack(spacing: 6) {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundStyle(.secondary)
-                    TextField("Search".localized, text: $viewModel.searchText)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(minWidth: 140, idealWidth: 200, maxWidth: 240)
+            ViewThatFits(in: .horizontal) {
+                filterSearchRow(searchMinWidth: 140, searchMaxWidth: 240)
+                filterSearchRow(searchMinWidth: 96, searchMaxWidth: 180)
+                VStack(alignment: .leading, spacing: 8) {
+                    filterPicker
+                    searchField(minWidth: 120, maxWidth: .infinity)
                 }
             }
 
-            HStack(spacing: 16) {
-                Toggle(isOn: $viewModel.translateSelectedOnly) {
-                    Text("Translate only checked rows".localized)
-                        .font(.caption)
-                }
-                .toggleStyle(.checkbox)
-
-                Toggle(isOn: $viewModel.skipExistingTranslations) {
-                    Text("Skip existing".localized)
-                        .font(.caption)
-                }
-                .toggleStyle(.checkbox)
-
-                Divider()
-                    .frame(height: 16)
-
-                Button("Select All".localized) { viewModel.setBatchSelection(true) }
-                    .buttonStyle(.borderless)
-                Button("Select None".localized) { viewModel.setBatchSelection(false) }
-                    .buttonStyle(.borderless)
-
-                Spacer()
+            ViewThatFits(in: .horizontal) {
+                batchOptionsRow(compact: false)
+                batchOptionsRow(compact: true)
             }
 
             if !viewModel.statusMessage.isEmpty {
                 Text(viewModel.statusMessage)
                     .font(.caption)
                     .foregroundStyle(viewModel.lastOperationSucceeded ? Color.secondary : Color.red)
+                    .lineLimit(2)
             }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var documentStatsText: String {
+        var parts: [String] = [
+            "%lld keys · %lld languages".localizedFormat(
+                viewModel.document.items.count,
+                viewModel.document.availableLanguages.count
+            )
+        ]
+        if viewModel.document.missingCount > 0 {
+            parts.append("· %lld missing".localizedFormat(viewModel.document.missingCount))
+        }
+        if viewModel.document.changedCount > 0 {
+            parts.append("· %lld changed".localizedFormat(viewModel.document.changedCount))
+        }
+        return parts.joined(separator: " ")
+    }
+
+    private var filterPicker: some View {
+        Picker("Filter".localized, selection: $viewModel.rowFilter) {
+            ForEach(LocalizationRowFilter.allCases) { filter in
+                Text(filter.title).tag(filter)
+            }
+        }
+        .pickerStyle(.segmented)
+        .frame(minWidth: 180, maxWidth: 260)
+        .layoutPriority(1)
+    }
+
+    private func searchField(minWidth: CGFloat, maxWidth: CGFloat) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(.secondary)
+            TextField("Search".localized, text: $viewModel.searchText)
+                .textFieldStyle(.roundedBorder)
+        }
+        .frame(minWidth: minWidth, maxWidth: maxWidth)
+    }
+
+    private func filterSearchRow(searchMinWidth: CGFloat, searchMaxWidth: CGFloat) -> some View {
+        HStack(spacing: 12) {
+            filterPicker
+            Spacer(minLength: 8)
+            searchField(minWidth: searchMinWidth, maxWidth: searchMaxWidth)
+        }
+    }
+
+    private func batchOptionsRow(compact: Bool) -> some View {
+        HStack(spacing: compact ? 10 : 16) {
+            Toggle(isOn: $viewModel.translateSelectedOnly) {
+                Text(compact ? "Checked only".localized : "Translate only checked rows".localized)
+                    .font(.caption)
+                    .lineLimit(1)
+            }
+            .toggleStyle(.checkbox)
+            .layoutPriority(1)
+            .help("Translate only checked rows".localized)
+
+            Toggle(isOn: $viewModel.skipExistingTranslations) {
+                Text("Skip existing".localized)
+                    .font(.caption)
+                    .lineLimit(1)
+            }
+            .toggleStyle(.checkbox)
+            .layoutPriority(1)
+
+            if !compact {
+                Divider()
+                    .frame(height: 16)
+            }
+
+            Button("Select All".localized) { viewModel.setBatchSelection(true) }
+                .buttonStyle(.borderless)
+                .fixedSize()
+            Button(compact ? "None".localized : "Select None".localized) { viewModel.setBatchSelection(false) }
+                .buttonStyle(.borderless)
+                .fixedSize()
+
+            Spacer(minLength: 0)
+        }
     }
 
     private var footerBar: some View {
-        HStack(spacing: 10) {
-            Menu("Add Language".localized) {
+        ViewThatFits(in: .horizontal) {
+            footerControls(compact: false)
+            footerControls(compact: true)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity)
+    }
+
+    private func footerControls(compact: Bool) -> some View {
+        HStack(spacing: 8) {
+            Menu {
                 if viewModel.addableLanguages.isEmpty {
                     Text("No languages to add".localized)
                 } else {
@@ -367,25 +421,51 @@ struct LocalizationMasterView: View {
                         }
                     }
                 }
+            } label: {
+                Text(compact ? "Language".localized : "Add Language".localized)
             }
+            .fixedSize()
+            .layoutPriority(1)
 
-            Spacer()
+            Spacer(minLength: 4)
 
-            Button("Reload Source".localized) {
-                Task { await viewModel.reload() }
+            if compact {
+                Menu("More".localized) {
+                    Button("Reload Source".localized) {
+                        Task { await viewModel.reload() }
+                    }
+                    .disabled(viewModel.isLoading)
+                    Button("Export CSV".localized) {
+                        viewModel.exportCSV()
+                    }
+                    .disabled(viewModel.document.items.isEmpty)
+                    Button("Save".localized) {
+                        viewModel.save()
+                    }
+                    .keyboardShortcut("s", modifiers: .command)
+                    .disabled(viewModel.document.items.isEmpty || viewModel.isLoading)
+                }
+                .fixedSize()
+            } else {
+                Button("Reload Source".localized) {
+                    Task { await viewModel.reload() }
+                }
+                .disabled(viewModel.isLoading)
+                .fixedSize()
+
+                Button("Export CSV".localized) {
+                    viewModel.exportCSV()
+                }
+                .disabled(viewModel.document.items.isEmpty)
+                .fixedSize()
+
+                Button("Save".localized) {
+                    viewModel.save()
+                }
+                .disabled(viewModel.document.items.isEmpty || viewModel.isLoading)
+                .keyboardShortcut("s", modifiers: .command)
+                .fixedSize()
             }
-            .disabled(viewModel.isLoading)
-
-            Button("Export CSV".localized) {
-                viewModel.exportCSV()
-            }
-            .disabled(viewModel.document.items.isEmpty)
-
-            Button("Save".localized) {
-                viewModel.save()
-            }
-            .disabled(viewModel.document.items.isEmpty || viewModel.isLoading)
-            .keyboardShortcut("s", modifiers: .command)
 
             if viewModel.isLoading {
                 Button("Cancel".localized) {
@@ -393,16 +473,18 @@ struct LocalizationMasterView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.red)
+                .fixedSize()
+                .layoutPriority(2)
             } else {
-                Button("Translate Now".localized) {
+                Button(compact ? "Translate".localized : "Translate Now".localized) {
                     viewModel.translateNow()
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(viewModel.document.items.isEmpty)
+                .fixedSize()
+                .layoutPriority(2)
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
     }
 
     // MARK: - Bindings
