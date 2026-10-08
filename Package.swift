@@ -32,7 +32,11 @@ let package = Package(
                 "GlossaryStore.swift",
                 "ProviderEndpointOverrides.swift",
                 "OpenAICompatibleCodec.swift",
-                "AIErrorClassifier.swift"
+                "AIErrorClassifier.swift",
+                "TranslationMemoryCache.swift",
+                "PlaceholderValidator.swift",
+                "GlossaryEnforcer.swift",
+                "TranslationRouter.swift"
             ]
         ),
         .testTarget(

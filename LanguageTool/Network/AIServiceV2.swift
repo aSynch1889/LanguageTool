@@ -24,6 +24,7 @@ class AIServiceV2 {
     private let providerManager: AIProviderManager
     private let providerRegistry: AIProviderRegistry
     let chunkSize: Int
+    private var translationMemory = TranslationMemoryCache()
 
     init(networkClient: NetworkClientProtocol = NetworkClient.shared,
          providerManager: AIProviderManager = AIProviderManager.shared,
@@ -33,6 +34,11 @@ class AIServiceV2 {
         self.providerManager = providerManager
         self.providerRegistry = providerRegistry
         self.chunkSize = chunkSize
+    }
+
+    /// Clears in-memory translation cache (useful after glossary changes).
+    func clearTranslationMemory() {
+        translationMemory = TranslationMemoryCache()
     }
 
     // MARK: - Public Interface
@@ -79,8 +85,45 @@ class AIServiceV2 {
     func batchTranslate(texts: [String], to targetLanguage: String) async throws -> [String] {
         guard !texts.isEmpty else { return [] }
 
-        guard let provider = providerManager.getSelectedProvider() else {
+        guard let selectedProvider = providerManager.getSelectedProvider() else {
             throw AIError.invalidConfiguration("No AI provider selected")
+        }
+
+        let glossaryRaw = GlossaryStore.loadRaw()
+        let glossaryEntries = GlossaryStore.parse(glossaryRaw)
+        let glossaryFingerprint = TranslationMemoryCache.glossaryFingerprint(from: glossaryRaw)
+        let glossaryHint = GlossaryStore.promptHint(from: glossaryRaw)
+
+        let (cachedResolved, missingIndices) = translationMemory.resolveBatch(
+            texts: texts,
+            targetLanguage: targetLanguage,
+            glossaryFingerprint: glossaryFingerprint
+        )
+
+        var result: [String] = cachedResolved.map { $0 ?? "" }
+        guard !missingIndices.isEmpty else {
+            return result
+        }
+
+        let textsToTranslate = missingIndices.map { texts[$0] }
+        let mtAvailable = providerManager.hasValidApiKey(for: "aliyun")
+            && providerRegistry.get("aliyun") != nil
+        let route = TranslationRouter.decide(
+            batchCount: textsToTranslate.count,
+            primaryProviderId: selectedProvider.id,
+            mtProviderId: "aliyun",
+            mtAvailable: mtAvailable
+        )
+
+        let provider: AIProviderConfig
+        if let routed = providerRegistry.get(route.preferredProviderId),
+           providerManager.hasValidApiKey(for: routed.id) {
+            provider = routed
+            if route.reason == .largeBatchUsesMT {
+                print("Translation router: large batch → MT provider \(routed.displayName)")
+            }
+        } else {
+            provider = selectedProvider
         }
 
         let apiKey = providerManager.getApiKey(for: provider.id)
@@ -88,14 +131,13 @@ class AIServiceV2 {
             throw AIError.invalidConfiguration("API key not configured for \(provider.name)")
         }
 
-        let glossaryHint = glossaryPromptHint()
         let translationOptions = provider.id == "aliyun" ? [
             "source_lang": "auto",
             "target_lang": targetLanguage
         ] : nil
 
-        var allTranslations: [String] = []
-        for chunk in BatchTranslationParser.chunk(texts, size: chunkSize) {
+        var freshTranslations: [String] = []
+        for chunk in BatchTranslationParser.chunk(textsToTranslate, size: chunkSize) {
             try Task.checkCancellation()
             let translatedChunk = try await translateChunkWithResilience(
                 chunk: chunk,
@@ -106,13 +148,57 @@ class AIServiceV2 {
                 translationOptions: translationOptions,
                 workingChunkSize: chunkSize
             )
-            allTranslations.append(contentsOf: translatedChunk)
+            freshTranslations.append(contentsOf: translatedChunk)
         }
 
-        guard allTranslations.count == texts.count else {
+        guard freshTranslations.count == textsToTranslate.count else {
             throw AIError.invalidResponse
         }
-        return allTranslations
+
+        let qualityChecked = zip(textsToTranslate, freshTranslations).map { source, translation in
+            postProcessTranslation(
+                source: source,
+                translation: translation,
+                glossaryEntries: glossaryEntries
+            )
+        }
+
+        translationMemory.storeBatch(
+            texts: textsToTranslate,
+            translations: qualityChecked,
+            targetLanguage: targetLanguage,
+            glossaryFingerprint: glossaryFingerprint
+        )
+
+        for (offset, index) in missingIndices.enumerated() {
+            result[index] = qualityChecked[offset]
+        }
+        return result
+    }
+
+    private func postProcessTranslation(
+        source: String,
+        translation: String,
+        glossaryEntries: [GlossaryEntry]
+    ) -> String {
+        var output = GlossaryEnforcer.enforce(
+            source: source,
+            translation: translation,
+            entries: glossaryEntries
+        )
+        let placeholderIssues = PlaceholderValidator.validate(source: source, translation: output)
+        if !placeholderIssues.isEmpty {
+            print("Placeholder validation: \(placeholderIssues.joined(separator: "; "))")
+        }
+        let glossaryIssues = GlossaryEnforcer.validate(
+            source: source,
+            translation: output,
+            entries: glossaryEntries
+        )
+        if !glossaryIssues.isEmpty {
+            print("Glossary validation: \(glossaryIssues.joined(separator: "; "))")
+        }
+        return output
     }
 
     func batchTranslateWithExisting(texts: [String],
@@ -451,7 +537,4 @@ class AIServiceV2 {
         )
     }
 
-    private func glossaryPromptHint() -> String {
-        GlossaryStore.promptHint(from: GlossaryStore.loadRaw())
-    }
 }
