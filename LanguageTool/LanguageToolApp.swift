@@ -10,6 +10,8 @@ struct LanguageToolApp: App {
             LocalizationManager.shared.setLanguage("en")
         }
 
+        AppearanceMode.migrateIfNeeded()
+
         // Ensure provider registry is initialized before UI binds to it.
         _ = AIProviderRegistry.shared
     }
@@ -23,8 +25,7 @@ struct LanguageToolApp: App {
                     }
                 }
         }
-        .windowStyle(.hiddenTitleBar)
-        .defaultSize(width: 600, height: 600)
+        .defaultSize(width: 1000, height: 700)
 
         Settings {
             SettingsView()

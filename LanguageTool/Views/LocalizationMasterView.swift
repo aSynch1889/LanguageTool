@@ -2,10 +2,18 @@ import SwiftUI
 import AppKit
 
 struct LocalizationMasterView: View {
-    @StateObject var viewModel: LocalizationMasterViewModel
+    @ObservedObject var viewModel: LocalizationMasterViewModel
+    var onGoToConvert: (() -> Void)?
+    var onOpenFile: (() -> Void)?
 
-    init(viewModel: LocalizationMasterViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(
+        viewModel: LocalizationMasterViewModel,
+        onGoToConvert: (() -> Void)? = nil,
+        onOpenFile: (() -> Void)? = nil
+    ) {
+        self.viewModel = viewModel
+        self.onGoToConvert = onGoToConvert
+        self.onOpenFile = onOpenFile
     }
 
     var body: some View {
@@ -28,7 +36,7 @@ struct LocalizationMasterView: View {
             Divider()
             footerBar
         }
-        .frame(minWidth: 960, minHeight: 640)
+        .frame(minWidth: 640, minHeight: 480)
         .background(Color(nsColor: .windowBackgroundColor))
     }
 
@@ -198,11 +206,22 @@ struct LocalizationMasterView: View {
                 .foregroundStyle(.secondary)
             Text("No localization entries")
                 .font(.headline)
-            Text("Open a source file from the main window, then launch Localization Master.")
+                Text("Convert a file first, or open one here to review translations.".localized)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 360)
+
+            HStack(spacing: 12) {
+                if let onGoToConvert {
+                    Button("Go to Convert".localized, action: onGoToConvert)
+                        .buttonStyle(.borderedProminent)
+                }
+                if let onOpenFile {
+                    Button("Open File…".localized, action: onOpenFile)
+                        .buttonStyle(.bordered)
+                }
+            }
         }
         .padding(24)
     }
@@ -215,7 +234,7 @@ struct LocalizationMasterView: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.orange)
                 } else {
-                    Label("Localization Master", systemImage: "tablecells")
+                    Label("Review".localized, systemImage: "tablecells")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }

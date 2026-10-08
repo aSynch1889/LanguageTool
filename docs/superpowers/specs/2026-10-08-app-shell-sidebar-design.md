@@ -1,7 +1,7 @@
 # 设计：单窗口侧栏整合（方案 A）
 
 > 日期：2026-10-08  
-> 状态：已确认（§1–§3）  
+> 状态：已确认（§1–§3）；**已落地**（2026-10-08）  
 > 目标：消除主窗口「转换」与 Localization Master「审阅」的产品割裂，并暴露设置 / 语言 / 外观快捷入口
 
 ---
@@ -119,24 +119,24 @@ Transfer 完成
 
 ## 8. 测试与验收
 
-- [ ] 冷启动进入「转换」
-- [ ] 转换成功自动进入「审阅」且能看到结果文件内容
-- [ ] 「在审阅中打开」不创建第二窗
-- [ ] ⚙ 与侧栏设置打开 Settings
-- [ ] 工具栏切换语言写入 `appLanguage`
-- [ ] 外观三态立即作用于主窗（转换+审阅）
-- [ ] 审阅 dirty 时切换/关闭有确认
-- [ ] 现有逻辑单测（`swift test`）仍通过
+- [x] 冷启动进入「转换」（`AppShellViewModel.sidebar` 默认 `.transfer`）
+- [x] 转换成功自动进入「审阅」且能看到结果文件内容（`showSuccessActions` → `requestReview`）
+- [x] 「在审阅中打开」不创建第二窗（已拆除 `NSWindow` Master）
+- [x] ⚙ 与侧栏设置打开 Settings
+- [x] 工具栏切换语言写入 `appLanguage`
+- [x] 外观三态立即作用于主窗（转换+审阅）（`AppearanceMode` + 主壳 `preferredColorScheme`）
+- [x] 审阅 dirty 时切换侧栏有确认（`confirmCloseIfNeeded`）；关主窗系统级确认未单独挂接
+- [x] 现有逻辑单测（`swift test`）仍通过
 
 ---
 
 ## 9. 实施顺序（供后续 plan）
 
-1. Shell + 侧栏路由空壳，Detail 先嵌现有 Transfer  
-2. 审阅页迁入 Detail；拆除默认 `NSWindow`  
-3. 转换 → 审阅交接  
-4. 工具栏：设置 / 语言 / 外观三态  
-5. 空态、文案、默认窗口尺寸、回归  
+1. [x] Shell + 侧栏路由空壳，Detail 先嵌现有 Transfer  
+2. [x] 审阅页迁入 Detail；拆除默认 `NSWindow`  
+3. [x] 转换 → 审阅交接  
+4. [x] 工具栏：设置 / 语言 / 外观三态  
+5. [x] 空态、文案、默认窗口尺寸、回归  
 
 ---
 

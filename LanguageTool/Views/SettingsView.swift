@@ -6,8 +6,15 @@ struct SettingsView: View {
     @ObservedObject private var notificationManager = NotificationManager.shared
     @AppStorage("translationGlossary") private var translationGlossary: String = ""
     @AppStorage("appLanguage") private var appLanguage: String = "en"
-    @AppStorage("isDarkMode") private var isDarkMode: Bool = false
+    @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw: String = AppearanceMode.system.rawValue
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
+
+    private var appearanceModeBinding: Binding<AppearanceMode> {
+        Binding(
+            get: { AppearanceMode(rawValue: appearanceModeRaw) ?? .system },
+            set: { appearanceModeRaw = $0.rawValue }
+        )
+    }
 
     private let supportedLanguages = [
         ("en", "English"),
@@ -130,7 +137,11 @@ struct SettingsView: View {
             }
 
             Section(header: Text("Appearance Settings".localized)) {
-                Toggle("Dark Mode".localized, isOn: $isDarkMode)
+                Picker("Appearance".localized, selection: appearanceModeBinding) {
+                    ForEach(AppearanceMode.allCases) { mode in
+                        Text(mode.title).tag(mode)
+                    }
+                }
             }
 
             Section(header: Text("Notification Settings".localized)) {
@@ -179,8 +190,9 @@ struct SettingsView: View {
         .frame(width: 420)
         .frame(minHeight: 200)
         .id(languageChanged)
-        .preferredColorScheme(isDarkMode ? .dark : .light)
+        .preferredColorScheme((AppearanceMode(rawValue: appearanceModeRaw) ?? .system).preferredColorScheme)
         .onAppear {
+            AppearanceMode.migrateIfNeeded()
             notificationManager.initializeDefaultSettings()
             notificationsEnabled = notificationManager.areNotificationsEnabled
             providerManager.refreshEndpointDrafts()

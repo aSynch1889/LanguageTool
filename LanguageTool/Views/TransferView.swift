@@ -3,7 +3,7 @@ import AppKit
 import UniformTypeIdentifiers
 
 struct TransferView: View {
-    @AppStorage("isDarkMode") private var isDarkMode: Bool = false
+    @EnvironmentObject private var shell: AppShellViewModel
     @StateObject private var viewModel = TransferViewModel()
 
     // Language selection state
@@ -50,7 +50,6 @@ struct TransferView: View {
             .frame(minHeight: 500)
             .blur(radius: viewModel.isLoading ? 3 : 0)
             .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
-            .preferredColorScheme(isDarkMode ? .dark : .light)
 
             if viewModel.isLoading {
                 loadingView
@@ -63,6 +62,17 @@ struct TransferView: View {
         .onReceive(NotificationCenter.default.publisher(for: .languageChanged)) { _ in
             viewModel.languageChanged.toggle()
         }
+        .onChange(of: viewModel.showSuccessActions) { _, show in
+            guard show else { return }
+            if let request = viewModel.makeReviewRequest(preferOutput: true) {
+                shell.requestReview(request)
+            }
+        }
+    }
+
+    private func openInReview(preferOutput: Bool) {
+        guard let request = viewModel.makeReviewRequest(preferOutput: preferOutput) else { return }
+        shell.requestReview(request)
     }
     
     private var platformSelectionCard: some View {
@@ -354,10 +364,12 @@ struct TransferView: View {
                     .buttonStyle(.bordered)
                     .disabled(viewModel.isLoading)
                     Spacer()
-                    Button(action: viewModel.openInNewWindow) {
+                    Button {
+                        openInReview(preferOutput: false)
+                    } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "tablecells")
-                            Text("Localization Master".localized)
+                            Text("Open in Review".localized)
                         }
                     }
                     .buttonStyle(.bordered)
@@ -414,8 +426,10 @@ struct TransferView: View {
                         }
                         .buttonStyle(.bordered)
 
-                        Button(action: viewModel.openMasterForReview) {
-                            Label("Review in Master".localized, systemImage: "tablecells")
+                        Button {
+                            openInReview(preferOutput: true)
+                        } label: {
+                            Label("View in Review".localized, systemImage: "tablecells")
                                 .font(.subheadline)
                         }
                         .buttonStyle(.bordered)
