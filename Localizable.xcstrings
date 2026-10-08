@@ -1979,13 +1979,7 @@
         }
       }
     },
-    "Language Tool" : {
-
-    },
     "Layout" : {
-
-    },
-    "Localization Master" : {
 
     },
     "Missing translation" : {
@@ -2301,9 +2295,6 @@
           }
         }
       }
-    },
-    "Open a source file from the main window, then launch Localization Master." : {
-
     },
     "Other Settings" : {
       "extractionState" : "stale",
