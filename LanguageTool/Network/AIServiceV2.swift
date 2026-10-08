@@ -23,15 +23,16 @@ class AIServiceV2 {
     private let networkClient: NetworkClientProtocol
     private let providerManager: AIProviderManager
     private let providerRegistry: AIProviderRegistry
+    let chunkSize: Int
 
     init(networkClient: NetworkClientProtocol = NetworkClient.shared,
          providerManager: AIProviderManager = AIProviderManager.shared,
-         providerRegistry: AIProviderRegistry = AIProviderRegistry.shared) {
+         providerRegistry: AIProviderRegistry = AIProviderRegistry.shared,
+         chunkSize: Int = BatchTranslationParser.defaultChunkSize) {
         self.networkClient = networkClient
         self.providerManager = providerManager
         self.providerRegistry = providerRegistry
-
-        setupDefaultProviders()
+        self.chunkSize = chunkSize
     }
 
     // MARK: - Public Interface
@@ -76,19 +77,7 @@ class AIServiceV2 {
     }
 
     func batchTranslate(texts: [String], to targetLanguage: String) async throws -> [String] {
-        let separator = "|||"
-        let combinedText = texts.joined(separator: separator)
-        let glossaryHint = glossaryPromptHint()
-
-        let prompt = """
-        请将以下文本翻译成\(targetLanguage)。
-        每个文本之间使用 ||| 分隔，请保持这个分隔符，只返回翻译结果：
-        \(glossaryHint)
-
-        \(combinedText)
-        """
-
-        let messages = [Message(role: "user", content: prompt)]
+        guard !texts.isEmpty else { return [] }
 
         guard let provider = providerManager.getSelectedProvider() else {
             throw AIError.invalidConfiguration("No AI provider selected")
@@ -99,20 +88,41 @@ class AIServiceV2 {
             throw AIError.invalidConfiguration("API key not configured for \(provider.name)")
         }
 
-        // Special handling for Aliyun with translation options
+        let glossaryHint = glossaryPromptHint()
         let translationOptions = provider.id == "aliyun" ? [
             "source_lang": "auto",
             "target_lang": targetLanguage
         ] : nil
 
-        let response = try await executeRequestWithFallback(
-            provider: provider,
-            apiKey: apiKey,
-            messages: messages,
-            translationOptions: translationOptions
-        )
+        var allTranslations: [String] = []
+        for chunk in BatchTranslationParser.chunk(texts, size: chunkSize) {
+            try Task.checkCancellation()
 
-        return try parseBatchTranslationResponse(response: response, separator: separator, expectedCount: texts.count)
+            let prompt = BatchTranslationParser.buildPrompt(
+                texts: chunk,
+                targetLanguage: targetLanguage,
+                glossaryHint: glossaryHint
+            )
+            let messages = [Message(role: "user", content: prompt)]
+            let response = try await executeRequestWithFallback(
+                provider: provider,
+                apiKey: apiKey,
+                messages: messages,
+                translationOptions: translationOptions
+            )
+
+            do {
+                let parsed = try BatchTranslationParser.parse(response: response, expectedCount: chunk.count)
+                allTranslations.append(contentsOf: parsed)
+            } catch {
+                throw AIError.invalidResponse
+            }
+        }
+
+        guard allTranslations.count == texts.count else {
+            throw AIError.invalidResponse
+        }
+        return allTranslations
     }
 
     func batchTranslateWithExisting(texts: [String],
@@ -180,7 +190,11 @@ class AIServiceV2 {
                               messages: [Message],
                               translationOptions: [String: String]? = nil) async throws -> String {
 
-        let requestBody = provider.requestBuilder.buildRequest(messages: messages, translationOptions: translationOptions)
+        let requestBody = provider.requestBuilder.buildRequest(
+            messages: messages,
+            model: provider.model,
+            translationOptions: translationOptions
+        )
 
         let httpConfig = try buildHTTPConfig(provider: provider, apiKey: apiKey, requestBody: requestBody)
 
@@ -225,10 +239,9 @@ class AIServiceV2 {
                                apiKey: String,
                                requestBody: [String: Any]) throws -> HTTPRequestConfig {
 
-        var urlString = provider.baseURL
+        var urlString = provider.baseURL.replacingOccurrences(of: "{model}", with: provider.model)
         var headers = ["Content-Type": "application/json"]
 
-        // Handle authentication
         switch provider.authType {
         case .bearer(token: _):
             headers["Authorization"] = "Bearer \(apiKey)"
@@ -237,8 +250,9 @@ class AIServiceV2 {
             case .header(name: let headerName):
                 headers[headerName] = apiKey
             case .queryParameter(name: let paramName):
+                let encoded = apiKey.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? apiKey
                 urlString += urlString.contains("?") ? "&" : "?"
-                urlString += "\(paramName)=\(apiKey)"
+                urlString += "\(paramName)=\(encoded)"
             }
         case .custom(headers: let customHeaders):
             for (key, value) in customHeaders {
@@ -260,94 +274,7 @@ class AIServiceV2 {
         )
     }
 
-    private func parseBatchTranslationResponse(response: String, separator: String, expectedCount: Int) throws -> [String] {
-        let cleanedResponse = response
-            .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            .replacingOccurrences(of: "\n", with: " ")
-            .replacingOccurrences(of: "\r", with: " ")
-            .replacingOccurrences(of: "  ", with: " ")
-
-        let translations = cleanedResponse.components(separatedBy: separator)
-            .map { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-
-        guard translations.count == expectedCount else {
-            throw AIError.invalidResponse
-        }
-
-        return translations
-    }
-
     private func glossaryPromptHint() -> String {
-        let glossary = UserDefaults.standard.string(forKey: "translationGlossary")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        guard !glossary.isEmpty else { return "" }
-        return "\n请严格遵守以下术语映射规则（术语左侧不要翻译，右侧为目标结果）：\n\(glossary)\n"
-    }
-
-    private func setupDefaultProviders() {
-        // Register DeepSeek
-        let deepseekConfig = AIProviderConfig(
-            id: "deepseek",
-            name: "deepseek",
-            displayName: "DeepSeek Chat",
-            baseURL: "https://api.deepseek.com/v1/chat/completions",
-            model: "deepseek-chat",
-            authType: .bearer(token: ""),
-            requestBuilder: DeepSeekRequestBuilder(),
-            responseParser: DeepSeekResponseParser()
-        )
-        providerRegistry.register(deepseekConfig)
-
-        // Register Gemini
-        let geminiConfig = AIProviderConfig(
-            id: "gemini",
-            name: "gemini",
-            displayName: "Google Gemini",
-            baseURL: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
-            model: "gemini-1.5-flash",
-            authType: .apiKey(key: "", location: .queryParameter(name: "key")),
-            requestBuilder: GeminiRequestBuilder(),
-            responseParser: GeminiResponseParser()
-        )
-        providerRegistry.register(geminiConfig)
-
-        // Register Aliyun
-        let aliyunConfig = AIProviderConfig(
-            id: "aliyun",
-            name: "aliyun",
-            displayName: "Aliyun",
-            baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-            model: "qwen-mt-turbo",
-            authType: .bearer(token: ""),
-            requestBuilder: AliyunRequestBuilder(),
-            responseParser: AliyunResponseParser()
-        )
-        providerRegistry.register(aliyunConfig)
-
-        // Register Kimi
-        let kimiConfig = AIProviderConfig(
-            id: "kimi",
-            name: "kimi",
-            displayName: "Kimi",
-            baseURL: "https://api.moonshot.cn/v1/chat/completions",
-            model: "moonshot-v1-8k",
-            authType: .bearer(token: ""),
-            requestBuilder: KimiRequestBuilder(),
-            responseParser: KimiResponseParser()
-        )
-        providerRegistry.register(kimiConfig)
-
-        // Register GLM
-        let glmConfig = AIProviderConfig(
-            id: "glm",
-            name: "glm",
-            displayName: "GLM-4.5",
-            baseURL: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-            model: "glm-4.5",
-            authType: .bearer(token: ""),
-            requestBuilder: GLMRequestBuilder(),
-            responseParser: GLMResponseParser()
-        )
-        providerRegistry.register(glmConfig)
+        GlossaryStore.promptHint(from: GlossaryStore.loadRaw())
     }
 }

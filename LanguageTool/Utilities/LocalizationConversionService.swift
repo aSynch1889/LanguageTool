@@ -15,9 +15,19 @@ enum LocalizationConversionService {
         languageCodes: [String],
         skipExistingTranslations: Bool
     ) async -> ConversionExecutionResult {
-        let parsedItems = await TranslationManager.shared.parseInputFile(at: inputPath, platform: selectedPlatform)
+        let parsedItems = await TranslationManager.shared.parseInputFileOrEmpty(at: inputPath, platform: selectedPlatform)
         let fileExtension = (inputPath as NSString).pathExtension.lowercased()
         let result: (message: String, success: Bool)
+
+        do {
+            try Task.checkCancellation()
+        } catch {
+            return ConversionExecutionResult(
+                translationItems: parsedItems,
+                message: "Conversion cancelled",
+                success: false
+            )
+        }
 
         switch selectedPlatform {
         case .iOS:
@@ -36,7 +46,11 @@ enum LocalizationConversionService {
                 case .success(let message):
                     result = (message: message, success: true)
                 case .failure(let error):
-                    result = (message: "❌ 转换失败：\(error.localizedDescription)", success: false)
+                    if error is CancellationError {
+                        result = (message: "Conversion cancelled", success: false)
+                    } else {
+                        result = (message: "Conversion failed: \(error.localizedDescription)", success: false)
+                    }
                 }
             case "xcstrings":
                 let conversionResult = await JsonUtils.convertToLocalizationFile(
@@ -47,7 +61,7 @@ enum LocalizationConversionService {
                 )
                 result = (message: conversionResult.message, success: conversionResult.success)
             default:
-                result = (message: "❌ 不支持的文件格式", success: false)
+                result = (message: "Unsupported file format", success: false)
             }
         case .flutter:
             let processResult = await ARBFileHandler.processARBFile(
@@ -60,12 +74,15 @@ enum LocalizationConversionService {
             case .success(let message):
                 result = (message: message, success: true)
             case .failure(let error):
-                result = (message: "❌ 转换失败：\(error.localizedDescription)", success: false)
+                result = (message: "Conversion failed: \(error.localizedDescription)", success: false)
             }
         case .electron:
             guard fileExtension == "json" else {
-                result = (message: "❌ Electron 平台仅支持 .json 文件", success: false)
-                return ConversionExecutionResult(translationItems: parsedItems, message: result.message, success: result.success)
+                return ConversionExecutionResult(
+                    translationItems: parsedItems,
+                    message: "Electron platform only supports .json files",
+                    success: false
+                )
             }
             let processResult = await ElectronLocalizationHandler.processLocalizationFile(
                 from: inputPath,
@@ -77,7 +94,7 @@ enum LocalizationConversionService {
             case .success(let message):
                 result = (message: message, success: true)
             case .failure(let error):
-                result = (message: "❌ 转换失败：\(error.localizedDescription)", success: false)
+                result = (message: "Conversion failed: \(error.localizedDescription)", success: false)
             }
         }
 

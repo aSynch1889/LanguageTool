@@ -6,6 +6,7 @@ enum LanguageCategory: String, CaseIterable {
     case asian = "asian"
     case european = "european"
     case american = "american"
+    case middleEastern = "middleEastern"
     case african = "african"
 
     var displayName: String {
@@ -15,23 +16,23 @@ enum LanguageCategory: String, CaseIterable {
         case .asian: return "Asian"
         case .european: return "European"
         case .american: return "American"
+        case .middleEastern: return "Middle Eastern"
         case .african: return "African"
         }
     }
 }
 
 struct Language: Identifiable, Hashable {
-    let id = UUID()
+    var id: String { code }
     let code: String
     let name: String
     let localizedName: String
     let category: LanguageCategory
-    
-    // 支持 Hashable
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(code)
     }
-    
+
     static func == (lhs: Language, rhs: Language) -> Bool {
         lhs.code == rhs.code
     }
@@ -76,8 +77,7 @@ struct Language: Identifiable, Hashable {
         Language(code: "hr", name: "Croatian", localizedName: "Hrvatski", category: .european),
         Language(code: "ca", name: "Catalan", localizedName: "Català", category: .european),
         Language(code: "ro", name: "Romanian", localizedName: "Română", category: .european),
-        Language(code: "he", name: "Hebrew", localizedName: "עברית", category: .asian),
-        
+
         // 亚洲语言
         Language(code: "ja", name: "Japanese", localizedName: "日本語", category: .common),
         Language(code: "ko", name: "Korean", localizedName: "한국어", category: .common),
@@ -89,10 +89,11 @@ struct Language: Identifiable, Hashable {
         Language(code: "ms", name: "Malay", localizedName: "Bahasa Melayu", category: .asian),
         
         // 中东语言
-        Language(code: "ar", name: "Arabic", localizedName: "العربية", category: .african),
-        Language(code: "ar-SA", name: "Arabic, Saudi Arabia", localizedName: "العربية (السعودية)", category: .african),
-        Language(code: "fa", name: "Persian", localizedName: "فارسی", category: .asian),
-        Language(code: "ur", name: "Urdu", localizedName: "اردو", category: .asian),
+        Language(code: "ar", name: "Arabic", localizedName: "العربية", category: .middleEastern),
+        Language(code: "ar-SA", name: "Arabic, Saudi Arabia", localizedName: "العربية (السعودية)", category: .middleEastern),
+        Language(code: "fa", name: "Persian", localizedName: "فارسی", category: .middleEastern),
+        Language(code: "he", name: "Hebrew", localizedName: "עברית", category: .middleEastern),
+        Language(code: "ur", name: "Urdu", localizedName: "اردو", category: .middleEastern),
         
         // 其他语言
         Language(code: "fil", name: "Filipino", localizedName: "Filipino", category: .asian),

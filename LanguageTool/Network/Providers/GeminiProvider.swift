@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Gemini Request Builder
 
 struct GeminiRequestBuilder: RequestBuilder {
-    func buildRequest(messages: [Message], translationOptions: [String: String]?) -> [String: Any] {
+    func buildRequest(messages: [Message], model: String, translationOptions: [String: String]?) -> [String: Any] {
         return [
             "contents": [
                 [
@@ -24,7 +24,6 @@ struct GeminiResponseParser: ResponseParser {
     func parseResponse(data: Data) throws -> String {
         let jsonResponse = try JSONSerialization.jsonObject(with: data) as? [String: Any]
 
-        // Check for error response
         if let error = jsonResponse?["error"] as? [String: Any],
            let message = error["message"] as? String {
             if message.contains("quota") {
@@ -35,7 +34,6 @@ struct GeminiResponseParser: ResponseParser {
             throw AIError.apiError(message)
         }
 
-        // Parse successful response
         if let candidates = jsonResponse?["candidates"] as? [[String: Any]],
            let firstCandidate = candidates.first,
            let content = firstCandidate["content"] as? [String: Any],

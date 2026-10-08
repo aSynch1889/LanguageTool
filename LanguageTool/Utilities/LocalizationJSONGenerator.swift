@@ -1,32 +1,45 @@
 import Foundation
-import AppKit
+
+struct LocalizationGenerationResult: Sendable {
+    let data: Data?
+    let succeededLanguages: Int
+    let failedLanguages: [String]
+    let needsReviewCount: Int
+
+    var report: String {
+        var parts: [String] = []
+        if succeededLanguages > 0 {
+            parts.append("Languages OK: \(succeededLanguages)")
+        }
+        if !failedLanguages.isEmpty {
+            parts.append("Failed: \(failedLanguages.joined(separator: ", "))")
+        }
+        if needsReviewCount > 0 {
+            parts.append("Needs review: \(needsReviewCount)")
+        }
+        return parts.joined(separator: " · ")
+    }
+
+    var isEmpty: Bool { report.isEmpty }
+}
 
 class LocalizationJSONGenerator {
-    static func generateJSON(for entries: [JsonUtils.XCStringsTranslationEntry],
-                           languages: [String],
-                           sourceLanguage: String,
-                           skipExistingTranslations: Bool = true) async -> Data? {
+    static let maxConcurrentLanguages = 3
+
+    static func generateJSON(
+        for entries: [XCStringsTranslationEntry],
+        languages: [String],
+        sourceLanguage: String,
+        skipExistingTranslations: Bool = true
+    ) async -> LocalizationGenerationResult {
         var localizationData: [String: Any] = [
             "version": "1.0",
             "sourceLanguage": sourceLanguage,
             "strings": [:]
         ]
-        
+
         var stringsDict: [String: Any] = [:]
-        
-        // 语言名称映射
-        let languageNames = [
-            "en": "English",
-            "zh-Hans": "Simplified Chinese",
-            "zh-Hant": "Traditional Chinese",
-            "ja": "Japanese",
-            "ko": "Korean",
-            "es": "Spanish",
-            "fr": "French",
-            "de": "German"
-        ]
-        
-        // 先按 key 初始化，保留 source 与已有翻译
+
         for entry in entries {
             var localizations: [String: Any] = [
                 sourceLanguage: [
@@ -49,132 +62,104 @@ class LocalizationJSONGenerator {
             stringsDict[entry.key] = ["localizations": localizations]
         }
 
-        // 为每种语言批量翻译所有条目
-        for language in languages {
-            if language == sourceLanguage {
-                continue
+        let targetLanguages = languages.filter { $0 != sourceLanguage }
+        var succeeded = 0
+        var failed: [String] = []
+        var needsReview = 0
+
+        await withTaskGroup(of: (String, Result<[String], Error>).self) { group in
+            var iterator = targetLanguages.makeIterator()
+            var inFlight = 0
+
+            func enqueueNext() {
+                while inFlight < maxConcurrentLanguages, let language = iterator.next() {
+                    inFlight += 1
+                    group.addTask {
+                        do {
+                            try Task.checkCancellation()
+                            let existingTranslationsForLanguage = entries.map { $0.existingTranslations[language] }
+                            let result = try await AIServiceV2.shared.batchTranslateWithExisting(
+                                texts: entries.map(\.sourceValue),
+                                to: LanguagePrompt.label(for: language),
+                                existingTranslations: existingTranslationsForLanguage,
+                                skipExisting: skipExistingTranslations
+                            )
+                            return (language, .success(result.translations))
+                        } catch {
+                            return (language, .failure(error))
+                        }
+                    }
+                }
             }
 
-            do {
-                // 使用优化后的批量翻译方法，支持跳过已有翻译
-                print("Starting batch translation [\(language)]...")
+            enqueueNext()
 
-                // 准备现有翻译数组
-                let existingTranslationsForLanguage = entries.map { entry -> String? in
-                    entry.existingTranslations[language]
-                }
-
-                let result = try await AIServiceV2.shared.batchTranslateWithExisting(
-                    texts: entries.map { $0.sourceValue },
-                    to: languageNames[language] ?? language,
-                    existingTranslations: existingTranslationsForLanguage,
-                    skipExisting: skipExistingTranslations
-                )
-                let translations = result.translations
-                
-                // 将翻译结果添加到字典中
-                for (index, entry) in entries.enumerated() {
-                    if var localizations = stringsDict[entry.key] as? [String: Any],
-                       var localizationsDict = localizations["localizations"] as? [String: Any],
-                       index < translations.count {
-                        let translationValue = translations[index]
-                        localizationsDict[language] = [
-                            "stringUnit": [
-                                "state": translationValue.isEmpty ? "needs_review" : "translated",
-                                "value": translationValue
+            for await (language, outcome) in group {
+                inFlight -= 1
+                switch outcome {
+                case .success(let translations):
+                    succeeded += 1
+                    for (index, entry) in entries.enumerated() where index < translations.count {
+                        if var localizations = stringsDict[entry.key] as? [String: Any],
+                           var localizationsDict = localizations["localizations"] as? [String: Any] {
+                            let translationValue = translations[index]
+                            if translationValue.isEmpty { needsReview += 1 }
+                            localizationsDict[language] = [
+                                "stringUnit": [
+                                    "state": translationValue.isEmpty ? "needs_review" : "translated",
+                                    "value": translationValue
+                                ]
                             ]
-                        ]
-                        localizations["localizations"] = localizationsDict
-                        stringsDict[entry.key] = localizations
+                            localizations["localizations"] = localizationsDict
+                            stringsDict[entry.key] = localizations
+                        }
+                    }
+                    print("✅ Batch translation successful [\(language)]")
+                case .failure(let error):
+                    if error is CancellationError {
+                        failed.append(language)
+                        print("❌ Batch translation cancelled [\(language)]")
+                    } else {
+                        failed.append(language)
+                        print("❌ Batch translation failed [\(language)]: \(error.localizedDescription)")
+                        for entry in entries {
+                            if var localizations = stringsDict[entry.key] as? [String: Any],
+                               var localizationsDict = localizations["localizations"] as? [String: Any] {
+                                localizationsDict[language] = [
+                                    "stringUnit": [
+                                        "state": "needs_review",
+                                        "value": ""
+                                    ]
+                                ]
+                                localizations["localizations"] = localizationsDict
+                                stringsDict[entry.key] = localizations
+                                needsReview += 1
+                            }
+                        }
                     }
                 }
-                
-                print("✅ Batch translation successful [\(language)]: \(result.statistics.summary)")
-            } catch {
-                print("❌ Batch translation failed [\(language)]: \(error.localizedDescription)")
-                // 翻译失败时为所有键设置空值
-                for entry in entries {
-                    if var localizations = stringsDict[entry.key] as? [String: Any],
-                       var localizationsDict = localizations["localizations"] as? [String: Any] {
-                        localizationsDict[language] = [
-                            "stringUnit": [
-                                "state": "needs_review",
-                                "value": ""
-                            ]
-                        ]
-                        localizations["localizations"] = localizationsDict
-                        stringsDict[entry.key] = localizations
-                    }
-                }
+                enqueueNext()
             }
         }
-        
+
         localizationData["strings"] = stringsDict
-        
+
         do {
-            return try JSONSerialization.data(withJSONObject: localizationData, options: [.prettyPrinted, .sortedKeys])
+            let data = try JSONSerialization.data(withJSONObject: localizationData, options: [.prettyPrinted, .sortedKeys])
+            return LocalizationGenerationResult(
+                data: data,
+                succeededLanguages: succeeded,
+                failedLanguages: failed,
+                needsReviewCount: needsReview
+            )
         } catch {
             print("❌ 生成 JSON 失败: \(error)")
-            return nil
-        }
-    }
-
-    static func saveJSONToFile(data: Data?, fileName: String) { // 修改参数为文件名
-        guard let data = data, let jsonString = String(data: data, encoding: .utf8) else {
-            print("Invalid JSON data")
-            return
-        }
-
-        // 获取 Documents 目录的路径
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            print("Could not access Documents directory")
-            return
-        }
-
-        // 创建文件路径
-        let filePath = documentsDirectory.appendingPathComponent(fileName).path
-
-        do {
-            try jsonString.write(toFile: filePath, atomically: true, encoding: .utf8)
-            print("JSON file saved to \(filePath)")
-        } catch {
-            print("Error writing JSON to file: \(error)")
-        }
-    }
-    
-    /// 选择保存路径保存 json 文件
-    /// - Parameter data: 待保存的数据
-    static func saveJSONToFile(data: Data?) {
-        guard let data = data, let jsonString = String(data: data, encoding: .utf8) else {
-            print("Invalid JSON data")
-            return
-        }
-
-        let savePanel = NSSavePanel()
-        savePanel.canCreateDirectories = true // 允许用户创建文件夹
-        savePanel.title = "Save JSON File" // 设置窗口标题
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
-        let fileName = "\(dateFormatter.string(from: Date())).json"
-        
-        savePanel.nameFieldStringValue = fileName // 设置默认文件名
-
-        // 显示保存面板
-        savePanel.begin { (result) in
-            if result == .OK {
-                guard let url = savePanel.url else {
-                    print("No URL selected")
-                    return
-                }
-
-                do {
-                    try jsonString.write(to: url, atomically: true, encoding: .utf8)
-                    print("JSON file saved to \(url)")
-                } catch {
-                    print("Error writing JSON to file: \(error)")
-                }
-            }
+            return LocalizationGenerationResult(
+                data: nil,
+                succeededLanguages: succeeded,
+                failedLanguages: failed,
+                needsReviewCount: needsReview
+            )
         }
     }
 }

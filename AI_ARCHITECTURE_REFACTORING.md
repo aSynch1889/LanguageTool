@@ -1,5 +1,7 @@
 # AI服务架构重构总结
 
+> **2026-10 更新**：Provider 默认注册已集中到 `AIProviderRegistry`；批量翻译改为 JSON 数组 + 分块；Gemini 使用 `x-goog-api-key` Header；`RequestBuilder` 接收 `model` 参数。下文部分示例仍为历史记录，以源码为准。
+
 ## 项目概述
 
 本次重构对LanguageTool项目的AI服务架构进行了全面升级，从硬编码的单独服务实现转变为配置驱动的可扩展架构。重构遵循了现代软件开发的最佳实践，实现了零侵入式的AI平台扩展能力。

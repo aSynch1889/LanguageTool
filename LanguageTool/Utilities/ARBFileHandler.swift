@@ -166,7 +166,7 @@ class ARBFileHandler {
 
                 let result = try await AIServiceV2.shared.batchTranslateWithExisting(
                     texts: translatableContent,
-                    to: language,
+                    to: LanguagePrompt.label(for: language),
                     existingTranslations: existingTranslations,
                     skipExisting: skipExistingTranslations
                 )

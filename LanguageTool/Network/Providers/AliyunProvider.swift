@@ -3,9 +3,9 @@ import Foundation
 // MARK: - Aliyun Request Builder
 
 struct AliyunRequestBuilder: RequestBuilder {
-    func buildRequest(messages: [Message], translationOptions: [String: String]?) -> [String: Any] {
+    func buildRequest(messages: [Message], model: String, translationOptions: [String: String]?) -> [String: Any] {
         var body: [String: Any] = [
-            "model": "qwen-mt-turbo",
+            "model": model,
             "messages": messages.map { [
                 "role": $0.role,
                 "content": $0.content
@@ -29,7 +29,6 @@ struct AliyunResponseParser: ResponseParser {
     func parseResponse(data: Data) throws -> String {
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
 
-        // Check for error response
         if let error = json?["error"] as? [String: Any],
            let message = error["message"] as? String {
             if message.contains("rate limit") {
@@ -40,7 +39,6 @@ struct AliyunResponseParser: ResponseParser {
             throw AIError.apiError(message)
         }
 
-        // Parse successful response
         guard let choices = json?["choices"] as? [[String: Any]],
               let firstChoice = choices.first,
               let message = firstChoice["message"] as? [String: Any],
@@ -48,7 +46,6 @@ struct AliyunResponseParser: ResponseParser {
             throw AIError.invalidResponse
         }
 
-        // Extract translation result from content (same logic as original)
         if let lastNewlineRange = content.range(of: "\n\n", options: .backwards) {
             let translationResult = content[lastNewlineRange.upperBound...]
                 .trimmingCharacters(in: .whitespacesAndNewlines)

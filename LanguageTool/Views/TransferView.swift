@@ -313,20 +313,35 @@ struct TransferView: View {
                 .foregroundStyle(.primary)
 
             VStack(spacing: 10) {
-                // Primary action button
-                Button(action: {
-                    viewModel.convertToLocalization()
-                }) {
-                    HStack {
-                        Image(systemName: "arrow.right.circle.fill")
-                        Text("Start Conversion".localized)
-                        Spacer()
+                if viewModel.isLoading {
+                    Button(action: {
+                        viewModel.cancelConversion()
+                    }) {
+                        HStack {
+                            Image(systemName: "stop.circle.fill")
+                            Text("Cancel".localized)
+                            Spacer()
+                        }
+                        .padding(.vertical, 8)
                     }
-                    .padding(.vertical, 8)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.red)
+                    .controlSize(.large)
+                } else {
+                    Button(action: {
+                        viewModel.convertToLocalization()
+                    }) {
+                        HStack {
+                            Image(systemName: "arrow.right.circle.fill")
+                            Text("Start Conversion".localized)
+                            Spacer()
+                        }
+                        .padding(.vertical, 8)
+                    }
+                    .disabled(!viewModel.isInputSelected || !viewModel.isOutputSelected || viewModel.selectedLanguages.isEmpty)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
                 }
-                .disabled(!viewModel.isInputSelected || !viewModel.isOutputSelected || viewModel.selectedLanguages.isEmpty || viewModel.isLoading)
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
 
                 // Secondary actions
                 HStack(spacing: 12) {
@@ -339,15 +354,14 @@ struct TransferView: View {
                     .buttonStyle(.bordered)
                     .disabled(viewModel.isLoading)
                     Spacer()
-//TODO: 临时注释New Window
-//                    Button(action: viewModel.openInNewWindow) {
-//                        HStack(spacing: 6) {
-//                            Image(systemName: "plus.rectangle.on.rectangle")
-//                            Text("New Window".localized)
-//                        }
-//                    }
-//                    .buttonStyle(.bordered)
-//                    .disabled(viewModel.isLoading)
+                    Button(action: viewModel.openInNewWindow) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "plus.rectangle.on.rectangle")
+                            Text("Localization Master (Experimental)".localized)
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(viewModel.isLoading || !viewModel.isInputSelected)
                 }
             }
 
@@ -359,13 +373,16 @@ struct TransferView: View {
     
     private var resultsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Conversion Results".localized, systemImage: viewModel.conversionResult.hasPrefix("✅") ? "checkmark.circle" : "xmark.circle")
+            Label(
+                "Conversion Results".localized,
+                systemImage: viewModel.lastConversionSucceeded ? "checkmark.circle" : "xmark.circle"
+            )
                 .font(.headline.weight(.semibold))
-                .foregroundStyle(viewModel.conversionResult.hasPrefix("✅") ? .green : .red)
+                .foregroundStyle(viewModel.lastConversionSucceeded ? .green : .red)
 
             Text(viewModel.conversionResult)
                 .font(.body)
-                .foregroundStyle(viewModel.conversionResult.hasPrefix("✅") ? .green : .red)
+                .foregroundStyle(viewModel.lastConversionSucceeded ? .green : .red)
 
             if viewModel.showSuccessActions {
                 VStack(alignment: .leading, spacing: 12) {

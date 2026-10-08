@@ -12,7 +12,6 @@ struct AIProviderConfig: Identifiable, Hashable {
     let requestBuilder: any RequestBuilder
     let responseParser: any ResponseParser
 
-    // Custom hash and equality to handle the protocol types
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(name)
@@ -55,7 +54,60 @@ class AIProviderRegistry: ObservableObject {
     }
 
     private func setupDefaultProviders() {
-        // Will register default providers after we create the specific implementations
+        register(AIProviderConfig(
+            id: "deepseek",
+            name: "deepseek",
+            displayName: "DeepSeek Chat",
+            baseURL: "https://api.deepseek.com/v1/chat/completions",
+            model: "deepseek-chat",
+            authType: .bearer(token: ""),
+            requestBuilder: DeepSeekRequestBuilder(),
+            responseParser: DeepSeekResponseParser()
+        ))
+
+        register(AIProviderConfig(
+            id: "gemini",
+            name: "gemini",
+            displayName: "Google Gemini",
+            baseURL: "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+            model: "gemini-1.5-flash",
+            authType: .apiKey(key: "", location: .header(name: "x-goog-api-key")),
+            requestBuilder: GeminiRequestBuilder(),
+            responseParser: GeminiResponseParser()
+        ))
+
+        register(AIProviderConfig(
+            id: "aliyun",
+            name: "aliyun",
+            displayName: "Aliyun",
+            baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+            model: "qwen-mt-turbo",
+            authType: .bearer(token: ""),
+            requestBuilder: AliyunRequestBuilder(),
+            responseParser: AliyunResponseParser()
+        ))
+
+        register(AIProviderConfig(
+            id: "kimi",
+            name: "kimi",
+            displayName: "Kimi",
+            baseURL: "https://api.moonshot.cn/v1/chat/completions",
+            model: "moonshot-v1-8k",
+            authType: .bearer(token: ""),
+            requestBuilder: KimiRequestBuilder(),
+            responseParser: KimiResponseParser()
+        ))
+
+        register(AIProviderConfig(
+            id: "glm",
+            name: "glm",
+            displayName: "GLM-4.5",
+            baseURL: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+            model: "glm-4.5",
+            authType: .bearer(token: ""),
+            requestBuilder: GLMRequestBuilder(),
+            responseParser: GLMResponseParser()
+        ))
     }
 }
 
@@ -116,10 +168,8 @@ class AIProviderManager: ObservableObject {
     }
 
     private func loadApiKeys() {
-        // 迁移旧的API密钥格式到新格式
         migrateOldApiKeys()
 
-        // 从 Keychain 加载 API 密钥
         let knownProviders = ["deepseek", "gemini", "aliyun", "kimi", "glm"]
         for providerId in knownProviders {
             let key = keychain.get(for: apiKeyPrefix + providerId) ?? ""
@@ -128,7 +178,6 @@ class AIProviderManager: ObservableObject {
     }
 
     private func loadSelectedProvider() {
-        // 迁移旧的选择格式到新格式
         if let oldService = userDefaults.string(forKey: "selectedAIService") {
             let newProviderId: String
             switch oldService {

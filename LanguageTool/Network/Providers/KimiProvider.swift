@@ -3,9 +3,9 @@ import Foundation
 // MARK: - Kimi Request Builder
 
 struct KimiRequestBuilder: RequestBuilder {
-    func buildRequest(messages: [Message], translationOptions: [String: String]?) -> [String: Any] {
+    func buildRequest(messages: [Message], model: String, translationOptions: [String: String]?) -> [String: Any] {
         return [
-            "model": "moonshot-v1-8k",  // Kimi 的默认模型
+            "model": model,
             "messages": messages.map { [
                 "role": $0.role,
                 "content": $0.content
@@ -22,7 +22,6 @@ struct KimiResponseParser: ResponseParser {
     func parseResponse(data: Data) throws -> String {
         let jsonDict = try JSONSerialization.jsonObject(with: data) as? [String: Any]
 
-        // 检查错误响应
         if let error = jsonDict?["error"] as? [String: Any],
            let message = error["message"] as? String {
             if message.contains("rate limit") || message.contains("quota") {
@@ -33,7 +32,6 @@ struct KimiResponseParser: ResponseParser {
             throw AIError.apiError(message)
         }
 
-        // 解析正常响应 (OpenAI兼容格式)
         if let choices = jsonDict?["choices"] as? [[String: Any]],
            let firstChoice = choices.first,
            let message = firstChoice["message"] as? [String: Any],

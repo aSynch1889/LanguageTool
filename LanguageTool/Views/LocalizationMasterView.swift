@@ -2,13 +2,11 @@ import SwiftUI
 import AppKit
 
 struct LocalizationMasterView: View {
-    @State private var remainingTrials = 4
     @State private var translateSelectedOnly = true
     @StateObject var viewModel: TransferViewModel
     @State private var searchText = ""
     @State private var selection = Set<TranslationItem.ID>()
-    
-    // 初始化器
+
     init(viewModel: TransferViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
@@ -52,18 +50,29 @@ struct LocalizationMasterView: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+                Text("Experimental: edits sync by replacing the source file with the current output path. Prefer the main conversion flow for production.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+
             HStack {
-                Toggle("仅对勾选了 \"翻译\" 的内容进行翻译。", isOn: $translateSelectedOnly)
+                Toggle("Translate only checked rows".localized, isOn: $translateSelectedOnly)
                 Spacer()
                 HStack {
                     Image(systemName: "magnifyingglass")
-                    TextField("搜索", text: $searchText)
+                    TextField("Search".localized, text: $searchText)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .frame(width: 150)
                 }
             }
             .padding()
-            
+
             Divider()
             
             // 使用 NSTableView 实现真正的动态列
@@ -81,9 +90,9 @@ struct LocalizationMasterView: View {
             Divider()
             
             HStack {
-                Menu("新增语言") {
+                Menu("Add Language".localized) {
                     if addableLanguages.isEmpty {
-                        Text("无可新增语言")
+                        Text("No languages to add".localized)
                     } else {
                         ForEach(addableLanguages) { language in
                             Button("\(language.localizedName) (\(language.code))") {
@@ -93,22 +102,23 @@ struct LocalizationMasterView: View {
                     }
                 }
                 Spacer()
-                Button("重新加载源文件") {
+                Button("Reload Source".localized) {
                     Task {
                         await viewModel.reloadSourceFile()
                     }
                 }
-                Button("同步到源文件") {
+                Button("Sync to Source".localized) {
                     viewModel.syncToSource()
                 }
-                Button("导出") {
+                Button("Export".localized) {
                     viewModel.exportToCSV()
                 }
-                Button("立即翻译") {
+                Button("Translate Now".localized) {
                     Task {
                         await viewModel.translateCurrentItems(onlySelected: translateSelectedOnly)
                     }
                 }
+                .disabled(viewModel.isLoading)
             }
             .padding()
         }

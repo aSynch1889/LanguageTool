@@ -13,6 +13,7 @@ class TransferViewModel: ObservableObject {
     @Published var showResult: Bool = false
     @Published var selectedLanguages: Set<Language> = [Language.supportedLanguages[0]]
     @Published var isLoading: Bool = false
+    @Published var lastConversionSucceeded: Bool = false
     @Published var showSuccessActions: Bool = false
     @Published var outputFormat: LocalizationFormat = .xcstrings
     @Published var selectedPlatform: PlatformType = .iOS
@@ -22,6 +23,7 @@ class TransferViewModel: ObservableObject {
 
     // 添加一个属性来保持对窗口的强引用
     private var localizationWindow: NSWindow?
+    private var conversionTask: Task<Void, Never>?
 
     // 通知管理器
     private let notificationManager = NotificationManager.shared
@@ -157,10 +159,12 @@ class TransferViewModel: ObservableObject {
     }
     
     func convertToLocalization() {
-        Task {
+        conversionTask?.cancel()
+        conversionTask = Task {
             isLoading = true
             showResult = false
             showSuccessActions = false
+            lastConversionSucceeded = false
             translationItems = []
 
             let inputPath = self.inputPath
@@ -181,22 +185,40 @@ class TransferViewModel: ObservableObject {
                 )
             }.value
 
+            if Task.isCancelled {
+                conversionResult = "Conversion cancelled"
+                lastConversionSucceeded = false
+                showSuccessActions = false
+                isLoading = false
+                showResult = true
+                return
+            }
+
             conversionResult = executionResult.message
+            lastConversionSucceeded = executionResult.success
             showSuccessActions = executionResult.success
             translationItems = executionResult.translationItems
             isLoading = false
             showResult = true
 
-            // 发送通知
             if notificationManager.areNotificationsEnabled {
                 if executionResult.success {
                     notificationManager.sendTranslationCompleteNotification(languageCount: selectedLanguages.count)
                 } else {
-                    let errorMessage = executionResult.message.replacingOccurrences(of: "❌ ", with: "")
-                    notificationManager.sendTranslationFailedNotification(errorMessage: errorMessage)
+                    notificationManager.sendTranslationFailedNotification(errorMessage: executionResult.message)
                 }
             }
         }
+    }
+
+    func cancelConversion() {
+        conversionTask?.cancel()
+        conversionTask = nil
+        isLoading = false
+        lastConversionSucceeded = false
+        showSuccessActions = false
+        conversionResult = "Conversion cancelled"
+        showResult = true
     }
     
     func handleDroppedFile(_ providers: [NSItemProvider]) -> Bool {
@@ -265,6 +287,7 @@ class TransferViewModel: ObservableObject {
         showResult = false
         conversionResult = ""
         showSuccessActions = false
+        lastConversionSucceeded = false
 
         // 重置翻译选项
         skipExistingTranslations = true
@@ -444,8 +467,8 @@ class TransferViewModel: ObservableObject {
                     
                     // 写入文件，使用 UTF-8 BOM 以确保 Excel 正确识别编码
                     let bom = Data([0xEF, 0xBB, 0xBF])
-                    try bom.write(to: url)
-                    try csvContent.data(using: .utf8)?.write(to: url, options: .atomic)
+                    let body = Data(csvContent.utf8)
+                    try (bom + body).write(to: url, options: .atomic)
                     
                     DispatchQueue.main.async {
                         NSWorkspace.shared.open(url)
@@ -497,7 +520,7 @@ class TransferViewModel: ObservableObject {
             do {
                 let result = try await AIServiceV2.shared.batchTranslateWithExisting(
                     texts: sourceTexts,
-                    to: language,
+                    to: LanguagePrompt.label(for: language),
                     existingTranslations: existing,
                     skipExisting: skipExistingTranslations
                 )
@@ -523,9 +546,14 @@ class TransferViewModel: ObservableObject {
     
     func reloadSourceFile() async {
         guard !inputPath.isEmpty && inputPath != "No file selected" else { return }
-        
+
         isLoading = true
-        translationItems = await TranslationManager.shared.parseInputFile(at: inputPath, platform: selectedPlatform)
+        do {
+            translationItems = try await TranslationManager.shared.parseInputFile(at: inputPath, platform: selectedPlatform)
+        } catch {
+            translationItems = []
+            showAlert(message: "Failed to parse source file: \(error.localizedDescription)", isError: true)
+        }
         isLoading = false
     }
 }

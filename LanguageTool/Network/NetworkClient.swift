@@ -23,12 +23,13 @@ class NetworkClient: NetworkClientProtocol {
 
     func execute(config: HTTPRequestConfig) async throws -> Data {
         for attempt in 0...maxRetries {
+            try Task.checkCancellation()
+
             var request = URLRequest(url: config.url)
             request.httpMethod = config.method.rawValue
             request.httpBody = config.body
             request.timeoutInterval = timeoutInterval
 
-            // Set headers
             for (key, value) in config.headers {
                 request.setValue(value, forHTTPHeaderField: key)
             }
@@ -50,7 +51,11 @@ class NetworkClient: NetworkClientProtocol {
 
                 guard (200...299).contains(httpResponse.statusCode) else {
                     if shouldRetry(httpStatus: httpResponse.statusCode, attempt: attempt) {
+                        try await backoffSleep(attempt: attempt, httpResponse: httpResponse)
                         continue
+                    }
+                    if httpResponse.statusCode == 429 {
+                        throw AIError.rateLimitExceeded
                     }
                     throw AIError.apiError("HTTP Status: \(httpResponse.statusCode)")
                 }
@@ -58,12 +63,16 @@ class NetworkClient: NetworkClientProtocol {
                 return data
             } catch let error as AIError {
                 if shouldRetry(error: error, attempt: attempt) {
+                    try await backoffSleep(attempt: attempt, httpResponse: nil)
                     continue
                 }
                 throw error
+            } catch is CancellationError {
+                throw CancellationError()
             } catch {
                 let wrapped = AIError.networkError(error)
                 if shouldRetry(error: wrapped, attempt: attempt) {
+                    try await backoffSleep(attempt: attempt, httpResponse: nil)
                     continue
                 }
                 throw wrapped
@@ -73,7 +82,20 @@ class NetworkClient: NetworkClientProtocol {
         throw AIError.invalidResponse
     }
 
-    // MARK: - Private Logging Methods
+    // MARK: - Private
+
+    private func backoffSleep(attempt: Int, httpResponse: HTTPURLResponse?) async throws {
+        if let retryAfter = httpResponse?.value(forHTTPHeaderField: "Retry-After"),
+           let seconds = Double(retryAfter) {
+            try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+            return
+        }
+
+        let base = pow(2.0, Double(attempt)) * 0.4
+        let jitter = Double.random(in: 0...0.3)
+        let delay = min(base + jitter, 8.0)
+        try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+    }
 
     private func logRequest(config: HTTPRequestConfig, request: URLRequest) {
         print("🔗 Network Request:")
@@ -111,7 +133,10 @@ class NetworkClient: NetworkClientProtocol {
         var sanitized = headers
         for key in headers.keys {
             let lower = key.lowercased()
-            if lower.contains("authorization") || lower.contains("api-key") || lower == "x-api-key" {
+            if lower.contains("authorization")
+                || lower.contains("api-key")
+                || lower == "x-api-key"
+                || lower == "x-goog-api-key" {
                 sanitized[key] = "REDACTED"
             }
         }

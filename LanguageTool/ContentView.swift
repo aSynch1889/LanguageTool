@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 
 struct ContentView: View {
     var body: some View {
@@ -17,8 +16,7 @@ struct ContentView: View {
                 Divider(),
                 alignment: .bottom
             )
-            
-            // 主要内容
+
             TransferView()
                 .frame(minWidth: 600, minHeight: 500)
                 .padding()
@@ -28,6 +26,4 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: [], inMemory: true)
 }
-

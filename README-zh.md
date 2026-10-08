@@ -77,9 +77,17 @@ Language Tool 是一个 macOS 应用程序，用于自动化生成多平台的�
    ```bash
    git clone https://github.com/aSynch1889/LanguageTool.git
    ```
-2. 使用 Xcode 打开项目
+2. 使用 Xcode 打开 **`LanguageTool.xcodeproj`**（唯一受支持的工程文件）
 3. 选择 Product > Build
 4. 构建完成后，应用会出现在 Xcode 的 product文件夹中
+
+### 运行单元测试（核心解析逻辑）
+
+```bash
+swift test
+```
+
+覆盖批量翻译响应解析、xcstrings 提取与术语表校验。
 
 ## 开发环境
 

@@ -84,7 +84,7 @@ class StringsFileParser {
             do {
                 let result = try await AIServiceV2.shared.batchTranslateWithExisting(
                     texts: values,
-                    to: language,
+                    to: LanguagePrompt.label(for: language),
                     existingTranslations: existingTranslations,
                     skipExisting: skipExistingTranslations
                 )
@@ -192,7 +192,7 @@ class StringsFileParser {
                         print("开始批量翻译: \(language.code)")
                         let translatedValues = try await AIServiceV2.shared.batchTranslate(
                             texts: values,
-                            to: language.code
+                            to: LanguagePrompt.label(for: language.code)
                         )
                         
                         // 将翻译结果与键重新组合

@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Core Network Protocols
 
 protocol RequestBuilder {
-    func buildRequest(messages: [Message], translationOptions: [String: String]?) -> [String: Any]
+    func buildRequest(messages: [Message], model: String, translationOptions: [String: String]?) -> [String: Any]
 }
 
 protocol ResponseParser {

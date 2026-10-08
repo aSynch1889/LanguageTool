@@ -76,9 +76,17 @@ If you prefer to build the application yourself:
    ```bash
    git clone https://github.com/aSynch1889/LanguageTool.git
    ```
-2. Open the project using Xcode
+2. Open **`LanguageTool.xcodeproj`** in Xcode (this is the only supported project file)
 3. Select Product > Build
 4. Once built, the application will appear in the product folder of Xcode
+
+### Running unit tests (core parsers)
+
+```bash
+swift test
+```
+
+These tests cover batch-translation response parsing, xcstrings extraction, and glossary validation.
 
 ## Development Environment
 
