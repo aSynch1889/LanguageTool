@@ -55,7 +55,10 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
 
     /// Keep SwiftUI `preferredColorScheme` and AppKit `NSApp.appearance` in sync.
     /// Switching dark → system via `preferredColorScheme(nil)` alone often leaves materials stuck dark.
+    /// Must not run during `App.init` — `NSApp` is still nil then.
+    @MainActor
     func applyToApp() {
-        NSApp.appearance = nsAppearance
+        guard let app = NSApp else { return }
+        app.appearance = nsAppearance
     }
 }

@@ -11,10 +11,10 @@ struct LanguageToolApp: App {
         }
 
         AppearanceMode.migrateIfNeeded()
-        AppearanceMode.load().applyToApp()
 
         // Ensure provider registry is initialized before UI binds to it.
         _ = AIProviderRegistry.shared
+        // AppearanceMode.applyToApp() runs from AppShellView.onAppear once NSApp exists.
     }
 
     var body: some Scene {
