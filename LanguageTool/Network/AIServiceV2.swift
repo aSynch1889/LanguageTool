@@ -183,6 +183,35 @@ class AIServiceV2 {
         return (result, statistics)
     }
 
+    /// Sends a minimal request to verify API key / endpoint / model for the selected provider.
+    func testConnection() async throws -> String {
+        guard let provider = providerManager.getSelectedProvider() else {
+            throw AIError.invalidConfiguration("No AI provider selected")
+        }
+
+        let apiKey = providerManager.getApiKey(for: provider.id)
+        guard !apiKey.isEmpty else {
+            throw AIError.invalidConfiguration("API key not configured for \(provider.name)")
+        }
+
+        if provider.requiresCustomEndpoint {
+            let baseURL = providerManager.effectiveBaseURL(for: provider)
+            guard !baseURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                throw AIError.invalidConfiguration("Base URL is required for OpenAI Compatible provider")
+            }
+        }
+
+        let messages = [
+            Message(role: "user", content: "Reply with exactly: ok")
+        ]
+        let reply = try await executeRequest(
+            provider: provider,
+            apiKey: apiKey,
+            messages: messages
+        )
+        return reply.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     // MARK: - Private Implementation
 
     private func executeRequest(provider: AIProviderConfig,
@@ -190,13 +219,19 @@ class AIServiceV2 {
                               messages: [Message],
                               translationOptions: [String: String]? = nil) async throws -> String {
 
+        let model = providerManager.effectiveModel(for: provider)
         let requestBody = provider.requestBuilder.buildRequest(
             messages: messages,
-            model: provider.model,
+            model: model,
             translationOptions: translationOptions
         )
 
-        let httpConfig = try buildHTTPConfig(provider: provider, apiKey: apiKey, requestBody: requestBody)
+        let httpConfig = try buildHTTPConfig(
+            provider: provider,
+            apiKey: apiKey,
+            model: model,
+            requestBody: requestBody
+        )
 
         let responseData = try await networkClient.execute(config: httpConfig)
 
@@ -237,9 +272,11 @@ class AIServiceV2 {
 
     private func buildHTTPConfig(provider: AIProviderConfig,
                                apiKey: String,
+                               model: String,
                                requestBody: [String: Any]) throws -> HTTPRequestConfig {
 
-        var urlString = provider.baseURL.replacingOccurrences(of: "{model}", with: provider.model)
+        let baseURL = providerManager.effectiveBaseURL(for: provider)
+        var urlString = baseURL.replacingOccurrences(of: "{model}", with: model)
         var headers = ["Content-Type": "application/json"]
 
         switch provider.authType {

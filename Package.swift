@@ -23,12 +23,15 @@ let package = Package(
                 "LocalizationManager.swift",
                 "JsonUtils.swift",
                 "LocalizationConversionService.swift",
-                "StringsFileParser.swift"
+                "StringsFileParser.swift",
+                "LocalizationDocument.swift"
             ],
             sources: [
                 "BatchTranslationParser.swift",
                 "XCStringsParser.swift",
-                "GlossaryStore.swift"
+                "GlossaryStore.swift",
+                "ProviderEndpointOverrides.swift",
+                "OpenAICompatibleCodec.swift"
             ]
         ),
         .testTarget(

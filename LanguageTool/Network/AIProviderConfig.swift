@@ -11,6 +11,30 @@ struct AIProviderConfig: Identifiable, Hashable {
     let authType: AuthenticationType
     let requestBuilder: any RequestBuilder
     let responseParser: any ResponseParser
+    /// When true, Settings always shows editable Base URL (e.g. custom OpenAI-compatible).
+    let requiresCustomEndpoint: Bool
+
+    init(
+        id: String,
+        name: String,
+        displayName: String,
+        baseURL: String,
+        model: String,
+        authType: AuthenticationType,
+        requestBuilder: any RequestBuilder,
+        responseParser: any ResponseParser,
+        requiresCustomEndpoint: Bool = false
+    ) {
+        self.id = id
+        self.name = name
+        self.displayName = displayName
+        self.baseURL = baseURL
+        self.model = model
+        self.authType = authType
+        self.requestBuilder = requestBuilder
+        self.responseParser = responseParser
+        self.requiresCustomEndpoint = requiresCustomEndpoint
+    }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -61,8 +85,8 @@ class AIProviderRegistry: ObservableObject {
             baseURL: "https://api.deepseek.com/v1/chat/completions",
             model: "deepseek-chat",
             authType: .bearer(token: ""),
-            requestBuilder: DeepSeekRequestBuilder(),
-            responseParser: DeepSeekResponseParser()
+            requestBuilder: OpenAICompatibleRequestBuilder(options: OpenAICompatiblePresets.deepSeek),
+            responseParser: OpenAICompatibleResponseParser()
         ))
 
         register(AIProviderConfig(
@@ -83,8 +107,8 @@ class AIProviderRegistry: ObservableObject {
             baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
             model: "qwen-mt-turbo",
             authType: .bearer(token: ""),
-            requestBuilder: AliyunRequestBuilder(),
-            responseParser: AliyunResponseParser()
+            requestBuilder: OpenAICompatibleRequestBuilder(options: OpenAICompatiblePresets.aliyun),
+            responseParser: OpenAICompatibleResponseParser(extraction: .aliyunTrailingSegment)
         ))
 
         register(AIProviderConfig(
@@ -94,8 +118,8 @@ class AIProviderRegistry: ObservableObject {
             baseURL: "https://api.moonshot.cn/v1/chat/completions",
             model: "moonshot-v1-8k",
             authType: .bearer(token: ""),
-            requestBuilder: KimiRequestBuilder(),
-            responseParser: KimiResponseParser()
+            requestBuilder: OpenAICompatibleRequestBuilder(options: OpenAICompatiblePresets.kimi),
+            responseParser: OpenAICompatibleResponseParser()
         ))
 
         register(AIProviderConfig(
@@ -105,8 +129,20 @@ class AIProviderRegistry: ObservableObject {
             baseURL: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
             model: "glm-4.5",
             authType: .bearer(token: ""),
-            requestBuilder: GLMRequestBuilder(),
-            responseParser: GLMResponseParser()
+            requestBuilder: OpenAICompatibleRequestBuilder(options: OpenAICompatiblePresets.glm),
+            responseParser: OpenAICompatibleResponseParser()
+        ))
+
+        register(AIProviderConfig(
+            id: "openai_compatible",
+            name: "openai_compatible",
+            displayName: "OpenAI Compatible",
+            baseURL: "https://api.openai.com/v1/chat/completions",
+            model: "gpt-4o-mini",
+            authType: .bearer(token: ""),
+            requestBuilder: OpenAICompatibleRequestBuilder(options: OpenAICompatiblePresets.custom),
+            responseParser: OpenAICompatibleResponseParser(),
+            requiresCustomEndpoint: true
         ))
     }
 }
@@ -119,14 +155,18 @@ class AIProviderManager: ObservableObject {
     @Published private var apiKeys: [String: String] = [:]
     @Published var selectedProviderId: String = "deepseek"
     @Published var fallbackProviderId: String = ""
+    @Published var modelDraft: String = ""
+    @Published var baseURLDraft: String = ""
 
     private let userDefaults = UserDefaults.standard
     private let apiKeyPrefix = "apiKey_"
     private let keychain = KeychainService.shared
+    private let endpointOverrides = ProviderEndpointOverrides()
 
     private init() {
         loadApiKeys()
         loadSelectedProvider()
+        refreshEndpointDrafts()
     }
 
     func setApiKey(_ key: String, for providerId: String) {
@@ -151,6 +191,7 @@ class AIProviderManager: ObservableObject {
     func setSelectedProvider(_ providerId: String) {
         selectedProviderId = providerId
         userDefaults.set(providerId, forKey: "selectedAIProvider")
+        refreshEndpointDrafts()
     }
 
     func setFallbackProvider(_ providerId: String) {
@@ -167,10 +208,44 @@ class AIProviderManager: ObservableObject {
         return AIProviderRegistry.shared.get(fallbackProviderId)
     }
 
+    func effectiveModel(for provider: AIProviderConfig) -> String {
+        endpointOverrides.effectiveModel(for: provider.id, defaultModel: provider.model)
+    }
+
+    func effectiveBaseURL(for provider: AIProviderConfig) -> String {
+        endpointOverrides.effectiveBaseURL(for: provider.id, defaultURL: provider.baseURL)
+    }
+
+    func commitModelDraft() {
+        guard let provider = getSelectedProvider() else { return }
+        endpointOverrides.setModel(modelDraft, for: provider.id)
+        modelDraft = endpointOverrides.storedModel(for: provider.id)
+        if modelDraft.isEmpty {
+            modelDraft = provider.model
+        }
+    }
+
+    func commitBaseURLDraft() {
+        guard let provider = getSelectedProvider() else { return }
+        endpointOverrides.setBaseURL(baseURLDraft, for: provider.id)
+        baseURLDraft = endpointOverrides.effectiveBaseURL(for: provider.id, defaultURL: provider.baseURL)
+    }
+
+    func refreshEndpointDrafts() {
+        guard let provider = getSelectedProvider() else {
+            modelDraft = ""
+            baseURLDraft = ""
+            return
+        }
+        let storedModel = endpointOverrides.storedModel(for: provider.id)
+        modelDraft = storedModel.isEmpty ? provider.model : storedModel
+        baseURLDraft = endpointOverrides.effectiveBaseURL(for: provider.id, defaultURL: provider.baseURL)
+    }
+
     private func loadApiKeys() {
         migrateOldApiKeys()
 
-        let knownProviders = ["deepseek", "gemini", "aliyun", "kimi", "glm"]
+        let knownProviders = AIProviderRegistry.shared.providerIds()
         for providerId in knownProviders {
             let key = keychain.get(for: apiKeyPrefix + providerId) ?? ""
             apiKeys[providerId] = key
@@ -208,7 +283,8 @@ class AIProviderManager: ObservableObject {
             (apiKeyPrefix + "gemini", "gemini"),
             (apiKeyPrefix + "aliyun", "aliyun"),
             (apiKeyPrefix + "kimi", "kimi"),
-            (apiKeyPrefix + "glm", "glm")
+            (apiKeyPrefix + "glm", "glm"),
+            (apiKeyPrefix + "openai_compatible", "openai_compatible")
         ]
 
         for mapping in legacyKeyMappings {

@@ -26,6 +26,9 @@ struct SettingsView: View {
 
     @State private var languageChanged = false
     @State private var glossaryDroppedLines = 0
+    @State private var isTestingConnection = false
+    @State private var connectionTestMessage: String?
+    @State private var connectionTestSucceeded = false
 
     @Environment(\.colorScheme) var colorScheme
 
@@ -43,6 +46,7 @@ struct SettingsView: View {
                 }
                 .onChange(of: providerManager.selectedProviderId) { _, newValue in
                     providerManager.setSelectedProvider(newValue)
+                    connectionTestMessage = nil
                 }
 
                 Picker("Fallback AI Service".localized, selection: $providerManager.fallbackProviderId) {
@@ -63,6 +67,38 @@ struct SettingsView: View {
 
                     SecureField("\(selectedProvider.displayName) API Key".localized, text: apiKeyBinding)
                         .textFieldStyle(.roundedBorder)
+
+                    TextField("Model".localized, text: $providerManager.modelDraft)
+                        .textFieldStyle(.roundedBorder)
+                        .onChange(of: providerManager.modelDraft) { _, _ in
+                            providerManager.commitModelDraft()
+                        }
+
+                    TextField("Base URL".localized, text: $providerManager.baseURLDraft)
+                        .textFieldStyle(.roundedBorder)
+                        .onChange(of: providerManager.baseURLDraft) { _, _ in
+                            providerManager.commitBaseURLDraft()
+                        }
+
+                    if selectedProvider.requiresCustomEndpoint {
+                        Text("Enter any OpenAI-compatible chat completions endpoint.".localized)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+
+                    HStack {
+                        Button(isTestingConnection ? "Testing…".localized : "Test Connection".localized) {
+                            Task { await runConnectionTest() }
+                        }
+                        .disabled(isTestingConnection)
+
+                        if let connectionTestMessage {
+                            Text(connectionTestMessage)
+                                .font(.caption)
+                                .foregroundColor(connectionTestSucceeded ? .green : .red)
+                                .lineLimit(2)
+                        }
+                    }
                 }
             }
 
@@ -131,13 +167,35 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .padding(.horizontal, 20)
-        .frame(width: 400)
+        .frame(width: 420)
         .frame(minHeight: 200)
         .id(languageChanged)
         .preferredColorScheme(isDarkMode ? .dark : .light)
         .onAppear {
             notificationManager.initializeDefaultSettings()
             notificationsEnabled = notificationManager.areNotificationsEnabled
+            providerManager.refreshEndpointDrafts()
+        }
+    }
+
+    private func runConnectionTest() async {
+        await MainActor.run {
+            isTestingConnection = true
+            connectionTestMessage = nil
+        }
+        do {
+            let reply = try await AIServiceV2.shared.testConnection()
+            await MainActor.run {
+                connectionTestSucceeded = true
+                connectionTestMessage = "Connected".localized + ": \(reply.prefix(40))"
+                isTestingConnection = false
+            }
+        } catch {
+            await MainActor.run {
+                connectionTestSucceeded = false
+                connectionTestMessage = error.localizedDescription
+                isTestingConnection = false
+            }
         }
     }
 
