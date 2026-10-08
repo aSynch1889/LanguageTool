@@ -16,26 +16,30 @@ struct LocalizationMasterView: View {
         self.onOpenFile = onOpenFile
     }
 
+    private var isEmptyReview: Bool {
+        viewModel.document.filePath.isEmpty || viewModel.document.items.isEmpty
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            headerBar
-            Divider()
-            ZStack {
-                contentBody
-
-                if viewModel.document.items.isEmpty && !viewModel.isLoading {
-                    emptyState
+            if isEmptyReview && !viewModel.isLoading {
+                emptyReviewChrome
+            } else {
+                headerBar
+                Divider()
+                ZStack {
+                    contentBody
+                    if viewModel.isLoading {
+                        ProgressView("Working…")
+                            .padding(16)
+                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+                    }
                 }
-
-                if viewModel.isLoading {
-                    ProgressView("Working…")
-                        .padding(16)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
-                }
+                Divider()
+                footerBar
             }
-            Divider()
-            footerBar
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .frame(minWidth: 640, minHeight: 480)
         .background(Color(nsColor: .windowBackgroundColor))
     }
@@ -199,38 +203,56 @@ struct LocalizationMasterView: View {
         }
     }
 
-    private var emptyState: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "tablecells.badge.ellipsis")
-                .font(.system(size: 36, weight: .light))
-                .foregroundStyle(.secondary)
-            Text("No localization entries")
-                .font(.headline)
-                Text("Convert a file first, or open one here to review translations.".localized)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 360)
-
-            HStack(spacing: 12) {
-                if let onGoToConvert {
-                    Button("Go to Convert".localized, action: onGoToConvert)
-                        .buttonStyle(.borderedProminent)
-                }
-                if let onOpenFile {
-                    Button("Open File…".localized, action: onOpenFile)
-                        .buttonStyle(.bordered)
-                }
+    /// Full-page empty review — do not overlay on Split/Table (avoids ghost chrome).
+    private var emptyReviewChrome: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Label("Review".localized, systemImage: "tablecells")
+                    .font(.headline.weight(.semibold))
+                Spacer()
             }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 14)
+
+            Divider()
+
+            VStack(spacing: 14) {
+                Spacer(minLength: 24)
+                Image(systemName: "tablecells.badge.ellipsis")
+                    .font(.system(size: 40, weight: .light))
+                    .foregroundStyle(.secondary)
+                Text("No localization entries".localized)
+                    .font(.title3.weight(.semibold))
+                Text("Convert a file first, or open one here to review translations.".localized)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 420)
+
+                HStack(spacing: 12) {
+                    if let onGoToConvert {
+                        Button("Go to Convert".localized, action: onGoToConvert)
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.large)
+                    }
+                    if let onOpenFile {
+                        Button("Open File…".localized, action: onOpenFile)
+                            .buttonStyle(.bordered)
+                            .controlSize(.large)
+                    }
+                }
+                .padding(.top, 4)
+                Spacer(minLength: 24)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .padding(24)
     }
 
     private var headerBar: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
                 if viewModel.document.isDirty {
-                    Label("Unsaved changes", systemImage: "pencil.circle.fill")
+                    Label("Unsaved changes".localized, systemImage: "pencil.circle.fill")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.orange)
                 } else {
@@ -259,49 +281,65 @@ struct LocalizationMasterView: View {
 
                 Spacer()
 
-                Picker("Layout", selection: $viewModel.layoutMode) {
+                Picker("Layout".localized, selection: $viewModel.layoutMode) {
                     ForEach(MasterLayoutMode.allCases) { mode in
                         Text(mode.title).tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)
+                .labelsHidden()
                 .frame(width: 160)
 
-                Text(viewModel.document.filePath.isEmpty
-                     ? "No file"
-                     : URL(fileURLWithPath: viewModel.document.filePath).lastPathComponent)
+                Text(URL(fileURLWithPath: viewModel.document.filePath).lastPathComponent)
                     .font(.caption.monospaced())
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .help(viewModel.document.filePath)
             }
 
-            HStack(spacing: 14) {
-                Picker("Filter", selection: $viewModel.rowFilter) {
+            // Two rows so toggles never collapse into a floating checkbox.
+            HStack(spacing: 12) {
+                Picker("Filter".localized, selection: $viewModel.rowFilter) {
                     ForEach(LocalizationRowFilter.allCases) { filter in
                         Text(filter.title).tag(filter)
                     }
                 }
                 .pickerStyle(.segmented)
-                .frame(width: 240)
+                .frame(maxWidth: 260)
 
-                Toggle("Translate only checked rows".localized, isOn: $viewModel.translateSelectedOnly)
-                Toggle("Skip existing".localized, isOn: $viewModel.skipExistingTranslations)
-
-                Button("Select All") { viewModel.setBatchSelection(true) }
-                    .buttonStyle(.borderless)
-                Button("Select None") { viewModel.setBatchSelection(false) }
-                    .buttonStyle(.borderless)
-
-                Spacer()
+                Spacer(minLength: 8)
 
                 HStack(spacing: 6) {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
                     TextField("Search".localized, text: $viewModel.searchText)
                         .textFieldStyle(.roundedBorder)
-                        .frame(minWidth: 160, idealWidth: 220, maxWidth: 260)
+                        .frame(minWidth: 140, idealWidth: 200, maxWidth: 240)
                 }
+            }
+
+            HStack(spacing: 16) {
+                Toggle(isOn: $viewModel.translateSelectedOnly) {
+                    Text("Translate only checked rows".localized)
+                        .font(.caption)
+                }
+                .toggleStyle(.checkbox)
+
+                Toggle(isOn: $viewModel.skipExistingTranslations) {
+                    Text("Skip existing".localized)
+                        .font(.caption)
+                }
+                .toggleStyle(.checkbox)
+
+                Divider()
+                    .frame(height: 16)
+
+                Button("Select All".localized) { viewModel.setBatchSelection(true) }
+                    .buttonStyle(.borderless)
+                Button("Select None".localized) { viewModel.setBatchSelection(false) }
+                    .buttonStyle(.borderless)
+
+                Spacer()
             }
 
             if !viewModel.statusMessage.isEmpty {
