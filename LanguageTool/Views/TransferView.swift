@@ -25,32 +25,28 @@ struct TransferView: View {
     
     var body: some View {
         ZStack {
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    platformSelectionCard
-                    fileSelectionCard
-                    languageSelectionCard
+            VStack(spacing: 0) {
+                ScrollView {
+                    LazyVStack(spacing: 16) {
+                        platformSelectionCard
+                        fileSelectionCard
+                        languageSelectionCard
 
-                    // 水平排列的选项和操作卡片
-                    HStack(alignment: .top, spacing: 16) {
-                        translationOptionsCard
-                            .frame(maxWidth: .infinity, minHeight: 140, maxHeight: 140, alignment: .top)
-
-                        actionButtonsCard
-                            .frame(maxWidth: .infinity, minHeight: 140, maxHeight: 140, alignment: .top)
+                        if viewModel.showResult {
+                            resultsCard
+                                .transition(.opacity.combined(with: .move(edge: .bottom)))
+                                .animation(.easeInOut(duration: 0.4), value: viewModel.showResult)
+                        }
                     }
-
-                    if viewModel.showResult {
-                        resultsCard
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
-                            .animation(.easeInOut(duration: 0.4), value: viewModel.showResult)
-                    }
+                    .padding()
+                    .frame(maxWidth: 800)
                 }
-                .padding()
-                .frame(maxWidth: 800)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .blur(radius: viewModel.isLoading ? 3 : 0)
+
+                // Always visible: skip-existing + primary conversion actions.
+                conversionActionBar
             }
-            .frame(minHeight: 500)
-            .blur(radius: viewModel.isLoading ? 3 : 0)
             .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
 
             if viewModel.isLoading {
@@ -69,6 +65,66 @@ struct TransferView: View {
             if let request = viewModel.makeReviewRequest(preferOutput: true) {
                 shell.requestReview(request)
             }
+        }
+    }
+
+    /// Pinned footer so Start Conversion is discoverable without scrolling.
+    private var conversionActionBar: some View {
+        VStack(spacing: 0) {
+            Divider()
+            HStack(alignment: .center, spacing: 16) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Toggle("Skip Existing Translations".localized, isOn: $viewModel.skipExistingTranslations)
+                        .toggleStyle(.checkbox)
+                        .help("When enabled, only missing translations will be generated. Existing translations will be preserved.".localized)
+
+                    Text("When enabled, only missing translations will be generated. Existing translations will be preserved.".localized)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: 320, alignment: .leading)
+
+                Spacer(minLength: 8)
+
+                HStack(spacing: 10) {
+                    Button(action: viewModel.resetAll) {
+                        Label("Reset".localized, systemImage: "arrow.counterclockwise")
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(viewModel.isLoading)
+
+                    Button {
+                        openInReview(preferOutput: false)
+                    } label: {
+                        Label("Open in Review".localized, systemImage: "tablecells")
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(viewModel.isLoading || !viewModel.isInputSelected)
+
+                    if viewModel.isLoading {
+                        Button(action: viewModel.cancelConversion) {
+                            Label("Cancel".localized, systemImage: "stop.circle.fill")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.red)
+                        .controlSize(.large)
+                    } else {
+                        Button(action: viewModel.convertToLocalization) {
+                            Label("Start Conversion".localized, systemImage: "arrow.right.circle.fill")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                        .disabled(!viewModel.isInputSelected || !viewModel.isOutputSelected || viewModel.selectedLanguages.isEmpty)
+                        .keyboardShortcut(.defaultAction)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity)
+            .background(ThemeSurface.card(for: colorScheme))
         }
     }
 
@@ -295,96 +351,6 @@ struct TransferView: View {
         .cardStyle()
     }
 
-    private var translationOptionsCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Translation Options".localized, systemImage: "gearshape")
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(.primary)
-
-            VStack(alignment: .leading, spacing: 8) {
-                Toggle("Skip Existing Translations".localized, isOn: $viewModel.skipExistingTranslations)
-                    .toggleStyle(SwitchToggleStyle())
-
-                Text("When enabled, only missing translations will be generated. Existing translations will be preserved.".localized)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(3)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .cardStyle()
-    }
-
-    private var actionButtonsCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Actions".localized, systemImage: "play.circle")
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(.primary)
-
-            VStack(spacing: 10) {
-                if viewModel.isLoading {
-                    Button(action: {
-                        viewModel.cancelConversion()
-                    }) {
-                        HStack {
-                            Image(systemName: "stop.circle.fill")
-                            Text("Cancel".localized)
-                            Spacer()
-                        }
-                        .padding(.vertical, 8)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.red)
-                    .controlSize(.large)
-                } else {
-                    Button(action: {
-                        viewModel.convertToLocalization()
-                    }) {
-                        HStack {
-                            Image(systemName: "arrow.right.circle.fill")
-                            Text("Start Conversion".localized)
-                            Spacer()
-                        }
-                        .padding(.vertical, 8)
-                    }
-                    .disabled(!viewModel.isInputSelected || !viewModel.isOutputSelected || viewModel.selectedLanguages.isEmpty)
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                }
-
-                // Secondary actions
-                HStack(spacing: 12) {
-                    Button(action: viewModel.resetAll) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "arrow.counterclockwise")
-                            Text("Reset".localized)
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .disabled(viewModel.isLoading)
-                    Spacer()
-                    Button {
-                        openInReview(preferOutput: false)
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "tablecells")
-                            Text("Open in Review".localized)
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    .disabled(viewModel.isLoading || !viewModel.isInputSelected)
-                }
-            }
-
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .cardStyle()
-    }
-    
     private var resultsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label(
