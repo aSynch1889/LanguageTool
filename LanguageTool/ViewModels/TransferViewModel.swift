@@ -23,6 +23,7 @@ class TransferViewModel: ObservableObject {
 
     // 添加一个属性来保持对窗口的强引用
     private var localizationWindow: NSWindow?
+    private var localizationMasterVM: LocalizationMasterViewModel?
     private var conversionTask: Task<Void, Never>?
 
     // 通知管理器
@@ -336,10 +337,23 @@ class TransferViewModel: ObservableObject {
         }
     }
     
+    /// Opens Localization Master on the selected input file.
     func openInNewWindow() {
+        openLocalizationMaster(preferOutput: false)
+    }
+
+    /// Opens Localization Master on conversion output when available (review flow).
+    func openMasterForReview() {
+        openLocalizationMaster(preferOutput: true)
+    }
+
+    private func openLocalizationMaster(preferOutput: Bool) {
         Task { @MainActor in
             if let existingWindow = localizationWindow {
                 existingWindow.makeKeyAndOrderFront(nil)
+                if let masterVM = localizationMasterVM {
+                    await loadMasterDocument(into: masterVM, preferOutput: preferOutput)
+                }
                 return
             }
 
@@ -353,24 +367,62 @@ class TransferViewModel: ObservableObject {
             window.isReleasedWhenClosed = false
 
             let masterVM = LocalizationMasterViewModel()
+            localizationMasterVM = masterVM
             let masterView = LocalizationMasterView(viewModel: masterVM)
             window.contentView = NSHostingView(rootView: masterView)
             window.center()
 
             self.localizationWindow = window
 
-            let delegate = WindowDelegate(onClose: { [weak self] in
-                self?.localizationWindow = nil
-            })
+            let delegate = MasterWindowDelegate(
+                shouldClose: { [weak self] in
+                    self?.localizationMasterVM?.confirmCloseIfNeeded() ?? true
+                },
+                onClose: { [weak self] in
+                    self?.localizationWindow = nil
+                    self?.localizationMasterVM = nil
+                }
+            )
             window.delegate = delegate
             objc_setAssociatedObject(window, "delegateReference", delegate, .OBJC_ASSOCIATION_RETAIN)
 
             window.makeKeyAndOrderFront(nil)
-
-            if isInputSelected, !inputPath.isEmpty {
-                await masterVM.load(path: inputPath, platform: selectedPlatform)
-            }
+            await loadMasterDocument(into: masterVM, preferOutput: preferOutput)
         }
+    }
+
+    private func loadMasterDocument(into masterVM: LocalizationMasterViewModel, preferOutput: Bool) async {
+        let languageCodes = selectedLanguages.map(\.code)
+        let path: String?
+        if preferOutput, isOutputSelected, isRegularFile(at: outputPath) {
+            path = outputPath
+        } else if isInputSelected, !inputPath.isEmpty {
+            path = inputPath
+        } else if preferOutput, isOutputSelected, isRegularFile(at: outputPath) {
+            path = outputPath
+        } else {
+            path = nil
+        }
+
+        guard let path else {
+            showAlert(message: "Select a localization file first".localized, isError: true)
+            return
+        }
+
+        await masterVM.loadForReview(
+            path: path,
+            platform: selectedPlatform,
+            languageCodes: languageCodes,
+            skipExisting: skipExistingTranslations
+        )
+    }
+
+    private func isRegularFile(at path: String) -> Bool {
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) else {
+            return false
+        }
+        return !isDirectory.boolValue
     }
     
     func exportToCSV() {
@@ -467,15 +519,20 @@ class TransferViewModel: ObservableObject {
     
 }
 
-// 添加一个窗口代理类来处理窗口关闭事件
-private class WindowDelegate: NSObject, NSWindowDelegate {
+private class MasterWindowDelegate: NSObject, NSWindowDelegate {
+    let shouldClose: () -> Bool
     let onClose: () -> Void
-    
-    init(onClose: @escaping () -> Void) {
+
+    init(shouldClose: @escaping () -> Bool, onClose: @escaping () -> Void) {
+        self.shouldClose = shouldClose
         self.onClose = onClose
         super.init()
     }
-    
+
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        shouldClose()
+    }
+
     func windowWillClose(_ notification: Notification) {
         onClose()
     }

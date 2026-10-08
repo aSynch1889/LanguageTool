@@ -356,8 +356,8 @@ struct TransferView: View {
                     Spacer()
                     Button(action: viewModel.openInNewWindow) {
                         HStack(spacing: 6) {
-                            Image(systemName: "plus.rectangle.on.rectangle")
-                            Text("Localization Master (Experimental)".localized)
+                            Image(systemName: "tablecells")
+                            Text("Localization Master".localized)
                         }
                     }
                     .buttonStyle(.bordered)
@@ -410,6 +410,12 @@ struct TransferView: View {
                     HStack(spacing: 12) {
                         Button(action: viewModel.openInFinder) {
                             Label("Show in Finder".localized, systemImage: "folder")
+                                .font(.subheadline)
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button(action: viewModel.openMasterForReview) {
+                            Label("Review in Master".localized, systemImage: "tablecells")
                                 .font(.subheadline)
                         }
                         .buttonStyle(.bordered)
