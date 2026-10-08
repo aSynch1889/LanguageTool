@@ -16,6 +16,28 @@ enum LocalizationDocumentError: LocalizedError {
     }
 }
 
+enum LocalizationRowFilter: String, CaseIterable, Identifiable {
+    case all
+    case missing
+    case changed
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .all: return "All"
+        case .missing: return "Missing"
+        case .changed: return "Changed"
+        }
+    }
+}
+
+/// Snapshot used to detect per-key edits since last load/save.
+struct TranslationItemBaseline: Equatable {
+    let translations: [String: String]
+    let comment: String
+}
+
 /// In-memory localization document with load / merge-save / CSV export.
 @MainActor
 final class LocalizationDocument: ObservableObject {
@@ -26,6 +48,7 @@ final class LocalizationDocument: ObservableObject {
     @Published private(set) var isDirty: Bool = false
 
     private var originalXCStringsJSON: [String: Any]?
+    private var baselines: [String: TranslationItemBaseline] = [:]
 
     var availableLanguages: [String] {
         var codes = Set<String>()
@@ -38,8 +61,20 @@ final class LocalizationDocument: ObservableObject {
         return Array(codes).sorted()
     }
 
+    var targetLanguages: [String] {
+        availableLanguages.filter { $0 != sourceLanguage }
+    }
+
     var fileExtension: String {
         (filePath as NSString).pathExtension.lowercased()
+    }
+
+    var missingCount: Int {
+        items.filter { hasMissingTranslation($0) }.count
+    }
+
+    var changedCount: Int {
+        items.filter { isChanged($0) }.count
     }
 
     func load(from path: String, platform: PlatformType) async throws {
@@ -67,6 +102,56 @@ final class LocalizationDocument: ObservableObject {
                 sourceLanguage = items.first?.translations.keys.sorted().first ?? "en"
             }
         }
+        captureBaseline()
+    }
+
+    /// Load an already-parsed item set (e.g. after conversion) as a review document.
+    func loadItems(
+        _ parsed: [TranslationItem],
+        path: String,
+        platform: PlatformType,
+        sourceLanguage: String?
+    ) {
+        self.platform = platform
+        self.filePath = path
+        self.items = parsed
+        self.isDirty = false
+        self.originalXCStringsJSON = nil
+        if let sourceLanguage, !sourceLanguage.isEmpty {
+            self.sourceLanguage = sourceLanguage
+        } else if parsed.contains(where: { $0.translations["en"] != nil }) {
+            self.sourceLanguage = "en"
+        } else {
+            self.sourceLanguage = parsed.first?.translations.keys.sorted().first ?? "en"
+        }
+        if path.lowercased().hasSuffix(".xcstrings"),
+           let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
+           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            originalXCStringsJSON = json
+            if let src = json["sourceLanguage"] as? String {
+                self.sourceLanguage = src
+            }
+        }
+        captureBaseline()
+    }
+
+    func captureBaseline() {
+        baselines = Dictionary(uniqueKeysWithValues: items.map { item in
+            (item.key, TranslationItemBaseline(translations: item.translations, comment: item.comment))
+        })
+    }
+
+    func hasMissingTranslation(_ item: TranslationItem) -> Bool {
+        let targets = targetLanguages
+        guard !targets.isEmpty else { return false }
+        return targets.contains { code in
+            (item.translations[code] ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
+    }
+
+    func isChanged(_ item: TranslationItem) -> Bool {
+        guard let baseline = baselines[item.key] else { return true }
+        return baseline.translations != item.translations || baseline.comment != item.comment
     }
 
     func replaceItems(_ newItems: [TranslationItem], markDirty: Bool = true) {
@@ -76,8 +161,10 @@ final class LocalizationDocument: ObservableObject {
 
     func updateItem(_ item: TranslationItem) {
         guard let index = items.firstIndex(where: { $0.key == item.key }) else { return }
-        if items[index] != item {
-            items[index] = item
+        let previous = items[index]
+        items[index] = item
+        let contentChanged = previous.translations != item.translations || previous.comment != item.comment
+        if contentChanged {
             isDirty = true
         }
     }
@@ -116,6 +203,7 @@ final class LocalizationDocument: ObservableObject {
 
         filePath = target
         isDirty = false
+        captureBaseline()
     }
 
     func exportCSV(to url: URL) throws {

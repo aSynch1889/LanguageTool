@@ -2,10 +2,27 @@ import SwiftUI
 import AppKit
 import UniformTypeIdentifiers
 
+enum MasterLayoutMode: String, CaseIterable, Identifiable {
+    case split
+    case table
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .split: return "Split"
+        case .table: return "Table"
+        }
+    }
+}
+
 @MainActor
 final class LocalizationMasterViewModel: ObservableObject {
     @Published var document = LocalizationDocument()
     @Published var searchText = ""
+    @Published var rowFilter: LocalizationRowFilter = .all
+    @Published var layoutMode: MasterLayoutMode = .split
+    @Published var selectedKey: String?
     @Published var translateSelectedOnly = true
     @Published var skipExistingTranslations = true
     @Published var isLoading = false
@@ -15,7 +32,17 @@ final class LocalizationMasterViewModel: ObservableObject {
     private var translateTask: Task<Void, Never>?
 
     var filteredItems: [TranslationItem] {
-        let items = document.items
+        var items = document.items
+
+        switch rowFilter {
+        case .all:
+            break
+        case .missing:
+            items = items.filter { document.hasMissingTranslation($0) }
+        case .changed:
+            items = items.filter { document.isChanged($0) }
+        }
+
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return items }
         return items.filter { item in
@@ -23,6 +50,11 @@ final class LocalizationMasterViewModel: ObservableObject {
                 || item.comment.localizedCaseInsensitiveContains(query)
                 || item.translations.values.contains { $0.localizedCaseInsensitiveContains(query) }
         }
+    }
+
+    var selectedItem: TranslationItem? {
+        guard let selectedKey else { return nil }
+        return document.items.first { $0.key == selectedKey }
     }
 
     var addableLanguages: [Language] {
@@ -35,6 +67,7 @@ final class LocalizationMasterViewModel: ObservableObject {
         statusMessage = ""
         do {
             try await document.load(from: path, platform: platform)
+            selectedKey = document.items.first?.key
             statusMessage = "Loaded \(document.items.count) keys"
             lastOperationSucceeded = true
         } catch {
@@ -43,11 +76,72 @@ final class LocalizationMasterViewModel: ObservableObject {
             showAlert(message: statusMessage, isError: true)
         }
         isLoading = false
+        objectWillChange.send()
+    }
+
+    /// Open conversion output (or any path) for review, optionally ensuring languages exist.
+    func loadForReview(
+        path: String,
+        platform: PlatformType,
+        languageCodes: [String] = [],
+        skipExisting: Bool? = nil
+    ) async {
+        if let skipExisting {
+            skipExistingTranslations = skipExisting
+        }
+        await load(path: path, platform: platform)
+        for code in languageCodes {
+            document.addLanguage(code)
+        }
+        if !languageCodes.isEmpty {
+            objectWillChange.send()
+        }
+    }
+
+    func selectKey(_ key: String?) {
+        selectedKey = key
     }
 
     func updateItem(_ item: TranslationItem) {
         document.updateItem(item)
+        if selectedKey == nil {
+            selectedKey = item.key
+        }
         objectWillChange.send()
+    }
+
+    /// Returns `true` when the window may close.
+    @discardableResult
+    func confirmCloseIfNeeded() -> Bool {
+        guard document.isDirty else { return true }
+
+        let alert = NSAlert()
+        alert.messageText = "Save changes before closing?"
+        alert.informativeText = "You have unsaved edits in Localization Master."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Save")
+        alert.addButton(withTitle: "Don't Save")
+        alert.addButton(withTitle: "Cancel")
+
+        switch alert.runModal() {
+        case .alertFirstButtonReturn:
+            do {
+                try document.save()
+                statusMessage = "Saved"
+                lastOperationSucceeded = true
+                objectWillChange.send()
+                return true
+            } catch {
+                statusMessage = "Save failed: \(error.localizedDescription)"
+                lastOperationSucceeded = false
+                showAlert(message: statusMessage, isError: true)
+                return false
+            }
+        case .alertSecondButtonReturn:
+            return true
+        default:
+            return false
+        }
     }
 
     func addLanguage(_ code: String) {
