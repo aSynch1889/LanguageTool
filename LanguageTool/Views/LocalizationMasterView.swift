@@ -274,15 +274,8 @@ struct LocalizationMasterView: View {
             }
 
             HStack(spacing: 10) {
-                Picker("Layout".localized, selection: $viewModel.layoutMode) {
-                    ForEach(MasterLayoutMode.allCases) { mode in
-                        Text(mode.title).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .frame(minWidth: 120, idealWidth: 148, maxWidth: 168)
-                .layoutPriority(1)
+                layoutPicker
+                    .layoutPriority(1)
 
                 Text(URL(fileURLWithPath: viewModel.document.filePath).lastPathComponent)
                     .font(.caption.monospaced())
@@ -301,11 +294,13 @@ struct LocalizationMasterView: View {
                     searchField(minWidth: 120, maxWidth: .infinity)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             ViewThatFits(in: .horizontal) {
                 batchOptionsRow(compact: false)
                 batchOptionsRow(compact: true)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             if !viewModel.statusMessage.isEmpty {
                 Text(viewModel.statusMessage)
@@ -335,14 +330,34 @@ struct LocalizationMasterView: View {
         return parts.joined(separator: " ")
     }
 
-    private var filterPicker: some View {
-        Picker("Filter".localized, selection: $viewModel.rowFilter) {
-            ForEach(LocalizationRowFilter.allCases) { filter in
-                Text(filter.title).tag(filter)
+    private var layoutPicker: some View {
+        Picker("Layout".localized, selection: $viewModel.layoutMode) {
+            ForEach(MasterLayoutMode.allCases) { mode in
+                Text(mode.title).tag(mode)
             }
         }
         .pickerStyle(.segmented)
-        .frame(minWidth: 180, maxWidth: 260)
+        .labelsHidden()
+        // Intrinsic width + leading alignment — avoid minWidth frames that center short locales.
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    private var filterPicker: some View {
+        HStack(spacing: 8) {
+            Text("Filter".localized)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize()
+
+            Picker("Filter".localized, selection: $viewModel.rowFilter) {
+                ForEach(LocalizationRowFilter.allCases) { filter in
+                    Text(filter.title).tag(filter)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .fixedSize(horizontal: true, vertical: false)
+        }
         .layoutPriority(1)
     }
 
@@ -353,7 +368,7 @@ struct LocalizationMasterView: View {
             TextField("Search".localized, text: $viewModel.searchText)
                 .textFieldStyle(.roundedBorder)
         }
-        .frame(minWidth: minWidth, maxWidth: maxWidth)
+        .frame(minWidth: minWidth, maxWidth: maxWidth, alignment: .leading)
     }
 
     private func filterSearchRow(searchMinWidth: CGFloat, searchMaxWidth: CGFloat) -> some View {
@@ -362,6 +377,7 @@ struct LocalizationMasterView: View {
             Spacer(minLength: 8)
             searchField(minWidth: searchMinWidth, maxWidth: searchMaxWidth)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func batchOptionsRow(compact: Bool) -> some View {
