@@ -36,9 +36,7 @@ struct AppShellView: View {
                 }
 
                 Section {
-                    Button {
-                        shell.openSettingsWindow()
-                    } label: {
+                    SettingsLink {
                         Label("Settings…".localized, systemImage: "gearshape")
                     }
                 }
@@ -50,9 +48,7 @@ struct AppShellView: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
-                Button {
-                    shell.openSettingsWindow()
-                } label: {
+                SettingsLink {
                     Label("Settings".localized, systemImage: "gearshape")
                 }
                 .help("Settings".localized)

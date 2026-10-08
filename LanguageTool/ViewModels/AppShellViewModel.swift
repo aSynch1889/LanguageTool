@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import AppKit
 
 @MainActor
 final class AppShellViewModel: ObservableObject {
@@ -42,14 +41,5 @@ final class AppShellViewModel: ObservableObject {
 
     func goToTransfer() {
         sidebar = .transfer
-    }
-
-    func openSettingsWindow() {
-        NSApp.activate(ignoringOtherApps: true)
-        if #available(macOS 14.0, *) {
-            NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-        } else {
-            NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
-        }
     }
 }
