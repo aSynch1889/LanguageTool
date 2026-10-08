@@ -70,6 +70,9 @@ struct AppShellView: View {
                 Menu {
                     ForEach(AppearanceMode.allCases) { mode in
                         Button {
+                            // Apply AppKit appearance *before* updating storage / preferredColorScheme,
+                            // otherwise remounted views still sample the previous dark appearance.
+                            mode.applyToApp()
                             appearanceModeRaw = mode.rawValue
                         } label: {
                             HStack {
@@ -87,16 +90,12 @@ struct AppShellView: View {
             }
         }
         .preferredColorScheme(appearanceMode.preferredColorScheme)
-        .id(appearanceModeRaw) // Force remount so materials / semantic colors refresh after dark → system.
         .environmentObject(shell)
         .onAppear {
             AppearanceMode.migrateIfNeeded()
             if UserDefaults.standard.string(forKey: AppearanceMode.storageKey) == nil {
                 appearanceModeRaw = AppearanceMode.system.rawValue
             }
-            appearanceMode.applyToApp()
-        }
-        .onChange(of: appearanceModeRaw) { _, _ in
             appearanceMode.applyToApp()
         }
         .onChange(of: shell.pendingReview) { _, request in

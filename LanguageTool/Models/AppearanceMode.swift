@@ -24,7 +24,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
         }
     }
 
-    /// AppKit appearance — materials and NSColor resolve against this.
+    /// AppKit appearance — must be applied *before* SwiftUI remounts after a mode change.
     var nsAppearance: NSAppearance? {
         switch self {
         case .system: return nil
@@ -53,12 +53,42 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
         return AppearanceMode(rawValue: raw) ?? .system
     }
 
-    /// Keep SwiftUI `preferredColorScheme` and AppKit `NSApp.appearance` in sync.
-    /// Switching dark → system via `preferredColorScheme(nil)` alone often leaves materials stuck dark.
-    /// Must not run during `App.init` — `NSApp` is still nil then.
+    /// Apply AppKit appearance to the shared app **and every window** before SwiftUI updates.
+    /// `NSApp` is nil during early `App.init` — those calls no-op safely.
     @MainActor
     func applyToApp() {
         guard let app = NSApp else { return }
-        app.appearance = nsAppearance
+        let appearance = nsAppearance
+        app.appearance = appearance
+        for window in app.windows {
+            window.appearance = appearance
+        }
+    }
+}
+
+// MARK: - Scheme-driven fills (do not use sticky NSColor / Material)
+
+enum ThemeSurface {
+    /// Card / panel fill that follows SwiftUI `colorScheme`, not AppKit dynamic colors.
+    static func card(for colorScheme: ColorScheme) -> Color {
+        switch colorScheme {
+        case .dark:
+            return Color(red: 0.17, green: 0.17, blue: 0.19)
+        case .light:
+            fallthrough
+        @unknown default:
+            return Color(red: 0.96, green: 0.96, blue: 0.975)
+        }
+    }
+
+    static func inset(for colorScheme: ColorScheme) -> Color {
+        switch colorScheme {
+        case .dark:
+            return Color(red: 0.12, green: 0.12, blue: 0.14)
+        case .light:
+            fallthrough
+        @unknown default:
+            return Color(red: 1.0, green: 1.0, blue: 1.0)
+        }
     }
 }

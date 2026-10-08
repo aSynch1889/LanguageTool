@@ -12,7 +12,10 @@ struct SettingsView: View {
     private var appearanceModeBinding: Binding<AppearanceMode> {
         Binding(
             get: { AppearanceMode(rawValue: appearanceModeRaw) ?? .system },
-            set: { appearanceModeRaw = $0.rawValue }
+            set: { newValue in
+                newValue.applyToApp()
+                appearanceModeRaw = newValue.rawValue
+            }
         )
     }
 
@@ -197,9 +200,6 @@ struct SettingsView: View {
             notificationManager.initializeDefaultSettings()
             notificationsEnabled = notificationManager.areNotificationsEnabled
             providerManager.refreshEndpointDrafts()
-        }
-        .onChange(of: appearanceModeRaw) { _, _ in
-            (AppearanceMode(rawValue: appearanceModeRaw) ?? .system).applyToApp()
         }
         .onChange(of: focusedEndpointField) { oldValue, newValue in
             // Commit only when leaving the field — never rewrite while typing.
