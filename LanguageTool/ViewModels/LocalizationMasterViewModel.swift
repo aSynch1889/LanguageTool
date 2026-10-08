@@ -36,7 +36,7 @@ final class LocalizationMasterViewModel: ObservableObject {
     @Published var document = LocalizationDocument()
     @Published var searchText = ""
     @Published var rowFilter: LocalizationRowFilter = .all
-    @Published var layoutMode: MasterLayoutMode = .split
+    @Published var layoutMode: MasterLayoutMode = .table
     @Published var selectedKey: String?
     @Published var translateSelectedOnly = true
     @Published var skipExistingTranslations = true
