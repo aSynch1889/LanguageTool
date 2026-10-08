@@ -193,9 +193,13 @@ struct SettingsView: View {
         .preferredColorScheme((AppearanceMode(rawValue: appearanceModeRaw) ?? .system).preferredColorScheme)
         .onAppear {
             AppearanceMode.migrateIfNeeded()
+            (AppearanceMode(rawValue: appearanceModeRaw) ?? .system).applyToApp()
             notificationManager.initializeDefaultSettings()
             notificationsEnabled = notificationManager.areNotificationsEnabled
             providerManager.refreshEndpointDrafts()
+        }
+        .onChange(of: appearanceModeRaw) { _, _ in
+            (AppearanceMode(rawValue: appearanceModeRaw) ?? .system).applyToApp()
         }
         .onChange(of: focusedEndpointField) { oldValue, newValue in
             // Commit only when leaving the field — never rewrite while typing.

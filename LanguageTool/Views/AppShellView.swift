@@ -87,12 +87,17 @@ struct AppShellView: View {
             }
         }
         .preferredColorScheme(appearanceMode.preferredColorScheme)
+        .id(appearanceModeRaw) // Force remount so materials / semantic colors refresh after dark → system.
         .environmentObject(shell)
         .onAppear {
             AppearanceMode.migrateIfNeeded()
             if UserDefaults.standard.string(forKey: AppearanceMode.storageKey) == nil {
                 appearanceModeRaw = AppearanceMode.system.rawValue
             }
+            appearanceMode.applyToApp()
+        }
+        .onChange(of: appearanceModeRaw) { _, _ in
+            appearanceMode.applyToApp()
         }
         .onChange(of: shell.pendingReview) { _, request in
             guard let request else { return }

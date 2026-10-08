@@ -11,6 +11,7 @@ struct LanguageToolApp: App {
         }
 
         AppearanceMode.migrateIfNeeded()
+        AppearanceMode.load().applyToApp()
 
         // Ensure provider registry is initialized before UI binds to it.
         _ = AIProviderRegistry.shared

@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 enum AppearanceMode: String, CaseIterable, Identifiable {
     case system
@@ -23,6 +24,15 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
         }
     }
 
+    /// AppKit appearance — materials and NSColor resolve against this.
+    var nsAppearance: NSAppearance? {
+        switch self {
+        case .system: return nil
+        case .light: return NSAppearance(named: .aqua)
+        case .dark: return NSAppearance(named: .darkAqua)
+        }
+    }
+
     static let storageKey = "appearanceMode"
     static let legacyDarkModeKey = "isDarkMode"
 
@@ -41,5 +51,11 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
         migrateIfNeeded(defaults: defaults)
         let raw = defaults.string(forKey: storageKey) ?? AppearanceMode.system.rawValue
         return AppearanceMode(rawValue: raw) ?? .system
+    }
+
+    /// Keep SwiftUI `preferredColorScheme` and AppKit `NSApp.appearance` in sync.
+    /// Switching dark → system via `preferredColorScheme(nil)` alone often leaves materials stuck dark.
+    func applyToApp() {
+        NSApp.appearance = nsAppearance
     }
 }

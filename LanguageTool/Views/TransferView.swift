@@ -214,7 +214,7 @@ struct TransferView: View {
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 6)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+                    .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
 
                     Menu {
                         ForEach(LanguageCategory.allCases, id: \.self) { category in
@@ -288,7 +288,7 @@ struct TransferView: View {
                 .animation(.easeInOut(duration: 0.3), value: filteredLanguages.count)
             }
             .frame(height: 250)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+            .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
         }
         .cardStyle()
     }
@@ -448,7 +448,7 @@ struct TransferView: View {
                     }
                 }
                 .padding()
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+                .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
             }
         }
         .cardStyle()
@@ -471,7 +471,7 @@ struct TransferView: View {
             }
         }
         .padding(24)
-        .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.1), radius: 20, y: 5)
     }
 
@@ -554,7 +554,7 @@ struct ModernFileSelector: View {
                     }
                 }
                 .padding()
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+                .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 10))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(isSelected ? .green.opacity(0.3) : .blue.opacity(0.3), lineWidth: 1.5)
@@ -610,11 +610,19 @@ struct ModernLanguageCard: View {
 
 // MARK: - Card Style ViewModifier
 struct CardStyle: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+
     func body(content: Content) -> some View {
         content
             .padding()
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-            .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
+            // Prefer semantic fills over `.regularMaterial`, which can stay dark after
+            // switching preferredColorScheme from `.dark` back to system (`nil`).
+            .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.06), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(colorScheme == .dark ? 0.25 : 0.05), radius: 2, y: 1)
     }
 }
 
