@@ -7,6 +7,9 @@ struct AppShellView: View {
     @StateObject private var masterViewModel = LocalizationMasterViewModel()
     @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw: String = AppearanceMode.system.rawValue
     @AppStorage("appLanguage") private var appLanguage: String = "en"
+    /// Bumped after each appearance apply so the whole shell remounts with a fresh colorScheme.
+    @State private var appearanceEpoch = 0
+    @State private var resolvedScheme: ColorScheme = .light
 
     private var appearanceMode: AppearanceMode {
         AppearanceMode(rawValue: appearanceModeRaw) ?? .system
@@ -43,8 +46,11 @@ struct AppShellView: View {
             }
             .navigationSplitViewColumnWidth(min: 160, ideal: 180, max: 240)
             .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
+            .background(ThemeSurface.page(for: resolvedScheme))
         } detail: {
             detailBody
+                .background(ThemeSurface.page(for: resolvedScheme))
         }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
@@ -70,10 +76,7 @@ struct AppShellView: View {
                 Menu {
                     ForEach(AppearanceMode.allCases) { mode in
                         Button {
-                            // Apply AppKit appearance *before* updating storage / preferredColorScheme,
-                            // otherwise remounted views still sample the previous dark appearance.
-                            mode.applyToApp()
-                            appearanceModeRaw = mode.rawValue
+                            selectAppearance(mode)
                         } label: {
                             HStack {
                                 Text(mode.title)
@@ -84,19 +87,29 @@ struct AppShellView: View {
                         }
                     }
                 } label: {
-                    Label("Appearance".localized, systemImage: appearanceMode == .dark ? "moon.fill" : "sun.max")
+                    Label(
+                        "Appearance".localized,
+                        systemImage: resolvedScheme == .dark ? "moon.fill" : "sun.max"
+                    )
                 }
                 .help("Appearance".localized)
             }
         }
-        .preferredColorScheme(appearanceMode.preferredColorScheme)
+        // Always pass an *explicit* ColorScheme. `nil` (system) leaves children stuck after dark.
+        .preferredColorScheme(resolvedScheme)
+        .environment(\.colorScheme, resolvedScheme)
+        .id(appearanceEpoch)
         .environmentObject(shell)
         .onAppear {
             AppearanceMode.migrateIfNeeded()
             if UserDefaults.standard.string(forKey: AppearanceMode.storageKey) == nil {
                 appearanceModeRaw = AppearanceMode.system.rawValue
             }
-            appearanceMode.applyToApp()
+            refreshAppearance(storeRaw: false)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: AppearanceMode.systemThemeChangedNotification)) { _ in
+            guard appearanceMode == .system else { return }
+            refreshAppearance(storeRaw: false)
         }
         .onChange(of: shell.pendingReview) { _, request in
             guard let request else { return }
@@ -109,6 +122,23 @@ struct AppShellView: View {
                 )
             }
         }
+    }
+
+    private func selectAppearance(_ mode: AppearanceMode) {
+        mode.applyToApp()
+        appearanceModeRaw = mode.rawValue
+        resolvedScheme = mode.resolvedColorScheme()
+        appearanceEpoch &+= 1
+    }
+
+    private func refreshAppearance(storeRaw: Bool) {
+        let mode = appearanceMode
+        mode.applyToApp()
+        if storeRaw {
+            appearanceModeRaw = mode.rawValue
+        }
+        resolvedScheme = mode.resolvedColorScheme()
+        appearanceEpoch &+= 1
     }
 
     private var sidebarSelection: Binding<AppShellViewModel.SidebarItem?> {

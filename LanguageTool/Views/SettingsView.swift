@@ -15,8 +15,14 @@ struct SettingsView: View {
             set: { newValue in
                 newValue.applyToApp()
                 appearanceModeRaw = newValue.rawValue
+                // Mirror shell behavior: force an explicit scheme into the Settings window too.
+                // (Settings is a separate scene; preferredColorScheme below reads storage.)
             }
         )
+    }
+
+    private var settingsResolvedScheme: ColorScheme {
+        (AppearanceMode(rawValue: appearanceModeRaw) ?? .system).resolvedColorScheme()
     }
 
     private let supportedLanguages = [
@@ -193,7 +199,8 @@ struct SettingsView: View {
         .frame(width: 420)
         .frame(minHeight: 200)
         .id(languageChanged)
-        .preferredColorScheme((AppearanceMode(rawValue: appearanceModeRaw) ?? .system).preferredColorScheme)
+        .preferredColorScheme(settingsResolvedScheme)
+        .environment(\.colorScheme, settingsResolvedScheme)
         .onAppear {
             AppearanceMode.migrateIfNeeded()
             (AppearanceMode(rawValue: appearanceModeRaw) ?? .system).applyToApp()

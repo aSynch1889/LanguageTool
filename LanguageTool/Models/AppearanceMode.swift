@@ -16,15 +16,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
         }
     }
 
-    var preferredColorScheme: ColorScheme? {
-        switch self {
-        case .system: return nil
-        case .light: return .light
-        case .dark: return .dark
-        }
-    }
-
-    /// AppKit appearance — must be applied *before* SwiftUI remounts after a mode change.
+    /// AppKit override. `nil` = follow macOS.
     var nsAppearance: NSAppearance? {
         switch self {
         case .system: return nil
@@ -35,6 +27,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
 
     static let storageKey = "appearanceMode"
     static let legacyDarkModeKey = "isDarkMode"
+    static let systemThemeChangedNotification = Notification.Name("AppleInterfaceThemeChangedNotification")
 
     /// Migrates legacy `isDarkMode` once: true → dark, false → system.
     static func migrateIfNeeded(defaults: UserDefaults = .standard) {
@@ -53,8 +46,8 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
         return AppearanceMode(rawValue: raw) ?? .system
     }
 
-    /// Apply AppKit appearance to the shared app **and every window** before SwiftUI updates.
-    /// `NSApp` is nil during early `App.init` — those calls no-op safely.
+    /// Apply AppKit appearance to the shared app and every window.
+    /// Safe when `NSApp` is still nil (early `App.init`).
     @MainActor
     func applyToApp() {
         guard let app = NSApp else { return }
@@ -64,12 +57,26 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
             window.appearance = appearance
         }
     }
+
+    /// Always returns an explicit scheme. Never rely on `preferredColorScheme(nil)`,
+    /// which often leaves child views stuck on the previous dark environment.
+    @MainActor
+    func resolvedColorScheme() -> ColorScheme {
+        switch self {
+        case .light:
+            return .light
+        case .dark:
+            return .dark
+        case .system:
+            let appearance = NSApp?.effectiveAppearance ?? NSAppearance(named: .aqua)!
+            return appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? .dark : .light
+        }
+    }
 }
 
-// MARK: - Scheme-driven fills (do not use sticky NSColor / Material)
+// MARK: - Scheme-driven fills (ignore AppKit dynamic colors)
 
 enum ThemeSurface {
-    /// Card / panel fill that follows SwiftUI `colorScheme`, not AppKit dynamic colors.
     static func card(for colorScheme: ColorScheme) -> Color {
         switch colorScheme {
         case .dark:
@@ -89,6 +96,17 @@ enum ThemeSurface {
             fallthrough
         @unknown default:
             return Color(red: 1.0, green: 1.0, blue: 1.0)
+        }
+    }
+
+    static func page(for colorScheme: ColorScheme) -> Color {
+        switch colorScheme {
+        case .dark:
+            return Color(red: 0.11, green: 0.11, blue: 0.12)
+        case .light:
+            fallthrough
+        @unknown default:
+            return Color(red: 0.93, green: 0.93, blue: 0.94)
         }
     }
 }
