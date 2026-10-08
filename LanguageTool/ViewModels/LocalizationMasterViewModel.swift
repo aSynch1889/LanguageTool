@@ -14,6 +14,21 @@ enum MasterLayoutMode: String, CaseIterable, Identifiable {
         case .table: return "Table".localized
         }
     }
+
+    /// Icon for the compact header toggle (shows the mode you would switch *to*).
+    var toggleSystemImage: String {
+        switch self {
+        case .split: return "tablecells"
+        case .table: return "sidebar.left"
+        }
+    }
+
+    var toggled: MasterLayoutMode {
+        switch self {
+        case .split: return .table
+        case .table: return .split
+        }
+    }
 }
 
 @MainActor

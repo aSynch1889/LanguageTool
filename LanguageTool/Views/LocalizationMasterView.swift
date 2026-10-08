@@ -250,8 +250,7 @@ struct LocalizationMasterView: View {
 
     private var headerBar: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // Status + layout + filename on separate flexible rows so Chinese labels don't crush.
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            HStack(alignment: .center, spacing: 8) {
                 Group {
                     if viewModel.document.isDirty {
                         Label("Unsaved changes".localized, systemImage: "pencil.circle.fill")
@@ -267,23 +266,20 @@ struct LocalizationMasterView: View {
                 Text(documentStatsText)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
 
-                Spacer(minLength: 0)
-            }
-
-            HStack(spacing: 10) {
-                layoutPicker
-                    .layoutPriority(1)
+                Spacer(minLength: 8)
 
                 Text(URL(fileURLWithPath: viewModel.document.filePath).lastPathComponent)
                     .font(.caption.monospaced())
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .truncationMode(.middle)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .frame(maxWidth: 180, alignment: .trailing)
                     .help(viewModel.document.filePath)
+
+                layoutToggleButton
             }
 
             ViewThatFits(in: .horizontal) {
@@ -330,16 +326,18 @@ struct LocalizationMasterView: View {
         return parts.joined(separator: " ")
     }
 
-    private var layoutPicker: some View {
-        Picker("Layout".localized, selection: $viewModel.layoutMode) {
-            ForEach(MasterLayoutMode.allCases) { mode in
-                Text(mode.title).tag(mode)
-            }
+    private var layoutToggleButton: some View {
+        let next = viewModel.layoutMode.toggled
+        return Button {
+            viewModel.layoutMode = next
+        } label: {
+            Image(systemName: viewModel.layoutMode.toggleSystemImage)
         }
-        .pickerStyle(.segmented)
-        .labelsHidden()
-        // Intrinsic width + leading alignment — avoid minWidth frames that center short locales.
-        .fixedSize(horizontal: true, vertical: false)
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+        .help("\("Layout".localized): \(next.title)")
+        .accessibilityLabel("Layout".localized)
+        .accessibilityValue(viewModel.layoutMode.title)
     }
 
     private var filterPicker: some View {
