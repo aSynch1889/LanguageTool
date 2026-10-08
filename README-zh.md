@@ -97,7 +97,8 @@ swift test
 
 ## 注意事项
 
-- 使用前需要配置有效的 AI 服务 API Key（支持 DeepSeek、Gemini、Aliyun、Kimi、GLM）
+- 使用前需要配置有效的 AI 服务 API Key（支持 DeepSeek、Gemini、Aliyun、Kimi、GLM、OpenRouter，以及自定义 OpenAI Compatible 端点）
+- 网关与自定义端点说明见 [docs/AI_GATEWAY_PRESETS.md](docs/AI_GATEWAY_PRESETS.md)
 - 建议在使用前备份原有的本地化文件
 - 翻译结果可能需要人工审核以确保准确性
 - 不同平台的本地化文件格式有所不同，请确保选择正确的平台
@@ -105,6 +106,7 @@ swift test
 - Gemini API [申请地址](https://aistudio.google.com/app/apikey?hl=zh-cn)
 - Kimi API [申请地址](https://platform.moonshot.cn/console/api-keys)
 - GLM API [申请地址](https://open.bigmodel.cn/usercenter/apikeys)
+- OpenRouter API [申请地址](https://openrouter.ai/keys)
 
 ## 贡献
 
@@ -116,7 +118,7 @@ swift test
 
 ## 致谢
 
-- DeepSeek、Gemini、Aliyun、Kimi、GLM 提供翻译服务
+- DeepSeek、Gemini、Aliyun、Kimi、GLM、OpenRouter 等提供翻译服务
 - SwiftUI 框架
 - 所有贡献者和用户
 

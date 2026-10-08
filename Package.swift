@@ -36,7 +36,8 @@ let package = Package(
                 "TranslationMemoryCache.swift",
                 "PlaceholderValidator.swift",
                 "GlossaryEnforcer.swift",
-                "TranslationRouter.swift"
+                "TranslationRouter.swift",
+                "TranslationTaskMetrics.swift"
             ]
         ),
         .testTarget(

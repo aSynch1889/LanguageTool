@@ -7,13 +7,42 @@ struct TranslationStatistics {
     let existingTranslations: Int
     let newTranslations: Int
     let skippedTranslations: Int
+    let cacheHits: Int
+    let fallbackCount: Int
+    let durationSeconds: Double
+    let providerId: String
+
+    init(
+        totalTexts: Int,
+        existingTranslations: Int,
+        newTranslations: Int,
+        skippedTranslations: Int,
+        cacheHits: Int = 0,
+        fallbackCount: Int = 0,
+        durationSeconds: Double = 0,
+        providerId: String = ""
+    ) {
+        self.totalTexts = totalTexts
+        self.existingTranslations = existingTranslations
+        self.newTranslations = newTranslations
+        self.skippedTranslations = skippedTranslations
+        self.cacheHits = cacheHits
+        self.fallbackCount = fallbackCount
+        self.durationSeconds = durationSeconds
+        self.providerId = providerId
+    }
 
     var summary: String {
+        var base: String
         if skippedTranslations > 0 {
-            return "Successfully translated \(newTranslations) new items, skipped \(skippedTranslations) existing translations".localized
+            base = "Successfully translated \(newTranslations) new items, skipped \(skippedTranslations) existing translations".localized
         } else {
-            return "Successfully translated \(newTranslations) items".localized
+            base = "Successfully translated \(newTranslations) items".localized
         }
+        if cacheHits > 0 || fallbackCount > 0 || durationSeconds > 0 {
+            base += " (\(String(format: "%.1fs", durationSeconds)), cache=\(cacheHits), fallback=\(fallbackCount))"
+        }
+        return base
     }
 }
 
@@ -25,6 +54,8 @@ class AIServiceV2 {
     private let providerRegistry: AIProviderRegistry
     let chunkSize: Int
     private var translationMemory = TranslationMemoryCache()
+    private(set) var lastTaskMetrics = TranslationTaskMetrics()
+    private var activeTaskMetrics = TranslationTaskMetrics()
 
     init(networkClient: NetworkClientProtocol = NetworkClient.shared,
          providerManager: AIProviderManager = AIProviderManager.shared,
@@ -85,6 +116,10 @@ class AIServiceV2 {
     func batchTranslate(texts: [String], to targetLanguage: String) async throws -> [String] {
         guard !texts.isEmpty else { return [] }
 
+        let startedAt = Date()
+        activeTaskMetrics = TranslationTaskMetrics()
+        activeTaskMetrics.totalTexts = texts.count
+
         guard let selectedProvider = providerManager.getSelectedProvider() else {
             throw AIError.invalidConfiguration("No AI provider selected")
         }
@@ -101,11 +136,19 @@ class AIServiceV2 {
         )
 
         var result: [String] = cachedResolved.map { $0 ?? "" }
+        activeTaskMetrics.cacheHits = texts.count - missingIndices.count
+
         guard !missingIndices.isEmpty else {
+            activeTaskMetrics.providerId = selectedProvider.id
+            activeTaskMetrics.durationSeconds = Date().timeIntervalSince(startedAt)
+            lastTaskMetrics = activeTaskMetrics
+            print("Translation metrics: \(lastTaskMetrics.summaryLine)")
             return result
         }
 
         let textsToTranslate = missingIndices.map { texts[$0] }
+        activeTaskMetrics.networkTranslations = textsToTranslate.count
+
         let mtAvailable = providerManager.hasValidApiKey(for: "aliyun")
             && providerRegistry.get("aliyun") != nil
         let route = TranslationRouter.decide(
@@ -120,11 +163,13 @@ class AIServiceV2 {
            providerManager.hasValidApiKey(for: routed.id) {
             provider = routed
             if route.reason == .largeBatchUsesMT {
+                activeTaskMetrics.routeReason = "largeBatchUsesMT"
                 print("Translation router: large batch → MT provider \(routed.displayName)")
             }
         } else {
             provider = selectedProvider
         }
+        activeTaskMetrics.providerId = provider.id
 
         let apiKey = providerManager.getApiKey(for: provider.id)
         guard !apiKey.isEmpty else {
@@ -173,6 +218,10 @@ class AIServiceV2 {
         for (offset, index) in missingIndices.enumerated() {
             result[index] = qualityChecked[offset]
         }
+
+        activeTaskMetrics.durationSeconds = Date().timeIntervalSince(startedAt)
+        lastTaskMetrics = activeTaskMetrics
+        print("Translation metrics: \(lastTaskMetrics.summaryLine)")
         return result
     }
 
@@ -212,11 +261,16 @@ class AIServiceV2 {
 
         if !skipExisting {
             let allTranslations = try await batchTranslate(texts: texts, to: targetLanguage)
+            let metrics = lastTaskMetrics
             let statistics = TranslationStatistics(
                 totalTexts: texts.count,
                 existingTranslations: 0,
                 newTranslations: allTranslations.count,
-                skippedTranslations: 0
+                skippedTranslations: 0,
+                cacheHits: metrics.cacheHits,
+                fallbackCount: metrics.fallbackCount,
+                durationSeconds: metrics.durationSeconds,
+                providerId: metrics.providerId
             )
             return (allTranslations, statistics)
         }
@@ -249,11 +303,16 @@ class AIServiceV2 {
             }
         }
 
+        let metrics = lastTaskMetrics
         let statistics = TranslationStatistics(
             totalTexts: texts.count,
             existingTranslations: skippedCount,
             newTranslations: newTranslationsCount,
-            skippedTranslations: skippedCount
+            skippedTranslations: skippedCount,
+            cacheHits: metrics.cacheHits,
+            fallbackCount: metrics.fallbackCount,
+            durationSeconds: metrics.durationSeconds,
+            providerId: metrics.providerId
         )
 
         return (result, statistics)
@@ -349,6 +408,8 @@ class AIServiceV2 {
                 let canFallback = AIErrorClassifier.isTransient(kind)
                     || AIErrorClassifier.shouldFallbackAfterParseRetries(kind)
                 if canFallback && index + 1 < candidates.count {
+                    let next = candidates[index + 1].0
+                    activeTaskMetrics.recordFallback(from: candidate.0.id, to: next.id)
                     print("Chunk translation failed on \(candidate.0.displayName) (\(kind)), trying next provider")
                     continue
                 }
@@ -462,6 +523,8 @@ class AIServiceV2 {
                     || (allowParseFallback && AIErrorClassifier.shouldFallbackAfterParseRetries(kind))
                 let hasNext = index + 1 < providersToTry.count
                 if canFallback && hasNext {
+                    let next = providersToTry[index + 1].0
+                    activeTaskMetrics.recordFallback(from: candidate.0.id, to: next.id)
                     print("Provider \(candidate.0.displayName) failed (\(kind)), trying next fallback")
                     continue
                 }

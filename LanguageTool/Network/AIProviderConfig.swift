@@ -144,6 +144,17 @@ class AIProviderRegistry: ObservableObject {
             responseParser: OpenAICompatibleResponseParser(),
             requiresCustomEndpoint: true
         ))
+
+        register(AIProviderConfig(
+            id: "openrouter",
+            name: "openrouter",
+            displayName: "OpenRouter",
+            baseURL: "https://openrouter.ai/api/v1/chat/completions",
+            model: "openai/gpt-4o-mini",
+            authType: .bearer(token: ""),
+            requestBuilder: OpenAICompatibleRequestBuilder(options: OpenAICompatiblePresets.custom),
+            responseParser: OpenAICompatibleResponseParser()
+        ))
     }
 }
 
@@ -313,7 +324,8 @@ class AIProviderManager: ObservableObject {
             (apiKeyPrefix + "aliyun", "aliyun"),
             (apiKeyPrefix + "kimi", "kimi"),
             (apiKeyPrefix + "glm", "glm"),
-            (apiKeyPrefix + "openai_compatible", "openai_compatible")
+            (apiKeyPrefix + "openai_compatible", "openai_compatible"),
+            (apiKeyPrefix + "openrouter", "openrouter")
         ]
 
         for mapping in legacyKeyMappings {
