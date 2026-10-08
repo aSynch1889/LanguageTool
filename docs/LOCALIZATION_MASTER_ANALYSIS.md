@@ -66,21 +66,21 @@ Localization Master **功能不完整**（约 30%），目前是「能打开浏�
 
 ### 阶段 1：功能闭环
 
-- [ ] `LocalizationDocument` / Master 专用 VM  
-- [ ] 保存写回（xcstrings merge 优先；ARB/JSON）  
-- [ ] 同步 = 保存到源路径（或先保存再确认）  
-- [ ] 导出 CSV 基于内存 items  
-- [ ] 立即翻译：排除源语言；进度/取消  
-- [ ] `TranslationItem.id = key`  
-- [ ] 复选框只表示批量翻译范围，不锁编辑  
+- [x] `LocalizationDocument` / Master 专用 VM  
+- [x] 保存写回（xcstrings merge 优先；ARB/JSON）  
+- [x] 同步 = 保存到源路径（Save）  
+- [x] 导出 CSV 基于内存 items  
+- [x] 立即翻译：排除源语言；进度/取消  
+- [x] `TranslationItem.id = key`  
+- [x] 复选框只表示批量翻译范围，不锁编辑  
 
 ### 阶段 2：表格 UI
 
-- [ ] `makeView(withIdentifier:)` 复用  
-- [ ] 禁止编辑中整表 reload；列变化才重建列  
-- [ ] 多行文本、源列只读弱背景、目标可编  
-- [ ] 空译文标记；更清晰的工具栏/状态条  
-- [ ] 清理死代码与冗长 Experimental 文案  
+- [x] `makeView(withIdentifier:)` 复用  
+- [x] 编辑中避免破坏性 reload；列变化才重建列  
+- [x] 多行文本、源列只读弱背景、目标可编  
+- [x] 空译文标记；状态条 / 空状态 / Select All·None  
+- [x] 清理死代码与冗长 Experimental 文案  
 
 ### 阶段 3（可选，本期不做）
 

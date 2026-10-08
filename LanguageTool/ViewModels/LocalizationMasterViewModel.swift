@@ -57,6 +57,16 @@ final class LocalizationMasterViewModel: ObservableObject {
         objectWillChange.send()
     }
 
+    func setBatchSelection(_ selected: Bool) {
+        let updated = document.items.map { item -> TranslationItem in
+            var copy = item
+            copy.isSelected = selected
+            return copy
+        }
+        document.replaceItems(updated, markDirty: false)
+        objectWillChange.send()
+    }
+
     func save() {
         do {
             try document.save()
