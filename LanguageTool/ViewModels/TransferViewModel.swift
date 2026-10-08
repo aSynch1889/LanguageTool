@@ -337,55 +337,38 @@ class TransferViewModel: ObservableObject {
     }
     
     func openInNewWindow() {
-        Task { @MainActor in  // 确保在主线程上下文中执行
-            // 如果窗口已经存在，就把它带到前面
+        Task { @MainActor in
             if let existingWindow = localizationWindow {
                 existingWindow.makeKeyAndOrderFront(nil)
                 return
             }
-            
-            // 创建新窗口
+
             let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
+                contentRect: NSRect(x: 0, y: 0, width: 1100, height: 720),
                 styleMask: [.titled, .closable, .miniaturizable, .resizable],
                 backing: .buffered,
                 defer: false
             )
-            
-            // 创建窗口控制器（但不设置为代理）
-            let windowController = NSWindowController(window: window)
-            
-            // 创建视图模型并设置必要的属性
-            let viewModel = TransferViewModel()
-            viewModel.inputPath = self.inputPath
-            viewModel.outputPath = self.outputPath
-            viewModel.selectedPlatform = self.selectedPlatform
-            
             window.title = "Localization Master"
-            let masterView = LocalizationMasterView(viewModel: viewModel)
+            window.isReleasedWhenClosed = false
+
+            let masterVM = LocalizationMasterViewModel()
+            let masterView = LocalizationMasterView(viewModel: masterVM)
             window.contentView = NSHostingView(rootView: masterView)
             window.center()
-            
-            // 保存对窗口的引用
+
             self.localizationWindow = window
-            
-            // 设置窗口关闭时的回调
-            window.isReleasedWhenClosed = false
-            
-            // 创建并设置正确的窗口代理
+
             let delegate = WindowDelegate(onClose: { [weak self] in
                 self?.localizationWindow = nil
             })
             window.delegate = delegate
-            
-            // 保持对代理的引用（否则代理可能被过早释放）
             objc_setAssociatedObject(window, "delegateReference", delegate, .OBJC_ASSOCIATION_RETAIN)
-            
+
             window.makeKeyAndOrderFront(nil)
-            
-            // 如果有输入文件，立即解析并显示内容
-            if !inputPath.isEmpty && inputPath != "No file selected" {
-                await viewModel.reloadSourceFile()
+
+            if isInputSelected, !inputPath.isEmpty {
+                await masterVM.load(path: inputPath, platform: selectedPlatform)
             }
         }
     }
@@ -482,80 +465,6 @@ class TransferViewModel: ObservableObject {
         }
     }
     
-    // 在解析文件后更新 translations 数组
-    func updateTranslations(from translations: [String: [String: String]]) {
-        self.translationItems = translations.map { key, values in
-            TranslationItem(
-                key: key,
-                translations: values
-            )
-        }
-    }
-
-    func translateCurrentItems(onlySelected: Bool) async {
-        let candidateIndices = translationItems.indices.filter { index in
-            !onlySelected || translationItems[index].isSelected
-        }
-
-        guard !candidateIndices.isEmpty else { return }
-
-        let targetLanguages = Set(translationItems.flatMap { $0.translations.keys }).union(selectedLanguages.map { $0.code })
-
-        for language in targetLanguages.sorted() {
-            var sourceTexts: [String] = []
-            var existing: [String?] = []
-            var mappedIndices: [Int] = []
-
-            for idx in candidateIndices {
-                let item = translationItems[idx]
-                if let source = preferredSourceText(from: item), !source.isEmpty {
-                    sourceTexts.append(source)
-                    existing.append(item.translations[language])
-                    mappedIndices.append(idx)
-                }
-            }
-
-            if sourceTexts.isEmpty { continue }
-
-            do {
-                let result = try await AIServiceV2.shared.batchTranslateWithExisting(
-                    texts: sourceTexts,
-                    to: LanguagePrompt.label(for: language),
-                    existingTranslations: existing,
-                    skipExisting: skipExistingTranslations
-                )
-
-                for (translationIndex, itemIndex) in mappedIndices.enumerated() where translationIndex < result.translations.count {
-                    translationItems[itemIndex].translations[language] = result.translations[translationIndex]
-                }
-            } catch {
-                print("Immediate translation failed [\(language)]: \(error.localizedDescription)")
-            }
-        }
-    }
-
-    private func preferredSourceText(from item: TranslationItem) -> String? {
-        let candidates = ["en", "zh-Hans", "zh-Hant"]
-        for code in candidates {
-            if let value = item.translations[code], !value.isEmpty {
-                return value
-            }
-        }
-        return item.translations.values.first { !$0.isEmpty }
-    }
-    
-    func reloadSourceFile() async {
-        guard !inputPath.isEmpty && inputPath != "No file selected" else { return }
-
-        isLoading = true
-        do {
-            translationItems = try await TranslationManager.shared.parseInputFile(at: inputPath, platform: selectedPlatform)
-        } catch {
-            translationItems = []
-            showAlert(message: "Failed to parse source file: \(error.localizedDescription)", isError: true)
-        }
-        isLoading = false
-    }
 }
 
 // 添加一个窗口代理类来处理窗口关闭事件
