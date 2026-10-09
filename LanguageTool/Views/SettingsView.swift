@@ -45,6 +45,8 @@ struct SettingsView: View {
     @State private var isTestingConnection = false
     @State private var connectionTestMessage: String?
     @State private var connectionTestSucceeded = false
+    /// When true, show free-text model field even if draft still matches a preset.
+    @State private var forceCustomModelEntry = false
     @FocusState private var focusedEndpointField: EndpointField?
 
     private enum EndpointField: Hashable {
@@ -52,10 +54,51 @@ struct SettingsView: View {
         case baseURL
     }
 
+    private static let customModelTag = "__custom_model__"
+
     @Environment(\.colorScheme) var colorScheme
 
     private var glossaryValidation: (entries: [GlossaryEntry], droppedLines: Int) {
         GlossaryStore.validate(translationGlossary)
+    }
+
+    private var modelChoices: [String] {
+        guard let provider = providerManager.getSelectedProvider() else { return [] }
+        return ProviderCatalog.suggestedModels(
+            forProviderId: provider.id,
+            baseURL: providerManager.baseURLDraft
+        )
+    }
+
+    private var showsCustomModelField: Bool {
+        let choices = modelChoices
+        if choices.isEmpty { return true }
+        if forceCustomModelEntry { return true }
+        return !choices.contains(providerManager.modelDraft)
+    }
+
+    private var modelPickerSelection: Binding<String> {
+        Binding(
+            get: {
+                let choices = modelChoices
+                if !forceCustomModelEntry, choices.contains(providerManager.modelDraft) {
+                    return providerManager.modelDraft
+                }
+                return Self.customModelTag
+            },
+            set: { newValue in
+                if newValue == Self.customModelTag {
+                    forceCustomModelEntry = true
+                    if modelChoices.contains(providerManager.modelDraft) {
+                        providerManager.modelDraft = ""
+                    }
+                } else {
+                    forceCustomModelEntry = false
+                    providerManager.modelDraft = newValue
+                    providerManager.commitModelDraft()
+                }
+            }
+        )
     }
 
     var body: some View {
@@ -99,15 +142,35 @@ struct SettingsView: View {
                 }
 
                 if let selectedProvider = providerManager.getSelectedProvider() {
-                    TextField("Model".localized, text: $providerManager.modelDraft)
+                    if !modelChoices.isEmpty {
+                        Picker("Model".localized, selection: modelPickerSelection) {
+                            ForEach(modelChoices, id: \.self) { model in
+                                Text(model).tag(model)
+                            }
+                            Text("Custom…".localized).tag(Self.customModelTag)
+                        }
+                    }
+
+                    if showsCustomModelField {
+                        TextField(
+                            modelChoices.isEmpty ? "Model".localized : "Custom Model".localized,
+                            text: $providerManager.modelDraft
+                        )
                         .textFieldStyle(.roundedBorder)
                         .focused($focusedEndpointField, equals: .model)
-                        .onSubmit { providerManager.commitModelDraft() }
+                        .onSubmit {
+                            forceCustomModelEntry = !modelChoices.contains(providerManager.modelDraft)
+                            providerManager.commitModelDraft()
+                        }
+                    }
 
                     TextField("Base URL".localized, text: $providerManager.baseURLDraft)
                         .textFieldStyle(.roundedBorder)
                         .focused($focusedEndpointField, equals: .baseURL)
-                        .onSubmit { providerManager.commitBaseURLDraft() }
+                        .onSubmit {
+                            providerManager.commitBaseURLDraft()
+                            forceCustomModelEntry = false
+                        }
                         .autocorrectionDisabled()
 #if os(macOS)
                         .textSelection(.enabled)
@@ -223,11 +286,16 @@ struct SettingsView: View {
         .onChange(of: focusedEndpointField) { oldValue, newValue in
             // Commit only when leaving the field — never rewrite while typing.
             if oldValue == .model && newValue != .model {
+                forceCustomModelEntry = !modelChoices.contains(providerManager.modelDraft)
                 providerManager.commitModelDraft()
             }
             if oldValue == .baseURL && newValue != .baseURL {
                 providerManager.commitBaseURLDraft()
+                forceCustomModelEntry = false
             }
+        }
+        .onChange(of: providerManager.selectedProviderId) { _, _ in
+            forceCustomModelEntry = false
         }
         .onDisappear {
             providerManager.commitModelDraft()

@@ -79,6 +79,7 @@
       }
     },
     "·": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
@@ -391,6 +392,16 @@
           "stringUnit": {
             "state": "new",
             "value": "%1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "%@: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@: %2$@"
           }
         }
       }
@@ -1547,6 +1558,83 @@
           "stringUnit": {
             "state": "translated",
             "value": "已變更"
+          }
+        }
+      }
+    },
+    "Checked only": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur markierte"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checked only"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo marcadas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cases cochées"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo selezionate"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チェックのみ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택만"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Só marcadas"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เฉพาะที่เลือก"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yalnızca işaretli"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅勾选行"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "僅勾選列"
           }
         }
       }
@@ -5320,6 +5408,83 @@
           "stringUnit": {
             "state": "translated",
             "value": "模型"
+          }
+        }
+      }
+    },
+    "More": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mehr"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Más"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Altro"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "その他"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "더보기"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mais"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เพิ่มเติม"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diğer"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多"
           }
         }
       }
@@ -11484,6 +11649,83 @@
         }
       }
     },
+    "Translate": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Übersetzen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translate"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traducir"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traduire"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traduci"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻訳"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traduzir"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แปล"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çevir"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻译"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻譯"
+          }
+        }
+      }
+    },
     "Translate Now": {
       "extractionState": "stale",
       "localizations": {
@@ -12870,230 +13112,154 @@
         }
       }
     },
-    "Checked only": {
+    "Custom…": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Checked only"
+            "value": "Custom…"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nur markierte"
+            "value": "Benutzerdefiniert …"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Solo marcadas"
+            "value": "Personalizado…"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cases cochées"
+            "value": "Personnalisé…"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Solo selezionate"
+            "value": "Personalizzato…"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "チェックのみ"
+            "value": "カスタム…"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "선택만"
+            "value": "사용자 지정…"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Só marcadas"
+            "value": "Personalizado…"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เฉพาะที่เลือก"
+            "value": "กำหนดเอง…"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yalnızca işaretli"
+            "value": "Özel…"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "仅勾选行"
+            "value": "自定义…"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "僅勾選列"
+            "value": "自訂…"
           }
         }
       }
     },
-    "More": {
+    "Custom Model": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "More"
+            "value": "Custom Model"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mehr"
+            "value": "Benutzerdefiniertes Modell"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Más"
+            "value": "Modelo personalizado"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Plus"
+            "value": "Modèle personnalisé"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Altro"
+            "value": "Modello personalizzato"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "その他"
+            "value": "カスタムモデル"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "더보기"
+            "value": "사용자 지정 모델"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mais"
+            "value": "Modelo personalizado"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เพิ่มเติม"
+            "value": "โมเดลกำหนดเอง"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Diğer"
+            "value": "Özel Model"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "更多"
+            "value": "自定义模型"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "更多"
-          }
-        }
-      }
-    },
-    "Translate": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Translate"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Übersetzen"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Traducir"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Traduire"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Traduci"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "翻訳"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "번역"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Traduzir"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "แปล"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Çevir"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "翻译"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "翻譯"
+            "value": "自訂模型"
           }
         }
       }

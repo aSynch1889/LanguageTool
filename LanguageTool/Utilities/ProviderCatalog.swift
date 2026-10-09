@@ -37,4 +37,28 @@ enum ProviderCatalog {
             return nil
         }
     }
+
+    /// Local preset models for the Settings picker (Base URL match wins over provider defaults).
+    static func suggestedModels(forProviderId providerId: String, baseURL: String) -> [String] {
+        let fromURL = OpenAICompatibleEndpointNormalizer.suggestedModels(forBaseURL: baseURL)
+        if !fromURL.isEmpty { return fromURL }
+
+        switch providerId {
+        case "aliyun":
+            return ["qwen-mt-turbo", "qwen-turbo", "qwen-plus", "qwen-max"]
+        case "gemini":
+            return ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash"]
+        case "openrouter":
+            return [
+                "openai/gpt-4o-mini",
+                "openai/gpt-4o",
+                "anthropic/claude-3.5-sonnet",
+                "google/gemini-2.0-flash-001"
+            ]
+        case "openai_compatible":
+            return ["gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "gpt-4.1"]
+        default:
+            return []
+        }
+    }
 }

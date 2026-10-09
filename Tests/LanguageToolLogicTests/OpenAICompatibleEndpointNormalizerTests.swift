@@ -37,6 +37,15 @@ final class OpenAICompatibleEndpointNormalizerTests: XCTestCase {
         )
     }
 
+    func testSuggestedModelsForDeepSeekIncludesChatAndReasoner() {
+        let models = OpenAICompatibleEndpointNormalizer.suggestedModels(
+            forBaseURL: "https://api.deepseek.com/chat/completions"
+        )
+        XCTAssertEqual(models.first, "deepseek-flash")
+        XCTAssertTrue(models.contains("deepseek-chat"))
+        XCTAssertTrue(models.contains("deepseek-reasoner"))
+    }
+
     func testSuggestedModelForMoonshot() {
         XCTAssertEqual(
             OpenAICompatibleEndpointNormalizer.suggestedModel(
@@ -52,5 +61,18 @@ final class OpenAICompatibleEndpointNormalizerTests: XCTestCase {
                 forBaseURL: "https://proxy.example.com/v1"
             )
         )
+        XCTAssertTrue(
+            OpenAICompatibleEndpointNormalizer.suggestedModels(
+                forBaseURL: "https://proxy.example.com/v1"
+            ).isEmpty
+        )
+    }
+
+    func testProviderCatalogPrefersBaseURLModels() {
+        let models = ProviderCatalog.suggestedModels(
+            forProviderId: "openai_compatible",
+            baseURL: "https://api.deepseek.com"
+        )
+        XCTAssertEqual(models.first, "deepseek-flash")
     }
 }
