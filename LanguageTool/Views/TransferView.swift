@@ -141,7 +141,19 @@ struct TransferView: View {
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(.primary)
 
-            Picker("Platform".localized, selection: $viewModel.selectedPlatform) {
+            Picker(
+                "Platform".localized,
+                selection: Binding(
+                    get: { viewModel.selectedPlatform },
+                    set: { newValue in
+                        guard newValue != viewModel.selectedPlatform else { return }
+                        // Defer: Picker mutates during view updates; resetAll publishes many fields.
+                        Task { @MainActor in
+                            viewModel.selectPlatform(newValue)
+                        }
+                    }
+                )
+            ) {
                 ForEach(PlatformType.allCases, id: \.self) { platform in
                     Text(platform.description)
                         .tag(platform)
@@ -150,9 +162,6 @@ struct TransferView: View {
             .pickerStyle(.segmented)
             .labelsHidden()
             .frame(maxWidth: .infinity)
-            .onChange(of: viewModel.selectedPlatform) { _, _ in
-                viewModel.resetAll()
-            }
         }
         .cardStyle()
     }

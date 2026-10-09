@@ -271,24 +271,33 @@ class TransferViewModel: ObservableObject {
         return false
     }
     
-    func resetAll() {
-        // 重置文件路径
-        inputPath = "No file selected".localized
-        outputPath = "No save location selected".localized
-        isInputSelected = false
-        isOutputSelected = false
-        
-        // 重置语言选择（只保留简体中文）
-        selectedLanguages = [Language.supportedLanguages[0]]
-        
-        // 重置结果显示
-        showResult = false
-        conversionResult = ""
-        showSuccessActions = false
-        lastConversionSucceeded = false
+    /// Change platform and clear file/language selection for the new target.
+    /// Call from a deferred turn (not inside a Picker/`onChange` view update).
+    func selectPlatform(_ platform: PlatformType) {
+        if selectedPlatform != platform {
+            selectedPlatform = platform
+        }
+        resetAll()
+    }
 
-        // 重置翻译选项
-        skipExistingTranslations = true
+    func resetAll() {
+        let emptyInput = "No file selected".localized
+        let emptyOutput = "No save location selected".localized
+        if inputPath != emptyInput { inputPath = emptyInput }
+        if outputPath != emptyOutput { outputPath = emptyOutput }
+        if isInputSelected { isInputSelected = false }
+        if isOutputSelected { isOutputSelected = false }
+
+        let defaultLanguages: Set<Language> = [Language.supportedLanguages[0]]
+        if selectedLanguages != defaultLanguages {
+            selectedLanguages = defaultLanguages
+        }
+
+        if showResult { showResult = false }
+        if !conversionResult.isEmpty { conversionResult = "" }
+        if showSuccessActions { showSuccessActions = false }
+        if lastConversionSucceeded { lastConversionSucceeded = false }
+        if !skipExistingTranslations { skipExistingTranslations = true }
     }
     
     func showAlert(message: String, isError: Bool = false) {
