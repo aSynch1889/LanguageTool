@@ -62,7 +62,9 @@ struct TransferView: View {
         }
         .onChange(of: viewModel.showSuccessActions) { _, show in
             guard show else { return }
-            if let request = viewModel.makeReviewRequest(preferOutput: true) {
+            // Defer navigation so we don't publish shell state during the conversion view update.
+            Task { @MainActor in
+                guard let request = viewModel.makeReviewRequest(preferOutput: true) else { return }
                 shell.requestReview(request)
             }
         }

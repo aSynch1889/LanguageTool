@@ -101,11 +101,12 @@ struct AppShellView: View {
             if UserDefaults.standard.string(forKey: AppearanceMode.storageKey) == nil {
                 appearanceModeRaw = AppearanceMode.system.rawValue
             }
-            refreshAppearance(storeRaw: false)
+            // Apply scheme only — remounting here would change `.id` and re-trigger onAppear forever.
+            refreshAppearance(storeRaw: false, remount: false)
         }
         .onReceive(NotificationCenter.default.publisher(for: AppearanceMode.systemThemeChangedNotification)) { _ in
             guard appearanceMode == .system else { return }
-            refreshAppearance(storeRaw: false)
+            refreshAppearance(storeRaw: false, remount: true)
         }
         .onReceive(NotificationCenter.default.publisher(for: .languageChanged)) { _ in
             if let language = UserDefaults.standard.string(forKey: "appLanguage") {
@@ -133,14 +134,19 @@ struct AppShellView: View {
         appearanceEpoch &+= 1
     }
 
-    private func refreshAppearance(storeRaw: Bool) {
+    private func refreshAppearance(storeRaw: Bool, remount: Bool) {
         let mode = appearanceMode
         mode.applyToApp()
         if storeRaw {
             appearanceModeRaw = mode.rawValue
         }
-        resolvedScheme = mode.resolvedColorScheme()
-        appearanceEpoch &+= 1
+        let nextScheme = mode.resolvedColorScheme()
+        if resolvedScheme != nextScheme {
+            resolvedScheme = nextScheme
+        }
+        if remount {
+            appearanceEpoch &+= 1
+        }
     }
 
     private var sidebarSelection: Binding<AppShellViewModel.SidebarItem?> {

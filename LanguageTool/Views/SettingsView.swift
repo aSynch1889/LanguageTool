@@ -61,24 +61,32 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("API Settings".localized)) {
-                Picker("AI Service".localized, selection: $providerManager.selectedProviderId) {
+                Picker(
+                    "AI Service".localized,
+                    selection: Binding(
+                        get: { providerManager.selectedProviderId },
+                        set: { newValue in
+                            providerManager.setSelectedProvider(newValue)
+                            connectionTestMessage = nil
+                        }
+                    )
+                ) {
                     ForEach(providerRegistry.allProviders()) { provider in
                         Text(provider.displayName).tag(provider.id)
                     }
                 }
-                .onChange(of: providerManager.selectedProviderId) { _, newValue in
-                    providerManager.setSelectedProvider(newValue)
-                    connectionTestMessage = nil
-                }
 
-                Picker("Fallback AI Service".localized, selection: $providerManager.fallbackProviderId) {
+                Picker(
+                    "Fallback AI Service".localized,
+                    selection: Binding(
+                        get: { providerManager.fallbackProviderId },
+                        set: { providerManager.setFallbackProvider($0) }
+                    )
+                ) {
                     Text("None".localized).tag("")
                     ForEach(providerRegistry.allProviders()) { provider in
                         Text(provider.displayName).tag(provider.id)
                     }
-                }
-                .onChange(of: providerManager.fallbackProviderId) { _, newValue in
-                    providerManager.setFallbackProvider(newValue)
                 }
 
                 ForEach(providerManager.providersNeedingVisibleKeys()) { provider in

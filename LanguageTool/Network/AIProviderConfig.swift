@@ -167,13 +167,17 @@ class AIProviderManager: ObservableObject {
     }
 
     func setSelectedProvider(_ providerId: String) {
-        selectedProviderId = providerId
+        if selectedProviderId != providerId {
+            selectedProviderId = providerId
+        }
         userDefaults.set(providerId, forKey: "selectedAIProvider")
         refreshEndpointDrafts()
     }
 
     func setFallbackProvider(_ providerId: String) {
-        fallbackProviderId = providerId
+        if fallbackProviderId != providerId {
+            fallbackProviderId = providerId
+        }
         userDefaults.set(providerId, forKey: "fallbackAIProvider")
     }
 
@@ -273,12 +277,14 @@ class AIProviderManager: ObservableObject {
 
     func refreshEndpointDrafts() {
         guard let provider = getSelectedProvider() else {
-            modelDraft = ""
-            baseURLDraft = ""
+            if !modelDraft.isEmpty { modelDraft = "" }
+            if !baseURLDraft.isEmpty { baseURLDraft = "" }
             return
         }
-        baseURLDraft = effectiveBaseURL(for: provider)
-        modelDraft = effectiveModel(for: provider)
+        let nextBase = effectiveBaseURL(for: provider)
+        let nextModel = effectiveModel(for: provider)
+        if baseURLDraft != nextBase { baseURLDraft = nextBase }
+        if modelDraft != nextModel { modelDraft = nextModel }
     }
 
     private func loadApiKeys() {
