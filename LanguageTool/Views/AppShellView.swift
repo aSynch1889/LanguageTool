@@ -67,6 +67,8 @@ struct AppShellView: View {
                 } label: {
                     Label("Language".localized, systemImage: "globe")
                 }
+                .labelStyle(.iconOnly)
+                .menuIndicator(.hidden)
                 .help("Interface Language".localized)
 
                 Menu {
@@ -88,6 +90,8 @@ struct AppShellView: View {
                         systemImage: resolvedScheme == .dark ? "moon.fill" : "sun.max"
                     )
                 }
+                .labelStyle(.iconOnly)
+                .menuIndicator(.hidden)
                 .help("Appearance".localized)
             }
         }

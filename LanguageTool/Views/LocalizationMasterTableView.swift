@@ -26,7 +26,7 @@ struct LocalizationMasterTableView: NSViewRepresentable {
         tableView.rowHeight = 36
         tableView.intercellSpacing = NSSize(width: 0, height: 0)
         tableView.gridStyleMask = [.solidHorizontalGridLineMask]
-        tableView.gridColor = NSColor.separatorColor.withAlphaComponent(0.35)
+        tableView.gridColor = NSColor.separatorColor.withAlphaComponent(0.12)
         tableView.headerView = NSTableHeaderView()
         tableView.selectionHighlightStyle = .regular
 
@@ -98,15 +98,20 @@ struct LocalizationMasterTableView: NSViewRepresentable {
     final class CenteredCellView: NSTableCellView {
         private let hostedView: NSView
 
-        init(identifier: NSUserInterfaceItemIdentifier, hostedView: NSView) {
+        init(
+            identifier: NSUserInterfaceItemIdentifier,
+            hostedView: NSView,
+            leadingInset: CGFloat = 8,
+            trailingInset: CGFloat = 8
+        ) {
             self.hostedView = hostedView
             super.init(frame: .zero)
             self.identifier = identifier
             hostedView.translatesAutoresizingMaskIntoConstraints = false
             addSubview(hostedView)
             NSLayoutConstraint.activate([
-                hostedView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-                hostedView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+                hostedView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingInset),
+                hostedView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -trailingInset),
                 hostedView.centerYAnchor.constraint(equalTo: centerYAnchor),
                 hostedView.topAnchor.constraint(greaterThanOrEqualTo: topAnchor, constant: 4),
                 hostedView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -4)
@@ -147,9 +152,9 @@ struct LocalizationMasterTableView: NSViewRepresentable {
 
             let checkbox = NSTableColumn(identifier: .init("checkbox"))
             checkbox.title = "Batch".localized
-            checkbox.width = 52
-            checkbox.minWidth = 52
-            checkbox.maxWidth = 52
+            checkbox.width = 68
+            checkbox.minWidth = 68
+            checkbox.maxWidth = 68
             tableView.addTableColumn(checkbox)
 
             let key = NSTableColumn(identifier: .init("key"))
@@ -243,7 +248,12 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             button.tag = row
             button.toolTip = "Include in batch translate"
             button.setButtonType(.switch)
-            return CenteredCellView(identifier: wrapId, hostedView: button)
+            return CenteredCellView(
+                identifier: wrapId,
+                hostedView: button,
+                leadingInset: 16,
+                trailingInset: 8
+            )
         }
 
         private func keyCell(tableView: NSTableView, item: TranslationItem) -> NSView {

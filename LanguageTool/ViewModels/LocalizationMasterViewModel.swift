@@ -72,6 +72,13 @@ final class LocalizationMasterViewModel: ObservableObject {
         return document.items.first { $0.key == selectedKey }
     }
 
+    /// True when every currently filtered row is checked for batch translate.
+    var areAllFilteredSelected: Bool {
+        let items = filteredItems
+        guard !items.isEmpty else { return false }
+        return items.allSatisfy(\.isSelected)
+    }
+
     var addableLanguages: [Language] {
         let existing = Set(document.availableLanguages)
         return Language.supportedLanguages.filter { !existing.contains($0.code) }

@@ -297,13 +297,6 @@ struct LocalizationMasterView: View {
                 batchOptionsRow(compact: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-
-            if !viewModel.statusMessage.isEmpty {
-                Text(viewModel.statusMessage)
-                    .font(.caption)
-                    .foregroundStyle(viewModel.lastOperationSucceeded ? Color.secondary : Color.red)
-                    .lineLimit(2)
-            }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
@@ -402,14 +395,23 @@ struct LocalizationMasterView: View {
                     .frame(height: 16)
             }
 
-            Button("Select All".localized) { viewModel.setBatchSelection(true) }
-                .buttonStyle(.borderless)
-                .fixedSize()
-            Button(compact ? "None".localized : "Select None".localized) { viewModel.setBatchSelection(false) }
-                .buttonStyle(.borderless)
-                .fixedSize()
+            let selectAll = !viewModel.areAllFilteredSelected
+            Button(selectAll ? "Select All".localized : (compact ? "None".localized : "Select None".localized)) {
+                viewModel.setBatchSelection(selectAll)
+            }
+            .buttonStyle(.borderless)
+            .fixedSize()
+            .disabled(viewModel.filteredItems.isEmpty)
 
-            Spacer(minLength: 0)
+            Spacer(minLength: 8)
+
+            if !viewModel.statusMessage.isEmpty {
+                Text(viewModel.statusMessage)
+                    .font(.caption)
+                    .foregroundStyle(viewModel.lastOperationSucceeded ? Color.secondary : Color.red)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            }
         }
     }
 
