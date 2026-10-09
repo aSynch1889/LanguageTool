@@ -36,10 +36,18 @@ final class AppShellViewModel: ObservableObject {
 
     func requestReview(_ request: ReviewRequest) {
         pendingReview = request
-        sidebar = .review
+        if sidebar != .review {
+            sidebar = .review
+        }
+    }
+
+    func clearPendingReview() {
+        guard pendingReview != nil else { return }
+        pendingReview = nil
     }
 
     func goToTransfer() {
+        guard sidebar != .transfer else { return }
         sidebar = .transfer
     }
 }

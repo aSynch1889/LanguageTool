@@ -116,13 +116,14 @@ struct AppShellView: View {
         }
         .onChange(of: shell.pendingReview) { _, request in
             guard let request else { return }
-            Task {
+            Task { @MainActor in
                 await masterViewModel.loadForReview(
                     path: request.path,
                     platform: request.platform,
                     languageCodes: request.languageCodes,
                     skipExisting: request.skipExisting
                 )
+                shell.clearPendingReview()
             }
         }
     }
@@ -153,29 +154,47 @@ struct AppShellView: View {
         Binding(
             get: { shell.sidebar },
             set: { newValue in
-                guard let newValue else { return }
-                if shell.sidebar == .review && newValue != .review {
-                    guard masterViewModel.confirmCloseIfNeeded() else { return }
+                guard let newValue, newValue != shell.sidebar else { return }
+                // List selection mutates during a view update — defer publishes to the next turn.
+                Task { @MainActor in
+                    await selectSidebar(newValue)
                 }
-                shell.sidebar = newValue
             }
         )
     }
 
+    @MainActor
+    private func selectSidebar(_ newValue: AppShellViewModel.SidebarItem) async {
+        if shell.sidebar == .review && newValue != .review {
+            guard masterViewModel.confirmCloseIfNeeded() else { return }
+        }
+        guard shell.sidebar != newValue else { return }
+        shell.sidebar = newValue
+    }
+
     @ViewBuilder
     private var detailBody: some View {
-        switch shell.sidebar {
-        case .transfer:
+        // Keep both panes alive so tab switches don't remount and re-publish child state.
+        ZStack {
             TransferView(viewModel: transferViewModel)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        case .review:
+                .opacity(shell.sidebar == .transfer ? 1 : 0)
+                .allowsHitTesting(shell.sidebar == .transfer)
+                .accessibilityHidden(shell.sidebar != .transfer)
+
             LocalizationMasterView(
                 viewModel: masterViewModel,
-                onGoToConvert: { shell.goToTransfer() },
+                onGoToConvert: {
+                    Task { @MainActor in
+                        await selectSidebar(.transfer)
+                    }
+                },
                 onOpenFile: { presentOpenPanelForReview() }
             )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .opacity(shell.sidebar == .review ? 1 : 0)
+            .allowsHitTesting(shell.sidebar == .review)
+            .accessibilityHidden(shell.sidebar != .review)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func presentOpenPanelForReview() {

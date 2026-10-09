@@ -60,9 +60,9 @@ struct TransferView: View {
         .onReceive(NotificationCenter.default.publisher(for: .languageChanged)) { _ in
             viewModel.languageChanged.toggle()
         }
-        .onChange(of: viewModel.showSuccessActions) { _, show in
-            guard show else { return }
-            // Defer navigation so we don't publish shell state during the conversion view update.
+        .onChange(of: viewModel.showSuccessActions) { wasShowing, show in
+            // Only react to false → true; ignore remounts that still hold a previous true.
+            guard show, !wasShowing else { return }
             Task { @MainActor in
                 guard let request = viewModel.makeReviewRequest(preferOutput: true) else { return }
                 shell.requestReview(request)

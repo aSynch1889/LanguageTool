@@ -114,6 +114,7 @@ final class LocalizationMasterViewModel: ObservableObject {
     }
 
     func selectKey(_ key: String?) {
+        guard selectedKey != key else { return }
         selectedKey = key
     }
 
