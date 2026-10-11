@@ -9,7 +9,7 @@
   --line: rgba(19, 32, 25, 0.1);
   --shadow: 0 28px 80px rgba(20, 40, 28, 0.14);
   --radius: 22px;
-  --font-display: "Syne", sans-serif;
+  --font-display: "Outfit", sans-serif;
   --font-body: "Figtree", sans-serif;
   --max: 1120px;
   color-scheme: light;
@@ -98,9 +98,9 @@ a {
   align-items: center;
   gap: 12px;
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-size: 1.12rem;
 }
 
 .brand-lockup img {
@@ -225,10 +225,10 @@ a {
 .hero-brand {
   margin: 0 0 18px;
   font-family: var(--font-display);
-  font-size: clamp(3.4rem, 8vw, 5.6rem);
-  line-height: 0.95;
-  letter-spacing: -0.055em;
-  font-weight: 800;
+  font-size: clamp(3.1rem, 7vw, 4.8rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 700;
 }
 
 .hero-brand span {
