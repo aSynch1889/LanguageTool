@@ -33,6 +33,9 @@ final class AppShellViewModel: ObservableObject {
 
     @Published var sidebar: SidebarItem = .transfer
     @Published var pendingReview: ReviewRequest?
+    @Published var toastMessage: String?
+
+    private var toastClearTask: Task<Void, Never>?
 
     func requestReview(_ request: ReviewRequest) {
         pendingReview = request
@@ -49,5 +52,17 @@ final class AppShellViewModel: ObservableObject {
     func goToTransfer() {
         guard sidebar != .transfer else { return }
         sidebar = .transfer
+    }
+
+    func showToast(_ message: String, duration: TimeInterval = 2.5) {
+        toastClearTask?.cancel()
+        toastMessage = message
+        toastClearTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            if toastMessage == message {
+                toastMessage = nil
+            }
+        }
     }
 }

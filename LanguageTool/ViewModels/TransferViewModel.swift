@@ -23,6 +23,12 @@ class TransferViewModel: ObservableObject {
 
     private var conversionTask: Task<Void, Never>?
 
+    /// Security-scoped URLs retained for the current selection (App Sandbox).
+    private var inputAccessURL: URL?
+    private var outputAccessURL: URL?
+    private var isAccessingInput = false
+    private var isAccessingOutput = false
+
     // 通知管理器
     private let notificationManager = NotificationManager.shared
     
@@ -88,8 +94,7 @@ class TransferViewModel: ObservableObject {
                     }
                 }
                 
-                self.inputPath = fileURL.path
-                self.isInputSelected = true
+                self.setInputURL(fileURL)
                 
                 // 根据选择的平台设置输出格式
                 switch self.selectedPlatform {
@@ -126,8 +131,7 @@ class TransferViewModel: ObservableObject {
         openPanel.begin { [weak self] response in
             guard let self = self else { return }
             if response == .OK, let directoryURL = openPanel.url {
-                self.outputPath = directoryURL.path
-                self.isOutputSelected = true
+                self.setOutputURL(directoryURL)
             }
         }
     }
@@ -150,8 +154,7 @@ class TransferViewModel: ObservableObject {
         panel.begin { [weak self] response in
             guard let self = self else { return }
             if response == .OK, let fileURL = panel.url {
-                self.outputPath = fileURL.path
-                self.isOutputSelected = true
+                self.setOutputURL(fileURL)
             }
         }
     }
@@ -252,8 +255,7 @@ class TransferViewModel: ObservableObject {
                 }
                 
                 DispatchQueue.main.async {
-                    self.inputPath = url.path
-                    self.isInputSelected = true
+                    self.setInputURL(url)
                     
                     // 根据选择的平台设置输出格式
                     switch selectedPlatform {
@@ -281,6 +283,8 @@ class TransferViewModel: ObservableObject {
     }
 
     func resetAll() {
+        clearScopedAccess()
+
         let emptyInput = "No file selected".localized
         let emptyOutput = "No save location selected".localized
         if inputPath != emptyInput { inputPath = emptyInput }
@@ -293,11 +297,15 @@ class TransferViewModel: ObservableObject {
             selectedLanguages = defaultLanguages
         }
 
+        dismissResult()
+        if !skipExistingTranslations { skipExistingTranslations = true }
+    }
+
+    func dismissResult() {
         if showResult { showResult = false }
         if !conversionResult.isEmpty { conversionResult = "" }
         if showSuccessActions { showSuccessActions = false }
         if lastConversionSucceeded { lastConversionSucceeded = false }
-        if !skipExistingTranslations { skipExistingTranslations = true }
     }
     
     func showAlert(message: String, isError: Bool = false) {
@@ -310,12 +318,17 @@ class TransferViewModel: ObservableObject {
     }
     
     func openInFinder() {
-        NSWorkspace.shared.selectFile(outputPath, inFileViewerRootedAtPath: "")
+        let path = outputAccessURL?.path ?? outputPath
+        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: "")
     }
     
     func syncToSource() {
-        let sourceURL = URL(fileURLWithPath: inputPath)
-        let outputURL = URL(fileURLWithPath: outputPath)
+        let sourceURL = inputAccessURL ?? URL(fileURLWithPath: inputPath)
+        let outputURL = outputAccessURL ?? URL(fileURLWithPath: outputPath)
+
+        // Keep user-selected sandbox access alive for both locations.
+        _ = ensureAccessingInput(for: sourceURL)
+        _ = ensureAccessingOutput(for: outputURL)
         
         do {
             var isDirectory: ObjCBool = false
@@ -324,8 +337,15 @@ class TransferViewModel: ObservableObject {
                 return
             }
 
-            let tempURL = sourceURL.deletingLastPathComponent().appendingPathComponent("\(sourceURL.lastPathComponent).tmp.\(UUID().uuidString)")
+            // Write temp inside the app container — never into the user's Documents folder.
+            let tempURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent("\(sourceURL.deletingPathExtension().lastPathComponent).sync.\(UUID().uuidString)")
+                .appendingPathExtension(sourceURL.pathExtension.isEmpty ? outputURL.pathExtension : sourceURL.pathExtension)
+            if FileManager.default.fileExists(atPath: tempURL.path) {
+                try FileManager.default.removeItem(at: tempURL)
+            }
             try FileManager.default.copyItem(at: outputURL, to: tempURL)
+            defer { try? FileManager.default.removeItem(at: tempURL) }
 
             if FileManager.default.fileExists(atPath: sourceURL.path) {
                 _ = try FileManager.default.replaceItemAt(
@@ -335,12 +355,75 @@ class TransferViewModel: ObservableObject {
                     options: [.usingNewMetadataOnly]
                 )
             } else {
-                try FileManager.default.moveItem(at: tempURL, to: sourceURL)
+                try FileManager.default.copyItem(at: tempURL, to: sourceURL)
             }
             showAlert(message: "Sync completed successfully".localized)
         } catch {
             showAlert(message: "Sync failed: \(error.localizedDescription)".localized, isError: true)
         }
+    }
+
+    // MARK: - Security-scoped access
+
+    private func setInputURL(_ url: URL) {
+        stopAccessingInput()
+        inputAccessURL = url
+        isAccessingInput = url.startAccessingSecurityScopedResource()
+        inputPath = url.path
+        isInputSelected = true
+    }
+
+    private func setOutputURL(_ url: URL) {
+        stopAccessingOutput()
+        outputAccessURL = url
+        isAccessingOutput = url.startAccessingSecurityScopedResource()
+        outputPath = url.path
+        isOutputSelected = true
+    }
+
+    private func ensureAccessingInput(for url: URL) -> Bool {
+        if inputAccessURL?.path == url.path, isAccessingInput { return true }
+        if inputAccessURL?.path != url.path {
+            stopAccessingInput()
+            inputAccessURL = url
+        }
+        if !isAccessingInput {
+            isAccessingInput = url.startAccessingSecurityScopedResource()
+        }
+        return isAccessingInput
+    }
+
+    private func ensureAccessingOutput(for url: URL) -> Bool {
+        if outputAccessURL?.path == url.path, isAccessingOutput { return true }
+        if outputAccessURL?.path != url.path {
+            stopAccessingOutput()
+            outputAccessURL = url
+        }
+        if !isAccessingOutput {
+            isAccessingOutput = url.startAccessingSecurityScopedResource()
+        }
+        return isAccessingOutput
+    }
+
+    private func clearScopedAccess() {
+        stopAccessingInput()
+        stopAccessingOutput()
+        inputAccessURL = nil
+        outputAccessURL = nil
+    }
+
+    private func stopAccessingInput() {
+        if isAccessingInput, let url = inputAccessURL {
+            url.stopAccessingSecurityScopedResource()
+        }
+        isAccessingInput = false
+    }
+
+    private func stopAccessingOutput() {
+        if isAccessingOutput, let url = outputAccessURL {
+            url.stopAccessingSecurityScopedResource()
+        }
+        isAccessingOutput = false
     }
     
     /// Builds a review request for the app shell (input or conversion output).

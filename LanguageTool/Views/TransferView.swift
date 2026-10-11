@@ -31,12 +31,6 @@ struct TransferView: View {
                         platformSelectionCard
                         fileSelectionCard
                         languageSelectionCard
-
-                        if viewModel.showResult {
-                            resultsCard
-                                .transition(.opacity.combined(with: .move(edge: .bottom)))
-                                .animation(.easeInOut(duration: 0.4), value: viewModel.showResult)
-                        }
                     }
                     .padding()
                     .frame(maxWidth: 800)
@@ -44,9 +38,16 @@ struct TransferView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .blur(radius: viewModel.isLoading ? 3 : 0)
 
+                // Pinned above the action bar so success/failure is visible without scrolling.
+                if viewModel.showResult {
+                    conversionStatusBar
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+
                 // Always visible: skip-existing + primary conversion actions.
                 conversionActionBar
             }
+            .animation(.easeInOut(duration: 0.25), value: viewModel.showResult)
             .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
 
             if viewModel.isLoading {
@@ -65,8 +66,85 @@ struct TransferView: View {
             guard show, !wasShowing else { return }
             Task { @MainActor in
                 guard let request = viewModel.makeReviewRequest(preferOutput: true) else { return }
+                shell.showToast("Conversion complete. Opened in Review.".localized)
                 shell.requestReview(request)
             }
+        }
+    }
+
+    /// Compact success/failure strip — always visible above the conversion action bar.
+    private var conversionStatusBar: some View {
+        VStack(spacing: 0) {
+            Divider()
+            HStack(alignment: .center, spacing: 12) {
+                Image(systemName: viewModel.lastConversionSucceeded ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .foregroundStyle(viewModel.lastConversionSucceeded ? .green : .red)
+                    .font(.title3)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(
+                        viewModel.lastConversionSucceeded
+                            ? "Conversion succeeded".localized
+                            : "Conversion failed".localized
+                    )
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(viewModel.lastConversionSucceeded ? .green : .red)
+
+                    Text(
+                        viewModel.lastConversionSucceeded
+                            ? URL(fileURLWithPath: viewModel.outputPath).lastPathComponent
+                            : viewModel.conversionResult
+                    )
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                }
+
+                Spacer(minLength: 8)
+
+                if viewModel.showSuccessActions {
+                    HStack(spacing: 8) {
+                        Button(action: viewModel.openInFinder) {
+                            Label("Show in Finder".localized, systemImage: "folder")
+                        }
+                        .labelStyle(.iconOnly)
+                        .help("Show in Finder".localized)
+
+                        Button(action: viewModel.syncToSource) {
+                            Label("Sync to Source".localized, systemImage: "arrow.triangle.2.circlepath")
+                        }
+                        .labelStyle(.iconOnly)
+                        .help("Sync to Source".localized)
+
+                        Button(action: viewModel.exportToCSV) {
+                            Label("Export CSV".localized, systemImage: "arrow.down.doc")
+                        }
+                        .labelStyle(.iconOnly)
+                        .help("Export CSV".localized)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+
+                Button {
+                    viewModel.dismissResult()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(6)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help("Dismiss".localized)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity)
+            .background(
+                (viewModel.lastConversionSucceeded ? Color.green : Color.red)
+                    .opacity(colorScheme == .dark ? 0.14 : 0.08)
+            )
         }
     }
 
@@ -136,32 +214,27 @@ struct TransferView: View {
     }
     
     private var platformSelectionCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        HStack(alignment: .center, spacing: 12) {
             Label("Select Platform".localized, systemImage: "apps.iphone")
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(.primary)
+                .fixedSize()
 
-            Picker(
-                "Platform".localized,
-                selection: Binding(
-                    get: { viewModel.selectedPlatform },
-                    set: { newValue in
-                        guard newValue != viewModel.selectedPlatform else { return }
-                        // Defer: Picker mutates during view updates; resetAll publishes many fields.
+            Spacer(minLength: 8)
+
+            HStack(spacing: 8) {
+                ForEach(PlatformType.allCases, id: \.self) { platform in
+                    PlatformChip(
+                        platform: platform,
+                        isSelected: viewModel.selectedPlatform == platform
+                    ) {
+                        guard platform != viewModel.selectedPlatform else { return }
                         Task { @MainActor in
-                            viewModel.selectPlatform(newValue)
+                            viewModel.selectPlatform(platform)
                         }
                     }
-                )
-            ) {
-                ForEach(PlatformType.allCases, id: \.self) { platform in
-                    Text(platform.description)
-                        .tag(platform)
                 }
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .frame(maxWidth: .infinity)
         }
         .cardStyle()
     }
@@ -364,77 +437,6 @@ struct TransferView: View {
         .cardStyle()
     }
 
-    private var resultsCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label(
-                "Conversion Results".localized,
-                systemImage: viewModel.lastConversionSucceeded ? "checkmark.circle" : "xmark.circle"
-            )
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(viewModel.lastConversionSucceeded ? .green : .red)
-
-            Text(viewModel.conversionResult)
-                .font(.body)
-                .foregroundStyle(viewModel.lastConversionSucceeded ? .green : .red)
-
-            if viewModel.showSuccessActions {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Output Location".localized)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
-
-                    HStack(spacing: 8) {
-                        Image(systemName: "folder.fill")
-                            .foregroundStyle(.blue)
-                            .font(.caption)
-
-                        Text(URL(fileURLWithPath: viewModel.outputPath).lastPathComponent)
-                            .font(.caption.monospaced())
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-
-                        Spacer()
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 6)
-                    .background(.blue.opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
-
-                    // Action buttons
-                    HStack(spacing: 12) {
-                        Button(action: viewModel.openInFinder) {
-                            Label("Show in Finder".localized, systemImage: "folder")
-                                .font(.subheadline)
-                        }
-                        .buttonStyle(.bordered)
-
-                        Button {
-                            openInReview(preferOutput: true)
-                        } label: {
-                            Label("View in Review".localized, systemImage: "tablecells")
-                                .font(.subheadline)
-                        }
-                        .buttonStyle(.bordered)
-
-                        Button(action: viewModel.syncToSource) {
-                            Label("Sync to Source".localized, systemImage: "arrow.triangle.2.circlepath")
-                                .font(.subheadline)
-                        }
-                        .buttonStyle(.bordered)
-
-                        Button(action: viewModel.exportToCSV) {
-                            Label("Export CSV".localized, systemImage: "arrow.down.doc")
-                                .font(.subheadline)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
-                .padding()
-                .background(ThemeSurface.inset(for: colorScheme), in: RoundedRectangle(cornerRadius: 8))
-            }
-        }
-        .cardStyle()
-    }
-    
     private var loadingView: some View {
         VStack(spacing: 16) {
             ProgressView()
@@ -587,6 +589,46 @@ struct ModernLanguageCard: View {
                 .animation(.easeInOut(duration: 0.2), value: isSelected)
         )
         .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Platform Chip
+private struct PlatformChip: View {
+    let platform: PlatformType
+    let isSelected: Bool
+    let action: () -> Void
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Text(platform.shortName)
+                    .font(.subheadline.weight(.semibold))
+                Text(platform.formatHint)
+                    .font(.caption)
+                    .foregroundStyle(isSelected ? Color.white.opacity(0.85) : Color.secondary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(isSelected ? Color.accentColor : ThemeSurface.inset(for: colorScheme))
+            )
+            .overlay(
+                Capsule(style: .continuous)
+                    .strokeBorder(
+                        isSelected
+                            ? Color.clear
+                            : Color.primary.opacity(colorScheme == .dark ? 0.18 : 0.10),
+                        lineWidth: 1
+                    )
+            )
+            .foregroundStyle(isSelected ? Color.white : Color.primary)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityLabel("\(platform.shortName), \(platform.formatHint)")
     }
 }
 

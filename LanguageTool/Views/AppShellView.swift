@@ -97,6 +97,20 @@ struct AppShellView: View {
                     }
                 }
         }
+        .overlay(alignment: .top) {
+            if let toastMessage = shell.toastMessage {
+                Text(toastMessage)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Capsule(style: .continuous).fill(Color.black.opacity(0.82)))
+                    .padding(.top, 12)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .accessibilityAddTraits(.isStaticText)
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: shell.toastMessage)
         // Always pass an *explicit* ColorScheme. `nil` (system) leaves children stuck after dark.
         .preferredColorScheme(resolvedScheme)
         .environment(\.colorScheme, resolvedScheme)
