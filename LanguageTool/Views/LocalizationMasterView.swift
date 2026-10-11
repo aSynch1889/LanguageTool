@@ -56,6 +56,8 @@ struct LocalizationMasterView: View {
                 sourceLanguage: viewModel.document.sourceLanguage,
                 onItemUpdate: { viewModel.updateItem($0) }
             )
+            // Match headerBar / footerBar horizontal inset so the Batch column is not flush left.
+            .padding(.horizontal, 14)
         }
     }
 
