@@ -264,64 +264,6 @@ struct TransferView: View {
                     onDrop: { _ in false }
                 )
             }
-
-            // File info summary
-            if viewModel.isInputSelected || viewModel.isOutputSelected {
-                VStack(alignment: .leading, spacing: 8) {
-                    Divider()
-
-                    HStack {
-                        Text("Selected Files".localized)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.secondary)
-
-                        Spacer()
-
-                        if viewModel.isInputSelected && viewModel.isOutputSelected {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
-                                .font(.caption)
-                                .transition(.scale.combined(with: .opacity))
-                        }
-                    }
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        if viewModel.isInputSelected {
-                            HStack(spacing: 6) {
-                                Image(systemName: "doc.text.fill")
-                                    .foregroundStyle(.blue)
-                                    .font(.caption2)
-
-                                Text("Input: %@".localizedFormat(URL(fileURLWithPath: viewModel.inputPath).lastPathComponent))
-                                    .font(.caption)
-                                    .foregroundStyle(.primary)
-
-                                Spacer()
-                            }
-                            .transition(.opacity.combined(with: .move(edge: .leading)))
-                        }
-
-                        if viewModel.isOutputSelected {
-                            HStack(spacing: 6) {
-                                Image(systemName: "folder.fill")
-                                    .foregroundStyle(.green)
-                                    .font(.caption2)
-
-                                Text("Output: %@".localizedFormat(URL(fileURLWithPath: viewModel.outputPath).lastPathComponent))
-                                    .font(.caption)
-                                    .foregroundStyle(.primary)
-
-                                Spacer()
-                            }
-                            .transition(.opacity.combined(with: .move(edge: .leading)))
-                        }
-                    }
-                }
-                .padding(.top, 4)
-                .transition(.opacity.combined(with: .move(edge: .bottom)))
-                .animation(.easeInOut(duration: 0.3), value: viewModel.isInputSelected)
-                .animation(.easeInOut(duration: 0.3), value: viewModel.isOutputSelected)
-            }
         }
         .cardStyle()
     }

@@ -29,6 +29,11 @@ class TransferViewModel: ObservableObject {
     private var isAccessingInput = false
     private var isAccessingOutput = false
 
+    /// Return `false` to cancel reset (e.g. unsaved Review edits).
+    var onWillReset: (() -> Bool)?
+    /// Called after Convert state is cleared (e.g. clear Review document).
+    var onDidReset: (() -> Void)?
+
     // 通知管理器
     private let notificationManager = NotificationManager.shared
     
@@ -276,13 +281,19 @@ class TransferViewModel: ObservableObject {
     /// Change platform and clear file/language selection for the new target.
     /// Call from a deferred turn (not inside a Picker/`onChange` view update).
     func selectPlatform(_ platform: PlatformType) {
+        guard onWillReset?() ?? true else { return }
         if selectedPlatform != platform {
             selectedPlatform = platform
         }
-        resetAll()
+        applyReset()
     }
 
     func resetAll() {
+        guard onWillReset?() ?? true else { return }
+        applyReset()
+    }
+
+    private func applyReset() {
         clearScopedAccess()
 
         let emptyInput = "No file selected".localized
@@ -299,6 +310,7 @@ class TransferViewModel: ObservableObject {
 
         dismissResult()
         if !skipExistingTranslations { skipExistingTranslations = true }
+        onDidReset?()
     }
 
     func dismissResult() {

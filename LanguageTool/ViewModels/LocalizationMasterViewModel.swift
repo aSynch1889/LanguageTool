@@ -120,6 +120,20 @@ final class LocalizationMasterViewModel: ObservableObject {
         }
     }
 
+    /// Drops the loaded review document and UI selection (Convert Reset / platform change).
+    func clear() {
+        translateTask?.cancel()
+        translateTask = nil
+        document.clear()
+        selectedKey = nil
+        searchText = ""
+        rowFilter = .all
+        statusMessage = ""
+        lastOperationSucceeded = false
+        isLoading = false
+        objectWillChange.send()
+    }
+
     func selectKey(_ key: String?) {
         guard selectedKey != key else { return }
         selectedKey = key

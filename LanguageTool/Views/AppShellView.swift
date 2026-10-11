@@ -123,6 +123,13 @@ struct AppShellView: View {
             }
             // Apply scheme only — remounting here would change `.id` and re-trigger onAppear forever.
             refreshAppearance(storeRaw: false, remount: false)
+            // Convert Reset / platform change should also clear the Review document.
+            transferViewModel.onWillReset = { [masterViewModel] in
+                masterViewModel.confirmCloseIfNeeded()
+            }
+            transferViewModel.onDidReset = { [masterViewModel] in
+                masterViewModel.clear()
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: AppearanceMode.systemThemeChangedNotification)) { _ in
             guard appearanceMode == .system else { return }

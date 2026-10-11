@@ -105,6 +105,17 @@ final class LocalizationDocument: ObservableObject {
         captureBaseline()
     }
 
+    /// Clears in-memory document state (e.g. Convert page Reset).
+    func clear() {
+        items = []
+        sourceLanguage = "en"
+        filePath = ""
+        platform = .iOS
+        isDirty = false
+        originalXCStringsJSON = nil
+        baselines = [:]
+    }
+
     /// Load an already-parsed item set (e.g. after conversion) as a review document.
     func loadItems(
         _ parsed: [TranslationItem],
