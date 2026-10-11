@@ -11,6 +11,7 @@ struct AppShellView: View {
     /// Bumped after each appearance apply so the whole shell remounts with a fresh colorScheme.
     @State private var appearanceEpoch = 0
     @State private var languageEpoch = 0
+    @State private var tabControlID = 0
     @State private var resolvedScheme: ColorScheme = .light
 
     private var appearanceMode: AppearanceMode {
@@ -33,67 +34,68 @@ struct AppShellView: View {
     ]
 
     var body: some View {
-        NavigationSplitView {
-            List(selection: sidebarSelection) {
-                ForEach(AppShellViewModel.SidebarItem.allCases) { item in
-                    Label(item.title, systemImage: item.systemImage)
-                        .tag(item)
-                }
-            }
-            .navigationSplitViewColumnWidth(min: 160, ideal: 180, max: 240)
-            .listStyle(.sidebar)
-            .scrollContentBackground(.hidden)
-            .background(ThemeSurface.page(for: resolvedScheme))
-        } detail: {
+        NavigationStack {
             detailBody
                 .background(ThemeSurface.page(for: resolvedScheme))
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
-                SettingsLink {
-                    Label("Settings".localized, systemImage: "gearshape")
-                }
-                .help("Settings".localized)
-
-                Menu {
-                    ForEach(supportedLanguages, id: \.code) { item in
-                        Button(item.name) {
-                            appLanguage = item.code
-                            UserDefaults.standard.set([item.code], forKey: "AppleLanguages")
-                            LocalizationManager.shared.setLanguage(item.code)
-                            NotificationCenter.default.post(name: .languageChanged, object: nil)
-                        }
-                    }
-                } label: {
-                    Label("Language".localized, systemImage: "globe")
-                }
-                .labelStyle(.iconOnly)
-                .menuIndicator(.hidden)
-                .help("Interface Language".localized)
-
-                Menu {
-                    ForEach(AppearanceMode.allCases) { mode in
-                        Button {
-                            selectAppearance(mode)
-                        } label: {
-                            HStack {
-                                Text(mode.title)
-                                if mode == appearanceMode {
-                                    Image(systemName: "checkmark")
-                                }
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Picker("", selection: tabSelection) {
+                            ForEach(AppShellViewModel.SidebarItem.allCases) { item in
+                                Text(item.title).tag(item)
                             }
                         }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                        .frame(maxWidth: 220)
+                        .id(tabControlID)
                     }
-                } label: {
-                    Label(
-                        "Appearance".localized,
-                        systemImage: resolvedScheme == .dark ? "moon.fill" : "sun.max"
-                    )
+
+                    ToolbarItemGroup(placement: .primaryAction) {
+                        SettingsLink {
+                            Label("Settings".localized, systemImage: "gearshape")
+                        }
+                        .help("Settings".localized)
+
+                        Menu {
+                            ForEach(supportedLanguages, id: \.code) { item in
+                                Button(item.name) {
+                                    appLanguage = item.code
+                                    UserDefaults.standard.set([item.code], forKey: "AppleLanguages")
+                                    LocalizationManager.shared.setLanguage(item.code)
+                                    NotificationCenter.default.post(name: .languageChanged, object: nil)
+                                }
+                            }
+                        } label: {
+                            Label("Language".localized, systemImage: "globe")
+                        }
+                        .labelStyle(.iconOnly)
+                        .menuIndicator(.hidden)
+                        .help("Interface Language".localized)
+
+                        Menu {
+                            ForEach(AppearanceMode.allCases) { mode in
+                                Button {
+                                    selectAppearance(mode)
+                                } label: {
+                                    HStack {
+                                        Text(mode.title)
+                                        if mode == appearanceMode {
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            Label(
+                                "Appearance".localized,
+                                systemImage: resolvedScheme == .dark ? "moon.fill" : "sun.max"
+                            )
+                        }
+                        .labelStyle(.iconOnly)
+                        .menuIndicator(.hidden)
+                        .help("Appearance".localized)
+                    }
                 }
-                .labelStyle(.iconOnly)
-                .menuIndicator(.hidden)
-                .help("Appearance".localized)
-            }
         }
         // Always pass an *explicit* ColorScheme. `nil` (system) leaves children stuck after dark.
         .preferredColorScheme(resolvedScheme)
@@ -154,23 +156,26 @@ struct AppShellView: View {
         }
     }
 
-    private var sidebarSelection: Binding<AppShellViewModel.SidebarItem?> {
+    private var tabSelection: Binding<AppShellViewModel.SidebarItem> {
         Binding(
             get: { shell.sidebar },
             set: { newValue in
-                guard let newValue, newValue != shell.sidebar else { return }
-                // List selection mutates during a view update — defer publishes to the next turn.
+                guard newValue != shell.sidebar else { return }
                 Task { @MainActor in
-                    await selectSidebar(newValue)
+                    await selectTab(newValue)
                 }
             }
         )
     }
 
     @MainActor
-    private func selectSidebar(_ newValue: AppShellViewModel.SidebarItem) async {
+    private func selectTab(_ newValue: AppShellViewModel.SidebarItem) async {
         if shell.sidebar == .review && newValue != .review {
-            guard masterViewModel.confirmCloseIfNeeded() else { return }
+            guard masterViewModel.confirmCloseIfNeeded() else {
+                // Picker may have painted the tapped segment; remount to snap back.
+                tabControlID &+= 1
+                return
+            }
         }
         guard shell.sidebar != newValue else { return }
         shell.sidebar = newValue
@@ -189,7 +194,7 @@ struct AppShellView: View {
                 viewModel: masterViewModel,
                 onGoToConvert: {
                     Task { @MainActor in
-                        await selectSidebar(.transfer)
+                        await selectTab(.transfer)
                     }
                 },
                 onOpenFile: { presentOpenPanelForReview() }
