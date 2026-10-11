@@ -101,26 +101,16 @@ struct LocalizationMasterTableView: NSViewRepresentable {
     final class BatchSelectHeaderCell: NSTableHeaderCell {
         var checkboxState: NSControl.StateValue = .off
 
-        private let checkCell: NSButtonCell = {
-            let cell = NSButtonCell()
-            cell.setButtonType(.switch)
-            cell.allowsMixedState = true
-            cell.title = ""
-            cell.isBordered = false
-            cell.imagePosition = .imageOnly
-            return cell
-        }()
-
         override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
             // Keep default header chrome, then paint checkbox + title.
             let saved = stringValue
             stringValue = ""
             super.draw(withFrame: cellFrame, in: controlView)
             stringValue = saved
-            drawBatchContents(in: cellFrame, controlView: controlView)
+            drawBatchContents(in: cellFrame)
         }
 
-        private func drawBatchContents(in cellFrame: NSRect, controlView: NSView) {
+        private func drawBatchContents(in cellFrame: NSRect) {
             let box: CGFloat = 15
             let checkRect = NSRect(
                 x: cellFrame.minX + 14,
@@ -128,8 +118,32 @@ struct LocalizationMasterTableView: NSViewRepresentable {
                 width: box,
                 height: box
             )
-            checkCell.state = checkboxState
-            checkCell.draw(withFrame: checkRect, in: controlView)
+            // Match NSButton checkbox: green fill + white glyph (not a solid green block).
+            let symbolName: String
+            let colorConfig: NSImage.SymbolConfiguration
+            switch checkboxState {
+            case .on:
+                symbolName = "checkmark.square.fill"
+                colorConfig = NSImage.SymbolConfiguration(paletteColors: [ThemeAccent.brandNS, .white])
+            case .mixed:
+                symbolName = "minus.square.fill"
+                colorConfig = NSImage.SymbolConfiguration(paletteColors: [ThemeAccent.brandNS, .white])
+            default:
+                symbolName = "square"
+                colorConfig = NSImage.SymbolConfiguration(paletteColors: [ThemeAccent.brandNS])
+            }
+            let sizeConfig = NSImage.SymbolConfiguration(pointSize: 13, weight: .semibold)
+            if let base = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil),
+               let image = base.withSymbolConfiguration(sizeConfig)?.withSymbolConfiguration(colorConfig) {
+                image.draw(
+                    in: checkRect,
+                    from: .zero,
+                    operation: .sourceOver,
+                    fraction: 1,
+                    respectFlipped: true,
+                    hints: nil
+                )
+            }
 
             let title = stringValue as NSString
             let attrs: [NSAttributedString.Key: Any] = [
@@ -189,6 +203,21 @@ struct LocalizationMasterTableView: NSViewRepresentable {
                 return true
             }
             return super.validateProposedFirstResponder(responder, for: event)
+        }
+    }
+
+    /// Soft brand-green selection instead of deep system-blue highlight.
+    final class BrandTableRowView: NSTableRowView {
+        override func drawSelection(in dirtyRect: NSRect) {
+            guard selectionHighlightStyle != .none else { return }
+            ThemeAccent.selectionFillNS.setFill()
+            dirtyRect.intersection(bounds).fill()
+        }
+
+        /// Keep normal label colors (avoid white text on the light green fill).
+        override var isEmphasized: Bool {
+            get { false }
+            set { }
         }
     }
 
@@ -331,6 +360,16 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             36
         }
 
+        func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
+            let id = NSUserInterfaceItemIdentifier("BrandRow")
+            if let rowView = tableView.makeView(withIdentifier: id, owner: self) as? BrandTableRowView {
+                return rowView
+            }
+            let rowView = BrandTableRowView()
+            rowView.identifier = id
+            return rowView
+        }
+
         func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
             guard row < items.count, let tableColumn else { return nil }
             let item = items[row]
@@ -368,12 +407,14 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             let wrapId = NSUserInterfaceItemIdentifier("CheckboxWrap")
             if let wrap = tableView.makeView(withIdentifier: wrapId, owner: self) as? CenteredCellView,
                let button = wrap.subviews.first as? NSButton {
+                applyBrandTint(to: button)
                 button.state = item.isSelected ? .on : .off
                 button.tag = row
                 return wrap
             }
 
             let button = NSButton(checkboxWithTitle: "", target: self, action: #selector(checkboxChanged(_:)))
+            applyBrandTint(to: button)
             button.state = item.isSelected ? .on : .off
             button.tag = row
             button.toolTip = "Include in batch translate"
@@ -384,6 +425,10 @@ struct LocalizationMasterTableView: NSViewRepresentable {
                 leadingInset: 16,
                 trailingInset: 8
             )
+        }
+
+        private func applyBrandTint(to button: NSButton) {
+            button.contentTintColor = ThemeAccent.brandNS
         }
 
         private func keyCell(tableView: NSTableView, item: TranslationItem) -> NSView {

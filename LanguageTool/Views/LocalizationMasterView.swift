@@ -122,7 +122,7 @@ struct LocalizationMasterView: View {
                             } else if viewModel.document.isChanged(item) {
                                 Text("Edited".localized)
                                     .font(.caption2)
-                                    .foregroundStyle(.blue)
+                                    .foregroundStyle(ThemeAccent.brand)
                             }
                         }
                         Spacer(minLength: 0)
@@ -522,8 +522,8 @@ struct LocalizationMasterView: View {
 
     private func rowBadgeColor(for item: TranslationItem) -> Color {
         if viewModel.document.hasMissingTranslation(item) { return .orange }
-        if viewModel.document.isChanged(item) { return .blue }
-        return .green.opacity(0.7)
+        if viewModel.document.isChanged(item) { return ThemeAccent.brand }
+        return ThemeAccent.brand.opacity(0.55)
     }
 
     private func languageTitle(_ code: String) -> String {

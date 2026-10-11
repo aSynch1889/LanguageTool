@@ -74,6 +74,20 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - Brand accent (fixed; replaces system blue)
+
+enum ThemeAccent {
+    /// Input/output success green `#34C759` — used as the app primary.
+    static let brand = Color(red: 52 / 255, green: 199 / 255, blue: 89 / 255)
+    static let softFill = brand.opacity(0.10)
+    static let stroke = brand.opacity(0.30)
+
+    /// AppKit controls (NSButton checkbox, etc.) ignore SwiftUI `.tint`.
+    static let brandNS = NSColor(srgbRed: 52 / 255, green: 199 / 255, blue: 89 / 255, alpha: 1)
+    /// Soft row / cell selection fill (light green, not system blue).
+    static let selectionFillNS = brandNS.withAlphaComponent(0.14)
+}
+
 // MARK: - Scheme-driven fills (ignore AppKit dynamic colors)
 
 enum ThemeSurface {

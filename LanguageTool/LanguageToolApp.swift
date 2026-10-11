@@ -20,6 +20,7 @@ struct LanguageToolApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .tint(ThemeAccent.brand)
                 .onReceive(NotificationCenter.default.publisher(for: .languageChanged)) { _ in
                     if let language = UserDefaults.standard.string(forKey: "appLanguage") {
                         LocalizationManager.shared.setLanguage(language)
@@ -30,6 +31,7 @@ struct LanguageToolApp: App {
 
         Settings {
             SettingsView()
+                .tint(ThemeAccent.brand)
         }
     }
 }

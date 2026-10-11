@@ -78,7 +78,7 @@ struct TransferView: View {
             Divider()
             HStack(alignment: .center, spacing: 12) {
                 Image(systemName: viewModel.lastConversionSucceeded ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .foregroundStyle(viewModel.lastConversionSucceeded ? .green : .red)
+                    .foregroundStyle(viewModel.lastConversionSucceeded ? ThemeAccent.brand : .red)
                     .font(.title3)
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -88,7 +88,7 @@ struct TransferView: View {
                             : "Conversion failed".localized
                     )
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(viewModel.lastConversionSucceeded ? .green : .red)
+                    .foregroundStyle(viewModel.lastConversionSucceeded ? ThemeAccent.brand : .red)
 
                     Text(
                         viewModel.lastConversionSucceeded
@@ -142,7 +142,7 @@ struct TransferView: View {
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
             .background(
-                (viewModel.lastConversionSucceeded ? Color.green : Color.red)
+                (viewModel.lastConversionSucceeded ? ThemeAccent.brand : Color.red)
                     .opacity(colorScheme == .dark ? 0.14 : 0.08)
             )
         }
@@ -382,7 +382,7 @@ struct TransferView: View {
     private var loadingView: some View {
         VStack(spacing: 16) {
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                .progressViewStyle(CircularProgressViewStyle(tint: ThemeAccent.brand))
                 .scaleEffect(1.2)
 
             VStack(spacing: 4) {
@@ -450,7 +450,7 @@ struct ModernFileSelector: View {
             Button(action: onSelect) {
                 HStack {
                     Image(systemName: isSelected ? "checkmark.circle.fill" : "plus.circle.dashed")
-                        .foregroundStyle(isSelected ? .green : .blue)
+                        .foregroundStyle(isSelected ? ThemeAccent.brand : ThemeAccent.brand.opacity(0.75))
                         .font(.title2)
                         .animation(.easeInOut(duration: 0.2), value: isSelected)
 
@@ -483,8 +483,8 @@ struct ModernFileSelector: View {
                 .background(ThemeSurface.inset(for: colorScheme), in: RoundedRectangle(cornerRadius: 10))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(isSelected ? .green.opacity(0.3) : .blue.opacity(0.3), lineWidth: 1.5)
-                        .opacity(isSelected ? 1 : 0.5)
+                        .stroke(isSelected ? ThemeAccent.stroke : ThemeAccent.brand.opacity(0.22), lineWidth: 1.5)
+                        .opacity(isSelected ? 1 : 0.7)
                         .animation(.easeInOut(duration: 0.2), value: isSelected)
                 )
             }
@@ -502,7 +502,7 @@ struct ModernLanguageCard: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(isSelected ? .blue : .secondary)
+                .foregroundStyle(isSelected ? ThemeAccent.brand : .secondary)
                 .font(.system(size: 16))
                 .animation(.easeInOut(duration: 0.2), value: isSelected)
 
@@ -522,12 +522,12 @@ struct ModernLanguageCard: View {
         .padding(.vertical, 6)
         .background(
             RoundedRectangle(cornerRadius: 6)
-                .fill(isSelected ? .blue.opacity(0.1) : .clear)
+                .fill(isSelected ? ThemeAccent.softFill : .clear)
                 .animation(.easeInOut(duration: 0.2), value: isSelected)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 6)
-                .stroke(isSelected ? .blue : Color.clear, lineWidth: 1)
+                .stroke(isSelected ? ThemeAccent.brand : Color.clear, lineWidth: 1)
                 .animation(.easeInOut(duration: 0.2), value: isSelected)
         )
         .contentShape(Rectangle())
@@ -555,7 +555,7 @@ private struct PlatformChip: View {
             .padding(.vertical, 7)
             .background(
                 Capsule(style: .continuous)
-                    .fill(isSelected ? Color.accentColor : ThemeSurface.inset(for: colorScheme))
+                    .fill(isSelected ? ThemeAccent.brand : ThemeSurface.inset(for: colorScheme))
             )
             .overlay(
                 Capsule(style: .continuous)
@@ -613,7 +613,7 @@ struct DragDropButtonStyle: ButtonStyle {
                             dash: [5]
                         )
                     )
-                    .foregroundColor(isSelected ? .blue : .gray)
+                    .foregroundColor(isSelected ? ThemeAccent.brand : .gray)
             )
             .background(
                 RoundedRectangle(cornerRadius: 8)
