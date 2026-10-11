@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "title": "LanguageTool — Batch localize for Mac",
+    "description": "A macOS localization utility for iOS, Flutter, and Electron. Convert, review, and ship multilingual releases faster."
+  },
+  "nav": {
+    "docs": "Docs",
+    "privacy": "Privacy",
+    "getApp": "Get on Mac App Store",
+    "lang": "中文"
+  },
+  "home": {
+    "brand": "LanguageTool",
+    "headline": "Ship multilingual releases without the spreadsheet grind.",
+    "support": "Batch-localize iOS, Flutter, and Electron files—then review before you export.",
+    "cta": "Download on the Mac App Store",
+    "capTitle": "Built for the localization loop",
+    "cap1Title": "Convert",
+    "cap1Body": "Pick a platform, choose target languages, and generate localization files in one pass.",
+    "cap2Title": "Review",
+    "cap2Body": "Inspect keys, spot missing strings, and polish translations before they land in your repo.",
+    "cap3Title": "Multi-platform",
+    "cap3Body": "Native support for .strings / .xcstrings, Flutter .arb, and Electron .json.",
+    "flowTitle": "From file to ship-ready",
+    "flow1": "Select platform",
+    "flow2": "Choose languages",
+    "flow3": "Convert",
+    "flow4": "Review & export",
+    "closeTitle": "Ready when your next locale is.",
+    "closeBody": "Available on macOS 13 and later.",
+    "closeCta": "Open Mac App Store"
+  },
+  "docs": {
+    "title": "Documentation",
+    "lead": "Get LanguageTool running and through your first localization pass.",
+    "reqTitle": "System requirements",
+    "reqBody": "macOS 13.0 or later. For iOS string catalogs, Xcode 15+ is recommended on the machine that consumes the output.",
+    "getTitle": "Get the app",
+    "getBody": "Install LanguageTool from the Mac App Store. Launch once, then open Settings if you want to connect your own translation service endpoint.",
+    "startTitle": "Getting started",
+    "step1": "Choose a platform: iOS, Flutter, or Electron.",
+    "step2": "Select the source file and output location, then pick target languages.",
+    "step3": "Start conversion. Open Review to check results, export CSV, or sync back.",
+    "faqTitle": "FAQ",
+    "faq1Q": "Can I skip strings that already have translations?",
+    "faq1A": "Yes. Enable “Skip existing translations” so only missing keys are generated.",
+    "faq2Q": "What is Review for?",
+    "faq2A": "Review is a table of keys and locales so you can verify, filter missing rows, and export before shipping.",
+    "faq3Q": "Which formats are supported?",
+    "faq3A": "iOS .strings / .xcstrings, Flutter .arb, and Electron localized .json files.",
+    "faq4Q": "Do I need an API key?",
+    "faq4A": "Only if you want AI-assisted translation via your own provider account. The key authenticates your account; it is not sold by LanguageTool."
+  },
+  "privacy": {
+    "title": "Privacy",
+    "updated": "Last updated: October 12, 2026",
+    "lead": "LanguageTool is designed to keep your localization work on your Mac.",
+    "s1Title": "What we collect",
+    "s1Body": "The Mac app does not require an LanguageTool account. Localization files you open stay under your control on your device unless you explicitly send them to a third-party service you configure.",
+    "s2Title": "Translation services",
+    "s2Body": "If you enter an API key for a third-party AI or translation provider, requests go to that provider under your account. LanguageTool does not sell API keys and does not operate those services.",
+    "s3Title": "App Store",
+    "s3Body": "Purchases and downloads through the Mac App Store are handled by Apple under Apple’s privacy policy.",
+    "s4Title": "Contact",
+    "s4Body": "For privacy questions about this app, use the support contact listed on the Mac App Store product page."
+  },
+  "footer": {
+    "tag": "Localization for developers on Mac.",
+    "rights": "© {year} LanguageTool"
+  }
+}

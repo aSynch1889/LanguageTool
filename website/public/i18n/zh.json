@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "title": "LanguageTool — Mac 批量本地化助手",
+    "description": "面向开发者的 macOS 本地化工具：支持 iOS、Flutter、Electron，批量转换、审阅后导出，加速多语言发布。"
+  },
+  "nav": {
+    "docs": "文档",
+    "privacy": "隐私",
+    "getApp": "前往 Mac App Store",
+    "lang": "EN"
+  },
+  "home": {
+    "brand": "LanguageTool",
+    "headline": "多语言发布，不必再泡在表格里。",
+    "support": "批量处理 iOS、Flutter、Electron 本地化文件，导出前先审阅校对。",
+    "cta": "在 Mac App Store 下载",
+    "capTitle": "为本地化闭环而设计",
+    "cap1Title": "转换",
+    "cap1Body": "选择平台与目标语言，一次生成多语种本地化文件。",
+    "cap2Title": "审阅",
+    "cap2Body": "按键查看译文、定位缺失文案，写入仓库前先把关。",
+    "cap3Title": "多平台",
+    "cap3Body": "原生支持 .strings / .xcstrings、Flutter .arb、Electron .json。",
+    "flowTitle": "从文件到可发布",
+    "flow1": "选择平台",
+    "flow2": "选择语言",
+    "flow3": "开始转换",
+    "flow4": "审阅与导出",
+    "closeTitle": "下一门语言，随时开始。",
+    "closeBody": "支持 macOS 13 及以上。",
+    "closeCta": "打开 Mac App Store"
+  },
+  "docs": {
+    "title": "文档",
+    "lead": "安装 LanguageTool，并完成第一次本地化流程。",
+    "reqTitle": "系统要求",
+    "reqBody": "macOS 13.0 或更高版本。若项目使用 String Catalog，建议在使用输出文件的机器上安装 Xcode 15+。",
+    "getTitle": "获取应用",
+    "getBody": "从 Mac App Store 安装 LanguageTool。首次启动后，如需连接自有翻译服务，可在设置中配置。",
+    "startTitle": "快速上手",
+    "step1": "选择平台：iOS、Flutter 或 Electron。",
+    "step2": "选择源文件与输出位置，勾选目标语言。",
+    "step3": "开始转换。可在「审阅」中检查结果、导出 CSV 或同步回源文件。",
+    "faqTitle": "常见问题",
+    "faq1Q": "可以跳过已有翻译吗？",
+    "faq1A": "可以。开启「跳过现有翻译」后，只会生成缺失的译文。",
+    "faq2Q": "审阅用来做什么？",
+    "faq2A": "以表格形式查看键与各语言译文，筛选缺失项，确认无误后再导出或同步。",
+    "faq3Q": "支持哪些格式？",
+    "faq3A": "iOS .strings / .xcstrings、Flutter .arb，以及 Electron 本地化 .json。",
+    "faq4Q": "必须填写 API Key 吗？",
+    "faq4A": "仅在你希望通过自有第三方服务做 AI 辅助翻译时需要。密钥用于验证你的账号，并非由 LanguageTool 出售。"
+  },
+  "privacy": {
+    "title": "隐私政策",
+    "updated": "最近更新：2026 年 10 月 12 日",
+    "lead": "LanguageTool 的设计目标是让本地化工作尽量留在你的 Mac 上。",
+    "s1Title": "我们收集什么",
+    "s1Body": "Mac 应用不要求注册 LanguageTool 账号。你打开的本地化文件默认保存在本机；只有在你主动配置并调用第三方服务时，相关内容才会发送到该服务。",
+    "s2Title": "翻译服务",
+    "s2Body": "若你填写第三方 AI / 翻译服务的 API Key，请求将发往该服务商、并计入你的账号。LanguageTool 不销售 API Key，也不运营这些服务。",
+    "s3Title": "App Store",
+    "s3Body": "通过 Mac App Store 的购买与下载由 Apple 处理，适用 Apple 的隐私政策。",
+    "s4Title": "联系我们",
+    "s4Body": "如有与本应用相关的隐私问题，请通过 Mac App Store 产品页上的支持联系方式与我们联系。"
+  },
+  "footer": {
+    "tag": "面向开发者的 Mac 本地化工具。",
+    "rights": "© {year} LanguageTool"
+  }
+}

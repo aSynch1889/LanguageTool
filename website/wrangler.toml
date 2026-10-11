@@ -1,0 +1,8 @@
+name = "languagetool-site"
+compatibility_date = "2026-10-12"
+workers_dev = true
+
+[assets]
+directory = "./public"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"

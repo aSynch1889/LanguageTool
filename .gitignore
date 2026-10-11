@@ -51,3 +51,7 @@ Localizable_副本.xcstrings
 
 # Vendor dependencies
 Vendor/
+
+# Website / Node
+website/node_modules/
+website/.wrangler/

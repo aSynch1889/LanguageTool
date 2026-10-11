@@ -1,6 +1,6 @@
 # LanguageTool Marketing Website Design
 
-**Status**: Approved  
+**Status**: Implemented (temporary workers.dev deploy; claim to permanent account)  
 **Date**: 2026-10-12  
 **Deploy**: Cloudflare Workers + Static Assets (`*.workers.dev`)
 
