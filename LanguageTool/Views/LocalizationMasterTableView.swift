@@ -43,6 +43,9 @@ struct LocalizationMasterTableView: NSViewRepresentable {
         }
 
         scrollView.documentView = tableView
+        scrollView.scrollerStyle = .overlay
+        scrollView.verticalScroller = SoftScroller()
+        scrollView.horizontalScroller = SoftScroller()
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = true
         scrollView.autohidesScrollers = true
@@ -203,6 +206,30 @@ struct LocalizationMasterTableView: NSViewRepresentable {
                 return true
             }
             return super.validateProposedFirstResponder(responder, for: event)
+        }
+    }
+
+    /// Lighter overlay knob so scrollbars don't dominate the table.
+    final class SoftScroller: NSScroller {
+        override class var isCompatibleWithOverlayScrollers: Bool { true }
+
+        override func drawKnobSlot(in slotRect: NSRect, highlight flag: Bool) {
+            // No track — keeps the scroller visually quiet.
+        }
+
+        override func drawKnob() {
+            var knob = rect(for: .knob)
+            let vertical = bounds.height >= bounds.width
+            if vertical {
+                knob = knob.insetBy(dx: 5, dy: 3)
+                knob.size.width = min(knob.width, 5)
+            } else {
+                knob = knob.insetBy(dx: 3, dy: 5)
+                knob.size.height = min(knob.height, 5)
+            }
+            guard knob.width > 0, knob.height > 0 else { return }
+            NSColor.secondaryLabelColor.withAlphaComponent(0.22).setFill()
+            NSBezierPath(roundedRect: knob, xRadius: 2.5, yRadius: 2.5).fill()
         }
     }
 

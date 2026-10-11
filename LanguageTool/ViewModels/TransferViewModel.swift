@@ -439,19 +439,23 @@ class TransferViewModel: ObservableObject {
     }
     
     /// Builds a review request for the app shell (input or conversion output).
-    func makeReviewRequest(preferOutput: Bool) -> AppShellViewModel.ReviewRequest? {
+    /// - Parameter presentError: when `false`, missing selection returns `nil` quietly (e.g. top-tab switch).
+    func makeReviewRequest(preferOutput: Bool, presentError: Bool = true) -> AppShellViewModel.ReviewRequest? {
         let languageCodes = selectedLanguages.map(\.code)
+        let emptyInput = "No file selected".localized
         let path: String?
         if preferOutput, isOutputSelected, isRegularFile(at: outputPath) {
             path = outputPath
-        } else if isInputSelected, !inputPath.isEmpty, inputPath != "No file selected" {
+        } else if isInputSelected, !inputPath.isEmpty, inputPath != emptyInput, inputPath != "No file selected" {
             path = inputPath
         } else {
             path = nil
         }
 
         guard let path else {
-            showAlert(message: "Select a localization file first".localized, isError: true)
+            if presentError {
+                showAlert(message: "Select a localization file first".localized, isError: true)
+            }
             return nil
         }
 

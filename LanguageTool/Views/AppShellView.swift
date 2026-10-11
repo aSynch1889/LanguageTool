@@ -199,7 +199,50 @@ struct AppShellView: View {
             }
         }
         guard shell.sidebar != newValue else { return }
+
+        if newValue == .review {
+            switch prepareReviewWhenOpeningTab() {
+            case .cancel:
+                tabControlID &+= 1
+                return
+            case .switchOnly:
+                shell.sidebar = .review
+            case .load(let request):
+                shell.requestReview(request)
+            }
+            return
+        }
+
         shell.sidebar = newValue
+    }
+
+    private enum ReviewTabPrep {
+        case cancel
+        case switchOnly
+        case load(AppShellViewModel.ReviewRequest)
+    }
+
+    /// Top「审阅」tab: load Convert's input (or conversion output) like「在审阅中打开」.
+    private func prepareReviewWhenOpeningTab() -> ReviewTabPrep {
+        let preferOutput = transferViewModel.lastConversionSucceeded
+        guard let request = transferViewModel.makeReviewRequest(
+            preferOutput: preferOutput,
+            presentError: false
+        ) else {
+            return .switchOnly
+        }
+
+        if masterViewModel.document.filePath == request.path {
+            return .switchOnly
+        }
+
+        if !masterViewModel.document.filePath.isEmpty {
+            guard masterViewModel.confirmCloseIfNeeded() else {
+                return .cancel
+            }
+        }
+
+        return .load(request)
     }
 
     @ViewBuilder
