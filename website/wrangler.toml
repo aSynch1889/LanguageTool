@@ -1,4 +1,5 @@
 name = "languagetool-site"
+account_id = "98efc023de48d4893f16c4c419008ecd"
 compatibility_date = "2026-10-12"
 workers_dev = true
 

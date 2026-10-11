@@ -40,7 +40,9 @@ body {
 
 img {
   max-width: 100%;
+  height: auto;
   display: block;
+  object-fit: contain;
 }
 
 a {
@@ -264,6 +266,10 @@ a {
 .hero-visual {
   position: relative;
   margin-inline: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
 }
 
 .hero-visual::before {
@@ -279,16 +285,18 @@ a {
 .hero-frame {
   position: relative;
   z-index: 1;
+  width: 100%;
   border-radius: 18px;
   overflow: hidden;
   box-shadow: var(--shadow);
   border: 1px solid rgba(255, 255, 255, 0.65);
-  transform: perspective(1200px) rotateX(2deg);
+  line-height: 0;
 }
 
 .hero-frame img {
   width: 100%;
   height: auto;
+  object-fit: contain;
   vertical-align: middle;
 }
 
@@ -350,13 +358,27 @@ a {
   grid-template-columns: 1.05fr 0.95fr;
   gap: 40px;
   align-items: center;
+  justify-items: stretch;
+}
+
+.split > * {
+  min-width: 0;
 }
 
 .split-visual {
+  min-width: 0;
+  align-self: center;
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
   border: 1px solid rgba(255, 255, 255, 0.7);
+  line-height: 0;
+}
+
+.split-visual img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .flow {
@@ -544,10 +566,6 @@ a {
   .hero {
     min-height: auto;
     padding-top: 12px;
-  }
-
-  .hero-frame {
-    transform: none;
   }
 
   .nav-link-label {
