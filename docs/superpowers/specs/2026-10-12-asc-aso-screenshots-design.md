@@ -1,6 +1,6 @@
 # ASC ASO Marketing Screenshots Design
 
-**Status**: Approved (pending user review of this written spec)  
+**Status**: Implemented  
 **Date**: 2026-10-12  
 **App**: LanguageTool (macOS)  
 **Target**: App Store Connect version 1.2.0 Mac screenshots
