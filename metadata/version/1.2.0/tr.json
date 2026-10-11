@@ -1,0 +1,7 @@
+{
+  "description": "LanguageTool, geliştiriciler ve ürün ekipleri için bir yerelleştirme verimlilik uygulamasıdır.\n``\nTemel özellikler:\n• iOS .strings ve .xcstrings dosyalarını işleyin\n• Flutter .arb dosyalarını işleyin\n• Electron .json dosyalarını işleyin\n• AI destekli 50+ dile toplu çeviri\n• Dışa aktarmadan önce çevirileri gözden geçirin\n• Mevcut çevirileri isteğe bağlı atlayın\n• Sonuçları dışa aktarın ve kaynak dosyalara senkronize edin\n``\nŞunlar için ideal:\n• Çok dilli sürümleri daha hızlı yayınlamak\n• Dil kapsamını genişletmek\n• Platformlar arası yerelleştirme akışlarını birleştirmek\n``\nLanguageTool tekrarlayan manuel işi azaltır ve yerelleştirmeyi daha hızlı, daha güvenilir hale getirir.",
+  "keywords": "yerelleştirme,çeviri,xcstrings,strings,arb,json,i18n,l10n,geliştirici,swift,electron,flutter",
+  "promotionalText": "iOS, Flutter ve Electron yerelleştirme dosyalarını toplu çevirip dışa aktarın; mevcut çevirileri koruyun.",
+  "supportUrl": "https://asynch1889.github.io/about/#",
+  "whatsNew": "• Daha net üst gezinmeyle yeniden tasarlanmış Convert ve Review deneyimi\n• İlerleme durumu ve başarı onayıyla daha iyi dönüştürme geri bildirimi\n• Geliştirilmiş inceleme tablosu, araç çubuğu ve senkronizasyon güvenilirliği\n• Güncellenmiş marka ve uygulama simgesiyle yenilenmiş görsel tasarım\n• Hata düzeltmeleri ve kararlılık iyileştirmeleri"
+}

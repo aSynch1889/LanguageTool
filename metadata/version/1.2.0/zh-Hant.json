@@ -1,0 +1,7 @@
+{
+  "description": "LanguageTool 是面向開發者與產品團隊的本地化效率工具。\n``\n核心能力：\n• 支援 iOS .strings / .xcstrings 檔案處理\n• 支援 Flutter .arb 檔案處理\n• 支援 Electron .json 檔案處理\n• AI 輔助批量翻譯，涵蓋 50+ 語言\n• 匯出前可審閱與校對譯文\n• 可選擇跳過既有翻譯，避免重複覆蓋\n• 支援結果匯出與快速同步來源檔案\n``\n適用場景：\n• 新版本多語言上線前的批量翻譯\n• 歷史文案補齊與語言擴展\n• 跨平台專案統一本地化流程\n``\nLanguageTool 幫你減少手動複製貼上與重複勞動，讓本地化發布更快、更穩。",
+  "keywords": "本地化,翻譯,xcstrings,strings,arb,json,i18n,l10n,開發工具,多語言,SwiftUI,Electron,Flutter",
+  "promotionalText": "支援 iOS、Flutter、Electron 本地化檔案批量翻譯與匯出，保留既有翻譯，提升多語言迭代效率。",
+  "supportUrl": "https://asynch1889.github.io/about/#",
+  "whatsNew": "• 重新設計 Convert / Review 體驗，頂部導覽更清晰\n• 強化轉換進度與成功回饋\n• 改進審閱表格、工具列與同步可靠性\n• 優化視覺設計並更新應用程式圖示\n• 修復已知問題並提升整體穩定性"
+}

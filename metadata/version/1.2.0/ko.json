@@ -1,0 +1,7 @@
+{
+  "description": "LanguageTool은 개발자와 제품 팀을 위한 로컬라이제이션 생산성 앱입니다.\n``\n주요 기능:\n• iOS .strings 및 .xcstrings 파일 처리\n• Flutter .arb 파일 처리\n• Electron .json 파일 처리\n• AI 기반 50개 이상 언어 일괄 번역\n• 내보내기 전 번역 검토\n• 기존 번역 건너뛰기로 덮어쓰기 방지\n• 결과 내보내기 및 원본 파일 동기화\n``\n이런 경우에 적합:\n• 다국어 출시 속도 향상\n• 기존 제품의 언어 확장\n• 플랫폼 간 로컬라이제이션 워크플로 통합\n``\nLanguageTool은 반복적인 수작업을 줄이고 로컬라이제이션을 더 빠르고 안정적으로 만듭니다.",
+  "keywords": "로컬라이즈,번역,xcstrings,strings,arb,json,i18n,l10n,개발자,swift,electron,flutter",
+  "promotionalText": "iOS, Flutter, Electron 로컬라이제이션 파일을 일괄 번역·내보내기하고, 기존 번역을 유지해 다국어 배포를 가속하세요.",
+  "supportUrl": "https://asynch1889.github.io/about/#",
+  "whatsNew": "• Convert / Review 경험을 개편하고 상단 탐색을 더 명확하게\n• 변환 진행 상태와 성공 확인 피드백 강화\n• 검토 테이블, 툴바, 동기화 안정성 개선\n• 비주얼 디자인과 앱 아이콘 업데이트\n• 버그 수정 및 전반적인 안정성 향상"
+}

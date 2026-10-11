@@ -1,0 +1,7 @@
+{
+  "description": "LanguageTool ist eine Lokalisierungs-App für Entwickler und Produktteams.\n``\nHauptfunktionen:\n• iOS-.strings- und .xcstrings-Dateien verarbeiten\n• Flutter-.arb-Dateien verarbeiten\n• Electron-.json-Dateien verarbeiten\n• KI-gestützte Stapelübersetzung in über 50 Sprachen\n• Übersetzungen vor dem Export prüfen\n• Vorhandene Übersetzungen optional überspringen\n• Ergebnisse exportieren und mit Quelldateien synchronisieren\n``\nIdeal für:\n• Schnellere mehrsprachige Releases\n• Erweiterung der Sprachabdeckung\n• Einheitliche Lokalisierungs-Workflows über Plattformen hinweg\n``\nLanguageTool reduziert manuelle Wiederholarbeit und macht Lokalisierung schneller und zuverlässiger.",
+  "keywords": "lokalisierung,übersetzung,xcstrings,strings,arb,json,i18n,l10n,entwickler,swift,electron,flutter",
+  "promotionalText": "Übersetzen und exportieren Sie iOS-, Flutter- und Electron-Lokalisierungsdateien stapelweise – vorhandene Übersetzungen bleiben erhalten.",
+  "supportUrl": "https://asynch1889.github.io/about/#",
+  "whatsNew": "• Neues Convert- und Review-Erlebnis mit klarerer Top-Navigation\n• Besseres Feedback beim Konvertieren mit Fortschritt und Erfolgsbestätigung\n• Verbesserte Review-Tabelle, Toolbar und Sync-Zuverlässigkeit\n• Frisches Design mit aktualisiertem Branding und App-Icon\n• Fehlerbehebungen und Stabilitätsverbesserungen"
+}
