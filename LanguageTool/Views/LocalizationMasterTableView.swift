@@ -6,10 +6,12 @@ struct LocalizationMasterTableView: NSViewRepresentable {
     let items: [TranslationItem]
     let availableLanguages: [String]
     let sourceLanguage: String
+    let batchHeaderState: NSControl.StateValue
+    let onToggleBatchHeader: () -> Void
     let onItemUpdate: (TranslationItem) -> Void
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onItemUpdate: onItemUpdate)
+        Coordinator(onItemUpdate: onItemUpdate, onToggleBatchHeader: onToggleBatchHeader)
     }
 
     func makeNSView(context: Context) -> NSScrollView {
@@ -27,13 +29,18 @@ struct LocalizationMasterTableView: NSViewRepresentable {
         tableView.intercellSpacing = NSSize(width: 0, height: 0)
         tableView.gridStyleMask = [.solidHorizontalGridLineMask]
         tableView.gridColor = NSColor.separatorColor.withAlphaComponent(0.12)
-        tableView.headerView = NSTableHeaderView()
+        // Use a real height — `frame: .zero` collapses the header and it never recovers.
+        let headerView = MasterTableHeaderView(frame: NSRect(x: 0, y: 0, width: 500, height: 28))
+        tableView.headerView = headerView
         tableView.selectionHighlightStyle = .regular
 
         let coordinator = context.coordinator
         tableView.dataSource = coordinator
         tableView.delegate = coordinator
         coordinator.tableView = tableView
+        headerView.onBatchToggle = { [weak coordinator] in
+            coordinator?.onToggleBatchHeader()
+        }
 
         scrollView.documentView = tableView
         scrollView.hasVerticalScroller = true
@@ -49,6 +56,8 @@ struct LocalizationMasterTableView: NSViewRepresentable {
     func updateNSView(_ scrollView: NSScrollView, context: Context) {
         let coordinator = context.coordinator
         coordinator.onItemUpdate = onItemUpdate
+        coordinator.onToggleBatchHeader = onToggleBatchHeader
+        coordinator.batchHeaderState = batchHeaderState
 
         let languagesChanged = coordinator.availableLanguages != availableLanguages
             || coordinator.sourceLanguage != sourceLanguage
@@ -62,11 +71,13 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             coordinator.items = items
             coordinator.setupColumnsIfNeeded(force: true)
             coordinator.tableView?.reloadData()
+            coordinator.syncBatchHeader()
             return
         }
 
         if coordinator.isEditing {
             coordinator.items = items
+            coordinator.syncBatchHeader()
             return
         }
 
@@ -82,6 +93,93 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             scrollView.reflectScrolledClipView(scrollView.contentView)
         } else {
             coordinator.items = items
+        }
+        coordinator.syncBatchHeader()
+    }
+
+    /// Checkbox + “Batch” title in the table header (drawing only; clicks handled by header view).
+    final class BatchSelectHeaderCell: NSTableHeaderCell {
+        var checkboxState: NSControl.StateValue = .off
+
+        private let checkCell: NSButtonCell = {
+            let cell = NSButtonCell()
+            cell.setButtonType(.switch)
+            cell.allowsMixedState = true
+            cell.title = ""
+            cell.isBordered = false
+            cell.imagePosition = .imageOnly
+            return cell
+        }()
+
+        override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
+            // Keep default header chrome, then paint checkbox + title.
+            let saved = stringValue
+            stringValue = ""
+            super.draw(withFrame: cellFrame, in: controlView)
+            stringValue = saved
+            drawBatchContents(in: cellFrame, controlView: controlView)
+        }
+
+        private func drawBatchContents(in cellFrame: NSRect, controlView: NSView) {
+            let box: CGFloat = 15
+            let checkRect = NSRect(
+                x: cellFrame.minX + 14,
+                y: floor(cellFrame.midY - box / 2),
+                width: box,
+                height: box
+            )
+            checkCell.state = checkboxState
+            checkCell.draw(withFrame: checkRect, in: controlView)
+
+            let title = stringValue as NSString
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize, weight: .semibold),
+                .foregroundColor: NSColor.secondaryLabelColor
+            ]
+            let titleSize = title.size(withAttributes: attrs)
+            let titleOrigin = NSPoint(
+                x: checkRect.maxX + 6,
+                y: floor(cellFrame.midY - titleSize.height / 2)
+            )
+            title.draw(at: titleOrigin, withAttributes: attrs)
+        }
+    }
+
+    /// `NSTableHeaderCell.trackMouse` is not reliably invoked; handle Batch clicks here.
+    final class MasterTableHeaderView: NSTableHeaderView {
+        var onBatchToggle: (() -> Void)?
+
+        override init(frame frameRect: NSRect) {
+            var frame = frameRect
+            if frame.height < 1 { frame.size.height = 28 }
+            if frame.width < 1 { frame.size.width = 500 }
+            super.init(frame: frame)
+        }
+
+        @available(*, unavailable)
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override var intrinsicContentSize: NSSize {
+            NSSize(width: NSView.noIntrinsicMetric, height: max(bounds.height, 28))
+        }
+
+        override func mouseDown(with event: NSEvent) {
+            guard let tableView else {
+                super.mouseDown(with: event)
+                return
+            }
+            let point = convert(event.locationInWindow, from: nil)
+            let columnIndex = column(at: point)
+            if columnIndex >= 0,
+               columnIndex < tableView.tableColumns.count,
+               tableView.tableColumns[columnIndex].identifier.rawValue == "checkbox" {
+                onBatchToggle?()
+                needsDisplay = true
+                return
+            }
+            super.mouseDown(with: event)
         }
     }
 
@@ -129,14 +227,44 @@ struct LocalizationMasterTableView: NSViewRepresentable {
         var items: [TranslationItem] = []
         var availableLanguages: [String] = []
         var sourceLanguage: String = "en"
+        var batchHeaderState: NSControl.StateValue = .off
         var onItemUpdate: (TranslationItem) -> Void
+        var onToggleBatchHeader: () -> Void
         private(set) var isEditing = false
 
         private var configuredLanguages: [String] = []
         private var configuredSource = ""
 
-        init(onItemUpdate: @escaping (TranslationItem) -> Void) {
+        init(
+            onItemUpdate: @escaping (TranslationItem) -> Void,
+            onToggleBatchHeader: @escaping () -> Void
+        ) {
             self.onItemUpdate = onItemUpdate
+            self.onToggleBatchHeader = onToggleBatchHeader
+        }
+
+        func syncBatchHeader() {
+            if let header = tableView?.headerView as? MasterTableHeaderView {
+                header.onBatchToggle = { [weak self] in
+                    self?.onToggleBatchHeader()
+                }
+                if header.frame.height < 1 {
+                    var frame = header.frame
+                    frame.size.height = 28
+                    header.frame = frame
+                }
+            } else if let tableView {
+                // Recover if header was dropped during layout.
+                let header = MasterTableHeaderView(frame: NSRect(x: 0, y: 0, width: max(tableView.bounds.width, 500), height: 28))
+                header.onBatchToggle = { [weak self] in
+                    self?.onToggleBatchHeader()
+                }
+                tableView.headerView = header
+            }
+            guard let column = tableView?.tableColumns.first(where: { $0.identifier.rawValue == "checkbox" }),
+                  let cell = column.headerCell as? BatchSelectHeaderCell else { return }
+            cell.checkboxState = batchHeaderState
+            tableView?.headerView?.needsDisplay = true
         }
 
         func setupColumnsIfNeeded(force: Bool = false) {
@@ -151,10 +279,12 @@ struct LocalizationMasterTableView: NSViewRepresentable {
             tableView.tableColumns.forEach { tableView.removeTableColumn($0) }
 
             let checkbox = NSTableColumn(identifier: .init("checkbox"))
-            checkbox.title = "Batch".localized
-            checkbox.width = 68
-            checkbox.minWidth = 68
-            checkbox.maxWidth = 68
+            let header = BatchSelectHeaderCell(textCell: "Batch".localized)
+            header.checkboxState = batchHeaderState
+            checkbox.headerCell = header
+            checkbox.width = 88
+            checkbox.minWidth = 88
+            checkbox.maxWidth = 100
             tableView.addTableColumn(checkbox)
 
             let key = NSTableColumn(identifier: .init("key"))

@@ -79,6 +79,16 @@ final class LocalizationMasterViewModel: ObservableObject {
         return items.allSatisfy(\.isSelected)
     }
 
+    /// Header checkbox state for the Batch column (supports mixed).
+    var filteredBatchHeaderState: NSControl.StateValue {
+        let items = filteredItems
+        guard !items.isEmpty else { return .off }
+        let selectedCount = items.reduce(0) { $0 + ($1.isSelected ? 1 : 0) }
+        if selectedCount == 0 { return .off }
+        if selectedCount == items.count { return .on }
+        return .mixed
+    }
+
     var addableLanguages: [Language] {
         let existing = Set(document.availableLanguages)
         return Language.supportedLanguages.filter { !existing.contains($0.code) }
@@ -189,9 +199,22 @@ final class LocalizationMasterViewModel: ObservableObject {
     }
 
     func setBatchSelection(_ selected: Bool) {
+        setFilteredBatchSelection(selected)
+    }
+
+    /// Toggle Batch header: all filtered → none; mixed/none → all filtered.
+    func toggleFilteredBatchSelection() {
+        setFilteredBatchSelection(!areAllFilteredSelected)
+    }
+
+    func setFilteredBatchSelection(_ selected: Bool) {
+        let filteredKeys = Set(filteredItems.map(\.key))
+        guard !filteredKeys.isEmpty else { return }
         let updated = document.items.map { item -> TranslationItem in
             var copy = item
-            copy.isSelected = selected
+            if filteredKeys.contains(item.key) {
+                copy.isSelected = selected
+            }
             return copy
         }
         document.replaceItems(updated, markDirty: false)

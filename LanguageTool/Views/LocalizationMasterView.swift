@@ -54,6 +54,8 @@ struct LocalizationMasterView: View {
                 items: viewModel.filteredItems,
                 availableLanguages: viewModel.document.availableLanguages,
                 sourceLanguage: viewModel.document.sourceLanguage,
+                batchHeaderState: viewModel.filteredBatchHeaderState,
+                onToggleBatchHeader: { viewModel.toggleFilteredBatchSelection() },
                 onItemUpdate: { viewModel.updateItem($0) }
             )
             // Match headerBar / footerBar horizontal inset so the Batch column is not flush left.
@@ -73,10 +75,23 @@ struct LocalizationMasterView: View {
 
     private var keyListPane: some View {
         VStack(spacing: 0) {
-            HStack {
+            HStack(spacing: 8) {
                 Text("Keys".localized)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
+
+                // Split layout has no Batch column header — keep select-all here.
+                Button {
+                    viewModel.toggleFilteredBatchSelection()
+                } label: {
+                    Image(systemName: splitBatchHeaderSymbol)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .disabled(viewModel.filteredItems.isEmpty)
+                .help(viewModel.areAllFilteredSelected ? "Select None".localized : "Select All".localized)
+
                 Spacer()
                 Text("\(viewModel.filteredItems.count)")
                     .font(.caption.monospacedDigit())
@@ -285,18 +300,15 @@ struct LocalizationMasterView: View {
             }
 
             ViewThatFits(in: .horizontal) {
-                filterSearchRow(searchMinWidth: 140, searchMaxWidth: 240)
-                filterSearchRow(searchMinWidth: 96, searchMaxWidth: 180)
+                filterOptionsSearchRow(compactToggles: false, searchMinWidth: 140, searchMaxWidth: 220)
+                filterOptionsSearchRow(compactToggles: true, searchMinWidth: 96, searchMaxWidth: 160)
                 VStack(alignment: .leading, spacing: 8) {
-                    filterPicker
+                    HStack(spacing: 12) {
+                        filterPicker
+                        batchOptionToggles(compact: true)
+                    }
                     searchField(minWidth: 120, maxWidth: .infinity)
                 }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            ViewThatFits(in: .horizontal) {
-                batchOptionsRow(compact: false)
-                batchOptionsRow(compact: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -335,6 +347,14 @@ struct LocalizationMasterView: View {
         .accessibilityValue(viewModel.layoutMode.title)
     }
 
+    private var splitBatchHeaderSymbol: String {
+        switch viewModel.filteredBatchHeaderState {
+        case .on: return "checkmark.square.fill"
+        case .mixed: return "minus.square.fill"
+        default: return "square"
+        }
+    }
+
     private var filterPicker: some View {
         HStack(spacing: 8) {
             Text("Filter".localized)
@@ -364,17 +384,22 @@ struct LocalizationMasterView: View {
         .frame(minWidth: minWidth, maxWidth: maxWidth, alignment: .leading)
     }
 
-    private func filterSearchRow(searchMinWidth: CGFloat, searchMaxWidth: CGFloat) -> some View {
+    private func filterOptionsSearchRow(
+        compactToggles: Bool,
+        searchMinWidth: CGFloat,
+        searchMaxWidth: CGFloat
+    ) -> some View {
         HStack(spacing: 12) {
             filterPicker
+            batchOptionToggles(compact: compactToggles)
             Spacer(minLength: 8)
             searchField(minWidth: searchMinWidth, maxWidth: searchMaxWidth)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func batchOptionsRow(compact: Bool) -> some View {
-        HStack(spacing: compact ? 10 : 16) {
+    private func batchOptionToggles(compact: Bool) -> some View {
+        HStack(spacing: compact ? 10 : 14) {
             Toggle(isOn: $viewModel.translateSelectedOnly) {
                 Text(compact ? "Checked only".localized : "Translate only checked rows".localized)
                     .font(.caption)
@@ -391,30 +416,8 @@ struct LocalizationMasterView: View {
             }
             .toggleStyle(.checkbox)
             .layoutPriority(1)
-
-            if !compact {
-                Divider()
-                    .frame(height: 16)
-            }
-
-            let selectAll = !viewModel.areAllFilteredSelected
-            Button(selectAll ? "Select All".localized : (compact ? "None".localized : "Select None".localized)) {
-                viewModel.setBatchSelection(selectAll)
-            }
-            .buttonStyle(.borderless)
-            .fixedSize()
-            .disabled(viewModel.filteredItems.isEmpty)
-
-            Spacer(minLength: 8)
-
-            if !viewModel.statusMessage.isEmpty {
-                Text(viewModel.statusMessage)
-                    .font(.caption)
-                    .foregroundStyle(viewModel.lastOperationSucceeded ? Color.secondary : Color.red)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-            }
         }
+        .fixedSize(horizontal: true, vertical: false)
     }
 
     private var footerBar: some View {
@@ -444,6 +447,16 @@ struct LocalizationMasterView: View {
             }
             .fixedSize()
             .layoutPriority(1)
+
+            if !viewModel.statusMessage.isEmpty {
+                Text(viewModel.statusMessage)
+                    .font(.caption)
+                    .foregroundStyle(viewModel.lastOperationSucceeded ? Color.secondary : Color.red)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .layoutPriority(0)
+                    .help(viewModel.statusMessage)
+            }
 
             Spacer(minLength: 4)
 
