@@ -45,11 +45,14 @@
       }
     });
 
-    const title = get("meta.title");
-    const description = get("meta.description");
-    if (title) document.title = title;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta && description) meta.setAttribute("content", description);
+    // Only homepage should overwrite SEO title/description from shared meta.*
+    if (document.documentElement.getAttribute("data-i18n-meta") === "home") {
+      const title = get("meta.title");
+      const description = get("meta.description");
+      if (title) document.title = title;
+      const meta = document.querySelector('meta[name="description"]');
+      if (meta && description) meta.setAttribute("content", description);
+    }
     document.documentElement.lang = state.lang === "zh" ? "zh-Hans" : "en";
 
     document.querySelectorAll("[data-store-link]").forEach((el) => {

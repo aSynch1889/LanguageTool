@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FAQ — LocaleDesk | macOS localization</title>
+    <meta
+      name="description"
+      content="LocaleDesk FAQ: supported formats (.xcstrings, .arb, .json), API keys, Xcode, privacy on Mac, and where to download."
+    />
+    <link rel="canonical" href="https://localedesk.cc/faq/" />
+    <meta name="theme-color" content="#34C759" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LocaleDesk" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://localedesk.cc/faq/" />
+    <meta property="og:title" content="FAQ — LocaleDesk" />
+    <meta
+      property="og:description"
+      content="Common questions about LocaleDesk for iOS, Flutter, and Electron localization on Mac."
+    />
+    <meta property="og:image" content="https://localedesk.cc/assets/img/hero-convert.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FAQ — LocaleDesk" />
+    <meta
+      name="twitter:description"
+      content="Formats, API keys, Xcode, and download — LocaleDesk FAQ."
+    />
+    <meta name="twitter:image" content="https://localedesk.cc/assets/img/hero-convert.png" />
+    <link rel="icon" href="/assets/img/app-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is LocaleDesk?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "LocaleDesk is a macOS app for batch-localizing app string files. Convert source locales into target languages, review the results, then export or sync back into your project."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which formats are supported?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "iOS .strings and .xcstrings (String Catalog), Flutter .arb, and Electron localized .json files."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need an API key?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Only if you want AI-assisted translation through your own provider account (bring your own key). LocaleDesk does not sell API keys and does not run a translation marketplace."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need Xcode?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "You can run LocaleDesk without Xcode. If your iOS project uses String Catalogs, Xcode 15+ is recommended on the machine that consumes the exported .xcstrings."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does localization stay on my Mac?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Files you open stay under your control on your device unless you explicitly send them to a third-party service you configure."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What macOS version is required?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "macOS 13.0 or later."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How is this different from spreadsheets or editing String Catalog alone?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Spreadsheets lose structure and are easy to desync. Editing one catalog by hand does not scale across many locales. LocaleDesk keeps file structure, batch-generates missing locales, and gives you a Review table before you ship."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Where do I download LocaleDesk?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "From the Mac App Store. Use the download button on localedesk.cc or search for LocaleDesk on the store."
+            }
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="nav">
+      <div class="shell nav-inner">
+        <a class="brand-lockup" href="/">
+          <img src="/assets/img/app-icon.png" alt="" width="36" height="36" />
+          <span>LocaleDesk</span>
+        </a>
+        <div class="nav-actions">
+          <a class="nav-link" href="/docs/" data-i18n="nav.docs">Docs</a>
+          <a class="nav-link" href="/faq/" data-i18n="nav.faq">FAQ</a>
+          <button class="lang-toggle" type="button" data-lang-toggle data-i18n="nav.lang">中文</button>
+          <a class="btn btn-primary btn-nav" data-store-link href="https://apps.apple.com/app/languagetool/id6742207195?mt=12">
+            <span class="btn-nav-label" data-i18n="nav.getApp">Get on Mac App Store</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page">
+      <div class="shell">
+        <div class="page-hero reveal">
+          <h1 data-i18n="faq.title">FAQ</h1>
+          <p data-i18n="faq.lead">
+            Answers for developers evaluating LocaleDesk for iOS, Flutter, and Electron localization on Mac.
+          </p>
+        </div>
+
+        <section class="doc-block faq reveal">
+          <details open>
+            <summary data-i18n="faq.q1">What is LocaleDesk?</summary>
+            <p data-i18n="faq.a1">LocaleDesk is a macOS localization app.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q2">Which formats are supported?</summary>
+            <p data-i18n="faq.a2">.strings, .xcstrings, .arb, .json.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q3">Do I need an API key?</summary>
+            <p data-i18n="faq.a3">Only for your own provider.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q4">Do I need Xcode?</summary>
+            <p data-i18n="faq.a4">Not required to run the app.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q5">Does localization stay on my Mac?</summary>
+            <p data-i18n="faq.a5">Yes by default.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q6">What macOS version is required?</summary>
+            <p data-i18n="faq.a6">macOS 13.0 or later.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q7">How is this different from spreadsheets?</summary>
+            <p data-i18n="faq.a7">Structure-preserving batch workflow with Review.</p>
+          </details>
+          <details>
+            <summary data-i18n="faq.q8">Where do I download LocaleDesk?</summary>
+            <p data-i18n="faq.a8">Mac App Store.</p>
+          </details>
+        </section>
+
+        <section class="doc-block reveal">
+          <p style="margin-bottom: 16px">
+            <a class="btn btn-primary" data-store-link href="https://apps.apple.com/app/languagetool/id6742207195?mt=12" data-i18n="faq.cta">Download on the Mac App Store</a>
+          </p>
+          <p>
+            <a href="/docs/" data-i18n="faq.moreDocs">Installation and workflow → Docs</a>
+            ·
+            <a href="/xcstrings/" data-i18n="faq.moreXc">Working with .xcstrings →</a>
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="shell footer-inner">
+        <span data-i18n="footer.tag">Localization for developers on Mac.</span>
+        <span>
+          <a href="/docs/" data-i18n="nav.docs">Docs</a>
+          ·
+          <a href="/faq/" data-i18n="nav.faq">FAQ</a>
+          ·
+          <a href="/privacy/" data-i18n="nav.privacy">Privacy</a>
+          ·
+          <span data-i18n="footer.rights">© 2026 LocaleDesk</span>
+        </span>
+      </div>
+    </footer>
+
+    <script src="/assets/js/i18n.js"></script>
+    <script src="/assets/js/site.js"></script>
+  </body>
+</html>

@@ -7,3 +7,12 @@ workers_dev = true
 directory = "./public"
 not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
+
+# Custom domains (zone must already be on this Cloudflare account)
+[[routes]]
+pattern = "localedesk.cc"
+custom_domain = true
+
+[[routes]]
+pattern = "www.localedesk.cc"
+custom_domain = true
